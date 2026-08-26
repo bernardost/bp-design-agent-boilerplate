@@ -33,9 +33,9 @@ derive: whether each is met. Refreshed at close-the-loop, alongside `now.md`. Li
 2: met · brain/workspace.toml + brain/config.py; doctor.py and feed.py hold no project constants
 3: met · AGENTS.md is the charter, CLAUDE.md is a one-line @import
 4: met · frontmatter tags across the brain, brain/tags.md owns the vocabulary, doctor reports them
-5: partly · push-as-you-go and the wrap-up signal are in the charter; observably-followed is still accruing
-6: partly · past items collapse and feed.py is inside /close; doctor's stale-page report shipped
-7: not-met · /setup and /close are written but no clone has been run end to end
+5: partly · in the charter and followed this session (pushed mid-session, signalled at the seam); one session is not yet a habit
+6: met · past items collapse (verified on a fixture), feed.py is inside /close, doctor reports a stale page
+7: partly · fresh-clone mechanics verified (skills, gitignore, charter import, both scripts); the /setup interview is untested — see FEED-1
 
 ---
 
