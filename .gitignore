@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated projection — rebuild with `python3 brain/feed.py`
+brain/feed.html
+
+# If the project acquires confidential source material, keep it out from day one,
+# e.g.:
+# context/client-context/
