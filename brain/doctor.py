@@ -26,16 +26,13 @@ ROOT = BRAIN.parent
 NOW_MAX = 2000  # chars. "If it would still be true in two weeks, it doesn't belong."
 TOMBSTONE = "do not cite"
 
-# ── Project configuration — the one block to edit when adopting this template ───────────
-# TRACKER_PREFIX: the issue-key prefix of your external tracker (e.g. "PROJ" for PROJ-12).
-# None if the project has no tracker: pointers are then `—` (not yet projected) or `skip`.
-TRACKER_PREFIX: str | None = "PROJ"
-# TASK_LABELS: the label vocabulary for brain/tasks.md. `bar` = inside the current stage's
-# exit criterion; `deferred` = real work explicitly NOT a prerequisite for the current
-# stage, which must never be presented as one. Labels encode the stage-exit criterion in
-# the grammar rather than in prose, so "is this required before we can move on?" is a grep
-# and not a judgement call.
-TASK_LABELS = ("build", "spec", "evals", "method", "blocked-on-external", "bar", "deferred")
+# Project constants come from brain/workspace.toml via config.py — never from this file.
+# The two scripts used to carry a TRACKER_PREFIX each with nothing checking they agreed.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from config import (  # noqa: E402
+    CONFIG, TRACKER_PREFIX, TASK_LABELS, PROJECT_NAME, GIT_REMOTE, IS_TEMPLATE, placeholders,
+)
+
 
 # brain/tasks.md line grammar. Files own task state; the tracker is a projection, so the
 # projection pointer is part of the line and not a thing to remember at push time.
@@ -54,12 +51,13 @@ TASK_LINE = re.compile(
 LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps"]
 
 # Files that describe what is true *now*. Only these may not carry a dead pointer.
-# A dated record (an ADR, an insight, a findings file) citing a since-superseded ADR was
+# A dated record (a decision, an insight, a findings file) citing a since-superseded decision was
 # correct when written; rewriting it would be falsifying the record, and the tombstone on
 # the target is what protects the reader who follows the link.
 CURRENT_STATE = [
     BRAIN / "now.md",
     BRAIN / "open-questions.md",
+    ROOT / "AGENTS.md",
     ROOT / "CLAUDE.md",
 ]
 CURRENT_STATE_DIRS: list = []
@@ -127,7 +125,7 @@ def check_tombstones():
 
 
 # ── FAIL 3 ── a current-state file must not cite a dead one ────────────────────
-def dead_adrs() -> dict[str, str]:
+def dead_decisions() -> dict[str, str]:
     dead = {}
     for p in md_files([BRAIN / "decisions"]):
         text = p.read_text(encoding="utf-8")
@@ -137,9 +135,9 @@ def dead_adrs() -> dict[str, str]:
 
 
 def check_stale_citations():
-    dead = dead_adrs()
+    dead = dead_decisions()
     if not dead:
-        notes.append("no superseded ADRs to police")
+        notes.append("no superseded decisions to police")
         return
 
     targets = [p for p in CURRENT_STATE if p.exists()] + list(md_files(CURRENT_STATE_DIRS))
@@ -160,7 +158,7 @@ def check_stale_citations():
                     f"      Point it at the replacement, or mark the citation as historical."
                 )
     if not hits:
-        notes.append(f"{len(dead)} superseded ADR(s), no current-state file cites them")
+        notes.append(f"{len(dead)} superseded decision(s), no current-state file cites them")
 
 
 # ── FAIL 4 ── brain/tasks.md keeps its line grammar ────────────────────────────
@@ -254,7 +252,7 @@ def check_no_projection_keys_in_prose():
         if line.lstrip().startswith("```"):
             fenced = not fenced
             continue
-        if fenced or not re.search(rf"{TRACKER_PREFIX}-\\d+", line):
+        if fenced or not re.search(rf"{TRACKER_PREFIX}-\d+", line):
             continue
         if TASK_LINE.match(line):
             continue  # the pointer field: the one legitimate home
@@ -288,12 +286,12 @@ def report_projection():
         print(f"               … and {len(pending) - 5} more")
 
 
-# ── REPORT ── dated records pointing at superseded ADRs ────────────────────────
+# ── REPORT ── dated records pointing at superseded decisions ────────────────────────
 def report_historical_citations():
-    """Not a failure: an ADR or findings file citing a since-superseded decision was correct
+    """Not a failure: a decision or findings file citing a since-superseded decision was correct
     when written. The tombstone on the target is the protection. Printed so the count is
     visible — if it grows fast, the supersession was probably badly communicated."""
-    dead = dead_adrs()
+    dead = dead_decisions()
     if not dead:
         return
     per: dict[str, int] = {}
@@ -306,7 +304,7 @@ def report_historical_citations():
                 per[stem] = per.get(stem, 0) + 1
     if per:
         total = sum(per.values())
-        print(f"  history    {total} dated-record citation(s) of superseded ADRs "
+        print(f"  history    {total} dated-record citation(s) of superseded decisions "
               f"(fine — target is tombstoned):")
         for stem, c in sorted(per.items(), key=lambda kv: -kv[1]):
             print(f"               {stem} ({c} files)")
@@ -372,6 +370,89 @@ def report_question_numbers():
         print(f"  questions  {len(set(nums))} unique, highest Q{highest}, no collisions")
 
 
+# ── REPORT ── the tag vocabulary ───────────────────────────────────────────────
+def report_tags():
+    """Tags are global to the brain: a decision and an insight sharing one is the point
+    (decision 0004). Unknown tags REPORT rather than FAIL — a new tag is usually legitimate,
+    and failing on it would train you to ignore this output. What is worth seeing is the
+    shape of the vocabulary: singletons that should have been [[links]], and files with no
+    tags at all, which are invisible to every tag query and to the Obsidian graph."""
+    vocab, counts, untagged = {}, {}, []
+    tags_file = BRAIN / "tags.md"
+    if tags_file.exists():
+        for line in tags_file.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"^-\s+`([a-z0-9-]+)`\s*—\s*(.+)$", line.strip())
+            if m:
+                vocab[m.group(1)] = m.group(2)
+
+    for path in md_files([BRAIN / "decisions", BRAIN / "insights", BRAIN / "braindumps",
+                          BRAIN / "briefings"]):
+        if path.name == "README.md" or path.stem.startswith("0000"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        found = []
+        if text.startswith("---"):
+            fm = text[3:text.find("\n---", 3)] if "\n---" in text[3:] + "\n---" else ""
+            tm = re.search(r"^tags:\s*\[(.*?)\]", fm, re.M)
+            if tm:
+                found = [t.strip().strip("\"'") for t in tm.group(1).split(",") if t.strip()]
+        if not found:
+            untagged.append(rel(path))
+        for t in found:
+            counts[t] = counts.get(t, 0) + 1
+
+    if not vocab and not counts:
+        print("  tags       no tags yet — brain/tags.md owns the vocabulary")
+        return
+    unknown = sorted(t for t in counts if vocab and t not in vocab)
+    unused = sorted(t for t in vocab if t not in counts)
+    top = sorted(counts.items(), key=lambda kv: -kv[1])[:6]
+    print(f"  tags       {len(counts)} in use over {sum(counts.values())} file(s)"
+          + (f", {len(vocab)} defined in tags.md" if vocab else ", tags.md defines none yet"))
+    if top:
+        print("               " + " · ".join(f"{t} ({c})" for t, c in top))
+    if unknown:
+        print(f"               not in tags.md: {', '.join(unknown)} — define or rename")
+    if unused:
+        print(f"               defined but unused: {', '.join(unused)}")
+    singles = sorted(t for t, c in counts.items() if c == 1)
+    if singles and sum(counts.values()) >= 30:
+        print(f"               one file only: {', '.join(singles)} — a theme of one is a [[link]]")
+    if untagged:
+        print(f"               {len(untagged)} file(s) with no tags, e.g. {untagged[0]}")
+
+
+# ── REPORT ── is this workspace actually configured? ──────────────────────────
+def report_config():
+    """A half-configured workspace should announce itself rather than quietly run with a
+    placeholder in the page title and the tracker push."""
+    miss = placeholders(CONFIG)
+    if not (BRAIN / "workspace.toml").exists():
+        print("  config     brain/workspace.toml is missing — run /setup (defaults in use)")
+    elif miss:
+        print(f"  config     {len(miss)} unfilled: {', '.join(miss)} — run /setup")
+    elif IS_TEMPLATE:
+        print(f"  config     {PROJECT_NAME} — the template repo itself; a clone runs /setup")
+    else:
+        tr = TRACKER_PREFIX or "no tracker"
+        print(f"  config     {PROJECT_NAME} · {tr} · remote {'on' if GIT_REMOTE else 'off'}")
+
+
+# ── REPORT ── has the page been regenerated since the files moved? ────────────
+def report_feed():
+    """The page is a projection. Stale is not a failure — it is a projection, and it is
+    expected to lag between wrap-ups. Printed so /close has a number to act on."""
+    out = BRAIN / "feed.html"
+    if not out.exists():
+        print("  feed       not generated yet — python3 brain/feed.py")
+        return
+    age = out.stat().st_mtime
+    stale = [s for s in ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md")
+             if (BRAIN / s).exists() and (BRAIN / s).stat().st_mtime > age]
+    print("  feed       current" if not stale
+          else f"  feed       STALE behind {', '.join(stale)} — python3 brain/feed.py")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
@@ -388,6 +469,9 @@ def main() -> int:
         report_historical_citations()
         report_duplication()
         report_question_numbers()
+        report_tags()
+        report_config()
+        report_feed()
         print()
 
     if fails:

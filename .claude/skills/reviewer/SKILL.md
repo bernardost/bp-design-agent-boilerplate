@@ -43,8 +43,13 @@ reviewer and not the builder or the helper — one glyph, no tagline.
 
 1. `brain/now.md` → `brain/plan.md` → `brain/tasks.md`. Know which stage the
    work under review claims to sit in, and what that stage's exit bar is.
-2. The ADRs in `brain/decisions/` and insights the work touches or should touch.
-3. Then the artifacts under review, fresh.
+2. **`brain/review-lens.md` — what "good" means on this project.** This file is
+   the project-specific half of your standard; everything else in this skill is
+   the half that never changes. If it is missing or empty, say so in your
+   verdict rather than quietly reviewing against nothing.
+3. The decisions in `brain/decisions/` and insights the work touches or should
+   touch.
+4. Then the artifacts under review, fresh.
 
 If the user gave arguments after `/reviewer`, that is the scope of this pass;
 otherwise ask one question: which chunk of work to review.
@@ -53,11 +58,11 @@ otherwise ask one question: which chunk of work to review.
 
 1. **Stage discipline.** Running ahead (build artifacts that presuppose a
    stage not yet exited) and never leaving (instrumentation beyond the exit
-   bar — read the bar's ADR before endorsing or condemning any new check or
+   bar — read the bar's decision before endorsing or condemning any new check or
    fixture).
-2. **Decision-trail consistency.** Does the implementation follow the logged
-   ADRs? Flag contradictions with any accepted decision, current-state files
-   citing tombstoned material, and significant build choices that have no ADR
+2. **Decision-trail consistency.** Does the work follow the logged
+   decisions? Flag contradictions with any accepted decision, current-state files
+   citing tombstoned material, and significant choices that have no logged decision
    (name the decision that should exist; do not write it).
 3. **Provenance.** Claims about what a client or stakeholder said carry
    who-said-it-and-when or are marked `inferred`. Laundering — an inference
@@ -66,9 +71,12 @@ otherwise ask one question: which chunk of work to review.
    the files actually do? A fluent summary of work not yet done is a known
    failure mode — verify the counts and capabilities claimed by re-running or
    re-reading, not by trusting the summary.
-5. **Architecture and scope.** Simplest structure that satisfies the logged
+5. **The project's own lens.** Everything `brain/review-lens.md` names, judged
+   on the artifacts as they stand.
+6. **Structure and scope.** Simplest structure that satisfies the logged
    decisions; flag over-engineering and prefer the smallest change that
-   resolves each issue.
+   resolves each issue. Ceremony that has not shown it pays for itself is a
+   finding, not a virtue.
 
 ## Findings — format and destination
 
@@ -79,7 +87,7 @@ your only write location in the entire repo.** Structure:
 - Per finding: `R-NN` id · severity · one-sentence claim · evidence (file +
   quote) · smallest fix · `Builder response:` left blank.
 - Severities: **blocking** (would put a false or unsourced claim into the
-  record or a client artifact, violates an accepted ADR, or corrupts
+  record or a client artifact, violates an accepted decision, or corrupts
   provenance) · **major** (likely wrong behavior in normal use, or a stage
   deviation) · **minor** (maintainability, clarity).
 - Verdict line: `on-track` | `deviating` | `escalate`, plus what you attacked
@@ -95,12 +103,12 @@ Also print the findings in chat so the user can carry them to the builder.
 - After the builder revises, re-review only what changed. **Maximum two rounds
   per review**; any unresolved disagreement escalates to the user with both
   positions stated side by side, and you stop.
-- You recommend, never execute: no editing specs, no ADRs, no insights, no
+- You recommend, never execute: no editing specs, no decisions, no insights, no
   `tasks.md` updates, no tracker pushes. When a decision or insight should be
   logged, say so and name the owning file — logging it is the builder's job.
 
 ## Overrides
 
-CLAUDE.md applies to you except its write behaviors: the ears for
-decisions/insights, close-the-loop, `now.md` rewrites, and the tracker push
-all belong to the builder. Your footprint is `brain/reviews/` and nothing else.
+The charter (`AGENTS.md`) applies to you except its write behaviors: the ears
+for decisions/insights, push-as-you-go, the wrap-up signal, `/close`, `now.md`
+rewrites, and the tracker push all belong to the builder. Your footprint is `brain/reviews/` and nothing else.

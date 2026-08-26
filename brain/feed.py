@@ -12,7 +12,7 @@ back as authority. A hand-written page would restate `now.md`, the plan, the ADR
 list in a fifth place, and the record-keeping invariant this workspace runs on is *one owner per
 class of information; everything else links, never restates*. So the page is a function of the
 files: position from `now.md`, the arc from `plan.md`, the current stage's exit conditions from
-the ADR that owns them, tasks from `tasks.md`, and the decisions waiting on the owner from
+the decision that owns them, tasks from `tasks.md`, and the decisions waiting on the owner from
 `feed-items.md`, which is the one file this adds.
 
 **The problem it solves is the reading cost, not the writing cost.** Every sentence in this
@@ -20,7 +20,7 @@ workspace is dense with references — `0012`, `Q9`, `PROJ-7`, `[[an-insight-slu
 is a file the reader has to go and find. The compression is right for the record and wrong for a
 person scanning it. So the glossary is built from the files themselves and every reference on the
 page carries its own definition on hover and its own link on click. **Nothing here is a summary
-someone maintains**; if an ADR's title changes, the tooltip changes with it.
+someone maintains**; if a decision's title changes, the tooltip changes with it.
 
 Dependency-free and offline, matching the rest of the tree. The page is a local file rather than
 anything hosted: it may carry confidential project facts, and `file://` links into the repo only
@@ -41,9 +41,11 @@ BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
 OUT = BRAIN / "feed.html"
 
-# ── Project configuration — edit when adopting this template ─────────────────────────────
-PROJECT_NAME = "Project"       # the page title and kicker
-TRACKER_PREFIX = "PROJ"        # must match brain/doctor.py; None if no tracker
+# Project constants live in brain/workspace.toml and are read through config.py — never
+# duplicated here. `doctor.py` reads the same file, so a prefix cannot disagree with itself.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from config import PROJECT_NAME, TRACKER_PREFIX  # noqa: E402
+
 _KEY = rf"{TRACKER_PREFIX}-\d+" if TRACKER_PREFIX else r"(?!x)x"   # never-matching if None
 
 SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md")
@@ -83,7 +85,7 @@ def glossary() -> dict:
 
     Built by reading, never by hand. The keys are exactly the tokens the prose already uses, which
     is what lets the linkifier be conservative: a token becomes a link **only if it resolves here**,
-    so a four-digit number that is not an ADR stays plain text rather than becoming a dead tooltip.
+    so a four-digit number that is not a decision stays plain text rather than becoming a dead tooltip.
     """
     g: dict = {}
 
@@ -96,13 +98,13 @@ def glossary() -> dict:
         title = head.group(2).strip() if head else path.stem
         status = re.search(r"^Date:.*·\s*Status:\s*(.+)$", text, re.M)
         g[m.group(1)] = {
-            "kind": "ADR " + m.group(1),
+            "kind": "decision " + m.group(1),
             "title": title,
             "gloss": _first_para(text, after="## Decision"),
             "note": (status.group(1).strip() if status else ""),
             "path": path,
         }
-        g[path.stem] = g[m.group(1)]          # the full [[0049-slug]] form
+        g[path.stem] = g[m.group(1)]          # the full [[0011-slug]] form
 
     for path in sorted((BRAIN / "insights").glob("*.md")):
         text = path.read_text()
@@ -197,7 +199,7 @@ def _inline(text: str, g: dict) -> str:
         return lift('<span class="ref dead">') + label + lift("</span>")
     out = re.sub(r"\[\[([^\]]+)\]\]", wiki, out)
 
-    # Bare tokens: ADR numbers, question numbers, task pointers. Conservative by construction —
+    # Bare tokens: decision numbers, question numbers, task pointers. Conservative by construction —
     # only linkified when the key resolves in the glossary.
     def bare(m):
         key = m.group(0)
@@ -302,19 +304,19 @@ def feed_items() -> list[dict]:
 
 
 def bar_conditions() -> tuple[str, list[dict]]:
-    """The current stage's exit conditions, from the ADR that owns them.
+    """The current stage's exit conditions, from the decision that owns them.
 
-    The **text** is read from the ADR — never retyped here, so it cannot drift from the decision.
+    The **text** is read from the decision — never retyped here, so it cannot drift from the decision.
     The **status** of each is a judgment, and it is read from `feed-items.md`'s `## BAR` block,
     which is the one place this tool asks to be told something rather than deriving it.
     """
     plan = (BRAIN / "plan.md").read_text()
     m = re.search(r"^## (Stage \d+ · [^\n]*?) — \*\*current\*\*", plan, re.M)
     stage = m.group(1) if m else "current stage"
-    adr = re.search(r"\*\*Bar: \[\[([^\]]+)\]\]", plan)
+    bar_ref = re.search(r"\*\*Bar: \[\[([^\]]+)\]\]", plan)
     conds = []
-    if adr:
-        path = BRAIN / "decisions" / f"{adr.group(1)}.md"
+    if bar_ref:
+        path = BRAIN / "decisions" / f"{bar_ref.group(1)}.md"
         if path.exists():
             body = path.read_text()
             dec = body.split("## Decision", 1)[-1].split("\n## ", 1)[0]
@@ -452,7 +454,16 @@ button{font:inherit;font-family:ui-sans-serif,system-ui,sans-serif;cursor:pointe
 /* ── feed cards ──────────────────────────────────────────────────────── */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
   padding:20px 22px;margin:0 0 16px;box-shadow:var(--shadow);position:relative}
-.card.answered{opacity:.62}
+.card.answered{opacity:.6}
+.card.answered:hover{opacity:1}
+/* A settled item folds to its title and its answer. Live ones are open, and can still be
+   folded away by hand. */
+details.fold>summary{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12.5px;
+  color:var(--dim);cursor:pointer;list-style:none;padding:2px 0 8px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:"▸ ";color:var(--accent)}
+details.fold[open]>summary::before{content:"▾ "}
+details.fold[open]>summary{color:var(--faint)}
 .card .cardhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
 .card .idtag{font-family:var(--mono);font-size:11px;color:var(--faint)}
 .card h3{margin:0 0 10px}
@@ -679,7 +690,7 @@ def build() -> str:
             f'<span class="pill {"ok" if met == len(conds) else "warn"}">{met} of {len(conds)}'
             '</span></div>'
             '<p style="font-size:13.5px;color:var(--dim);margin:-2px 0 10px">'
-            'Tap a condition for the full wording from the ADR that owns it.</p>'
+            'Tap a condition for the full wording from the decision that owns it.</p>'
             + "".join(rows) + '</div>')
 
     # ── the feed ─────────────────────────────────────────────────────────────────────────────
@@ -705,10 +716,22 @@ def build() -> str:
         lead = first + "</p>" if rest else body
         more = (f'<details class="body-more"><summary>the reasoning</summary>{rest}</details>'
                 if rest.strip() else "")
-        out.append(f"""<div class="card{' answered' if item['status'] == 'answered' else ''}"
+        # A whole settled item folds too, and starts folded. What is waiting on the owner is
+        # the only thing the page opens by itself — everything else is history, and history
+        # that is open by default pushes the live question below the fold.
+        live = item["status"] == "awaiting-you"
+        if live:
+            fold_label = "the detail"
+        else:
+            given = k.get("answered", "").strip()
+            fold_label = (f"you said: {given}" if given
+                          else f"{item['status']} · open it")
+        out.append(f"""<div class="card{'' if live else ' answered'}"
   data-id="{item['id']}" data-title="{html.escape(item['title'])}">
   <div class="cardhead"><span class="idtag">{item['id']}</span>{answered_pill}</div>
   <h3>{_inline(item['title'], g)}</h3>
+  <details class="fold"{' open' if live else ''}>
+  <summary>{_inline(fold_label, g)}</summary>
   <div class="facts">{''.join(facts)}</div>
   <div class="body">{lead}{more}</div>
   <div class="answer">
@@ -716,6 +739,7 @@ def build() -> str:
     <textarea placeholder="…or say it in your own words"></textarea>
     <div class="saved"></div>
   </div>
+  </details>
 </div>""")
 
     # ── the client thread ────────────────────────────────────────────────────────────────────

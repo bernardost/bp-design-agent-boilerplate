@@ -1,4 +1,7 @@
-# 0000 — ADR template (copy me; do not cite)
+---
+tags: []
+---
+# 0000 — Decision template (copy me; do not cite)
 Date: YYYY-MM-DD · Status: accepted
 
 ## Context

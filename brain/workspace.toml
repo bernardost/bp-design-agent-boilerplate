@@ -1,0 +1,41 @@
+# workspace.toml — the one file `/setup` writes and every script reads.
+#
+# Nothing in brain/*.py holds a project constant of its own; they all read this through
+# brain/config.py. Edit it by hand or re-run `/setup` to change an answer.
+# Placeholders in {{braces}} are unfilled — `doctor.py` reports them.
+
+[project]
+name = "Agent Workspace Boilerplate"   # page titles, kickers, the tracker push
+owner = "Bernardo Presser"
+# Where the work being designed actually lives. A design project's product is often not
+# in this repo: a Figma file, a live site, a deck. List every home, so a new session can
+# find the work without asking.
+work_lives = ["this repo — the workspace is the product"]
+# True only in the boilerplate repo itself. `/setup` sets it false in a clone, which is
+# how `doctor.py` tells "this IS the template" from "a clone that never ran /setup".
+is_template = true
+
+[tracker]
+# The external tracker. `prefix = ""` means the project has no tracker: task pointers are
+# then `—` (not yet projected) or `skip` (never projected).
+name = ""                          # e.g. "Linear" — none on this project
+prefix = ""                        # the issue-key prefix, e.g. "PROJ" for PROJ-12
+
+[tasks]
+# The label vocabulary for brain/tasks.md. `bar` = inside the current stage's exit
+# criterion; `deferred` = real work explicitly NOT a prerequisite for the current stage,
+# which must never be presented as one. Labels put the stage question in the grammar, so
+# "is this required before we can move on?" is a grep and not a judgement call.
+labels = ["charter", "skills", "scripts", "interface", "integrations", "bar", "deferred"]
+
+[git]
+# See decision 0006. A remote is what lets the same workspace open on a phone; recording
+# the answer here IS the owner's say-so, so it is not asked again every session.
+remote = true                      # true once a remote is configured and push is authorized
+visibility = "private"             # "private" | "public" — public is an explicit choice
+push_each_unit = true              # commit + push every completed unit of work, unprompted
+
+[confidential]
+# Directories holding client or third-party material. Kept out of git from day one, and
+# read-only to the assistant when they are source material from outside.
+paths = ["context/"]

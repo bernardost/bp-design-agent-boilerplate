@@ -14,8 +14,8 @@ Output one screen, no more:
 - **Focus** — from now.md, one line, with the current stage and its bar
 - **Next actions** — the top 3, with any blockers
 - **Open questions** — grouped by owner tag, count + the most urgent one each
-- **Recent decisions** — last 3 ADRs, one line each
+- **Recent decisions** — the last 3, one line each
 - **Tasks** — counts by status, and anything `doing` by title
 
 If now.md's date is older than the newest decision or task change, note that
-it may be stale and offer to reconcile.
+it may be stale and offer to reconcile — or say it is worth `/close`-ing.
