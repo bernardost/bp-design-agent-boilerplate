@@ -1,7 +1,7 @@
-# Agent Workspace Boilerplate — project brain
+# {{PROJECT_NAME}} — project brain
 
-Bernardo's blank agent workspace, cloned at the start of every design project. It is both
-a thinking system and, here, the thing being built. This file carries what the tree cannot tell you —
+{{OWNER}}'s working environment for {{ONE_LINE_ENGAGEMENT_DESCRIPTION}}. It is both a
+thinking system and the home of the work. This file carries what the tree cannot tell you —
 judgment where judgment works, hard rules only where a failure taught us one.
 
 **This is the charter, and it is the only one.** `CLAUDE.md` imports this file so Claude Code
@@ -13,8 +13,7 @@ reads it; Codex and Cursor read `AGENTS.md` directly. Never write a second copy.
 
 ## Terminology
 
-**The workspace** is the work on this project: there is no separate product.
-On a cloned project, name the work by its name. Name it by its name,
+**{{PRODUCT_NAME}}** is the work: the thing being designed or built. Name it by its name,
 never "the agent". It does not always live in this repo — `work_lives` in
 `brain/workspace.toml` says where (a Figma file, a site, a deck).
 
@@ -104,7 +103,7 @@ is configured, `git pull` before you touch anything — another device may have 
 - Braindumps stay verbatim in `brain/braindumps/YYYY-MM-DD-HHMM.md`; processing routes
   content out, never rewrites the dump. Briefings work the same way in `brain/briefings/`.
 
-## The tracker (none on this project — projection only)
+## The tracker ({{TRACKER_NAME}} — projection only)
 
 Push at session end from changed `tasks.md` lines; write the returned key back into the
 pointer field — never pre-guess identifiers. Only tasks project: never decisions, insights,

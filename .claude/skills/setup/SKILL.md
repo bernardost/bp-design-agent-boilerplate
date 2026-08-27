@@ -13,9 +13,9 @@ what "good" means, and where it is going — and should know which commands exis
 
 Run `python3 brain/config.py` and read `brain/decisions/` .
 
-- **A fresh clone** — the config still says `Agent Workspace Boilerplate`, or the decisions
-  in `brain/decisions/` are the template's own (0001–0011 are about building the template).
-  Full run, including the clear-out in step 3.
+- **A fresh clone** — `project.is_template` is true, or `brain/workspace.toml` still holds
+  `{{PLACEHOLDER}}` answers. Full run, including step 3. Set `is_template = false` as part of
+  writing the config: that flag is how every later session knows setup has happened.
 - **An already-configured project** — the owner wants to change an answer, add a source, or
   connect a tracker. **Skip step 3 entirely.** Ask what they want to change, change only that,
   log a decision if the change is one, and stop. Never re-clear a live brain.
@@ -81,8 +81,12 @@ connector shows up, and it is honest.
 
 Confirm out loud first, listing what will go. Then:
 
-- Empty `brain/braindumps/`, `brain/decisions/`, `brain/insights/`, `brain/reviews/`,
-  `brain/briefings/` — **keeping** every `README.md` and `brain/decisions/0000-decision-template.md`.
+- The boilerplate ships blank, so usually there is nothing to clear. Check anyway:
+  `brain/braindumps/`, `brain/decisions/`, `brain/insights/`, `brain/reviews/`,
+  `brain/briefings/` should hold only `README.md` files and
+  `brain/decisions/0000-decision-template.md`. Empty anything else.
+- `rm -rf archive/` if it is present — it holds the boilerplate's own design rationale, which
+  is not this project's record.
 - Rewrite `brain/now.md`, `brain/tasks.md`, `brain/open-questions.md`, `brain/feed-items.md`
   from the template shapes, with this project's content.
 - Write the project's own decision 0001: what is being built and why this workspace shape.

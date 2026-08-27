@@ -25,13 +25,15 @@ and no dependency added. Optional, never assumed.
 
 ## Vocabulary
 
-- `terminology` — what we call things, and why the name matters
-- `onboarding` — the first-run experience: the quiz, the tour, what a clone inherits
-- `template-shape` — how this workspace is structured as a reusable thing
-- `brain-structure` — how records relate: tags, links, ownership of information
-- `portability` — surviving a closed session, a new device, a different model
-- `interface` — how the owner sees and answers things: the page, the feed, the signals
-- `git` — the remote, commits, what travels and what stays local
-- `integrations` — external sources and connectors: Slack, meetings, mail, tracker
-- `review` — the independent-reviewer role and the quality bar
+*A starter set for a design project — `/setup` reshapes it from the interview, and it should
+end up describing this project's themes, not these.*
+
+- `brief` — what the client asked for, and how that has moved
+- `research` — what we learned about users, the market, or the existing thing
+- `concept` — direction, exploration, the shape of the idea
+- `craft` — visual and interaction execution: type, colour, motion, detail
+- `accessibility` — who can and cannot use what we made
+- `system` — tokens, components, patterns, the reusable layer
+- `handoff` — what engineering or the client needs to carry it forward
+- `process` — how we work: rituals, tools, what to do differently next time
 - `stage-bar` — what has to be true to leave a stage

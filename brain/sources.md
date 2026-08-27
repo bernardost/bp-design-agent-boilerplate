@@ -27,8 +27,7 @@ link where one exists. A summary with no attribution is laundering and does not 
 
 ## Watched
 
-*(none yet — `/setup` fills this. This repo has no external sources: it is the template
-itself, and its record lives entirely in `brain/`.)*
+*(none yet — `/setup` fills this by asking, then probing what is actually reachable)*
 
 ## Wanted, not connected
 

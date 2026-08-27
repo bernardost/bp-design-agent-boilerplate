@@ -10,29 +10,18 @@ every next step is genuinely useful and nothing ever ends.
 
 ---
 
-## Stage 1 · Clone-ready — **current**
+## Stage 1 · {{NAME_THE_FIRST_STAGE}} — **current**
 
-**Bar: [[0011-clone-ready-the-stage-1-exit-bar]]** *(the numbered conditions under its
-`## Decision` heading are what `feed.py` renders as the bar).*
+**Bar: [[0001-what-enough-means-the-stage-1-exit-criterion]]** *(write this decision at
+`/setup` — the numbered conditions under its `## Decision` heading are what `feed.py` renders
+as the bar).*
 
-Repoint the workspace from the engagement it was extracted from to the blank design-project
-workspace: one config file, `/setup`, `/close`, plain terminology, global tags, portable
-charter, push-as-you-go.
+**Not required to exit:** *(name the tempting extras explicitly — this list is the anti-drag
+guard).*
 
-**Not required to exit:** the screenshot experiment · `/briefing` or any connector work ·
-`brain/map.html` · onboarding copy polish · validating against a second real project.
+## Stage 2 · {{NAME_THE_NEXT_STAGE}} — *not entered*
 
-## Stage 2 · The second interface — *not entered*
-
-**Entry:** a clone has been run start to finish at least once, so there is a real project to
-look at. Then, and only then, test whether before/after screenshots and a richer `feed.html`
-earn their cost. **Bar written on entry, not now.**
-
-## Stage 3 · Sources and briefings — *not entered*
-
-**Entry:** a project with real external surfaces to watch — Slack, meetings, mail, a tracker.
-`/briefing` is the largest new capability and the most likely to invent, so it gets its own
-stage rather than riding along. **Bar written on entry, not now.**
+**Entry:** *(the event that opens it)*. **Bar written on entry, not now.**
 
 ---
 
