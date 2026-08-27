@@ -71,7 +71,9 @@ is configured, `git pull` before you touch anything — another device may have 
 - **Close the loop** with `/close` before ending any session that moved the work: append to
   owning files → update `tasks.md` → **rewrite `now.md` from scratch, never edit it**
   (rewriting is what enforces the one-screen limit) → `python3 brain/doctor.py` →
-  regenerate `brain/feed.html` → commit and push → push the tracker projection.
+  regenerate `brain/feed.html` (which also draws the brain as a graph, and writes
+  `brain/brain.canvas` for anyone who opens `brain/` as an Obsidian vault) → commit and push →
+  push the tracker projection.
 
 ## Record-keeping invariants (doctor.py enforces what it can)
 
@@ -80,8 +82,9 @@ is configured, `git pull` before you touch anything — another device may have 
   `brain/open-questions.md` (with an owner tag: who can answer) · tasks → `brain/tasks.md` ·
   current state → `brain/now.md` · the stage arc and each stage's exit bar → `brain/plan.md` ·
   reviews → `brain/reviews/` · decisions awaiting the owner → `brain/feed-items.md` · the tag
-  vocabulary → `brain/tags.md` · what "good" means here → `brain/review-lens.md` · watched
-  external sources → `brain/sources.md` · every project constant → `brain/workspace.toml`.
+  vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
+  `brain/glossary.md`** · what "good" means here → `brain/review-lens.md` · watched external
+  sources → `brain/sources.md` · every project constant → `brain/workspace.toml`.
 - **Tags are global to the brain.** One vocabulary across decisions, insights, braindumps and
   briefings — a decision and an insight sharing a tag is the point. Frontmatter
   `tags: [a, b]`, defined in `brain/tags.md`. A tag is a theme; a `[[wiki-link]]` is a claim
@@ -99,7 +102,8 @@ is configured, `git pull` before you touch anything — another device may have 
 - **Label evidence, never launder it:** claims about what a client or stakeholder said carry
   who said it and when, or are marked `inferred`. Confident inventions are the main error
   source. Anything pulled from Slack, a meeting recording, or email carries its source and
-  date on the line.
+  date on the line — and a name or codename you had to decode goes to `brain/glossary.md`,
+  which is where a guess would otherwise harden into a fact.
 - Braindumps stay verbatim in `brain/braindumps/YYYY-MM-DD-HHMM.md`; processing routes
   content out, never rewrites the dump. Briefings work the same way in `brain/briefings/`.
 

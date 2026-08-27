@@ -17,6 +17,7 @@ which costs more than the check is worth.
 """
 
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -453,6 +454,150 @@ def report_feed():
           else f"  feed       STALE behind {', '.join(stale)} — python3 brain/feed.py")
 
 
+# ── shared helpers for the reports below ──────────────────────────────────────
+def _inbound() -> dict:
+    """`stem -> {citing files}` across the scanned tree.
+
+    A decision is cited three ways in practice — `[[0007-slug]]`, `[[0007]]`, and the bare
+    token `0007` in prose — so all three count. Without that, every decision cited the way
+    the charter actually recommends (restate the content, cite the number) would read as an
+    orphan."""
+    texts = {p: p.read_text(encoding="utf-8") for p in md_files(SCAN_DIRS)}
+    keys = {}
+    for p in texts:
+        keys.setdefault(p.stem, p)
+        m = re.match(r"^(\d{4})-", p.name)
+        if m:
+            keys.setdefault(m.group(1), p)
+    out: dict = {p.stem: set() for p in texts}
+    for src, text in texts.items():
+        for key, target in keys.items():
+            if target == src:
+                continue
+            hit = (f"[[{key}]]" in text or f"[[{key}|" in text
+                   or (len(key) == 4 and key.isdigit()
+                       and re.search(rf"(?<![\w-]){key}(?![\w-])", text)))
+            if hit:
+                out[target.stem].add(rel(src))
+    return out
+
+
+def _last_touched() -> dict:
+    """`relative path -> YYYY-MM-DD`, the later of git history and filesystem mtime.
+
+    mtime alone is wrong in a fresh clone — checkout stamps every file with the clone time,
+    so nothing would ever look stale. git alone is wrong for edits you have not committed
+    yet. The later of the two is right in both cases, and degrades to mtime outside a repo."""
+    from datetime import datetime as _dt
+    dates: dict = {}
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "log", "--pretty=format:%ad", "--date=short",
+             "--name-only"], capture_output=True, text=True, timeout=20)
+        current = None
+        for line in out.stdout.splitlines():
+            line = line.strip()
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", line):
+                current = line
+            elif line and current:
+                dates.setdefault(line, current)
+    except Exception:
+        pass
+    for p in md_files(SCAN_DIRS):
+        r = rel(p)
+        mt = _dt.fromtimestamp(p.stat().st_mtime).strftime("%Y-%m-%d")
+        dates[r] = max(dates.get(r, mt), mt)
+    return dates
+
+
+# ── REPORT ── notes nothing points at ────────────────────────────────────────
+def report_orphans():
+    """The inverse of the unresolved-link report, and the blind spot it left: a link pointing
+    at nothing is visible, a note nothing points at is invisible. An orphan is not wrong —
+    the newest decision has not been cited yet by definition — but a decision or insight that
+    stays unreferenced is one the work never actually used."""
+    inbound = _inbound()
+    orphans = []
+    for path in md_files([BRAIN / "decisions", BRAIN / "insights"]):
+        if path.name == "README.md" or path.stem.startswith("0000"):
+            continue
+        if not inbound.get(path.stem):
+            orphans.append(rel(path))
+    if not orphans:
+        print("  orphans    every decision and insight is cited somewhere")
+        return
+    print(f"  orphans    {len(orphans)} note(s) nothing links to or cites:")
+    for o in orphans[:6]:
+        print(f"               {o}")
+    if len(orphans) > 6:
+        print(f"               … and {len(orphans) - 6} more")
+
+
+# ── REPORT ── has now.md fallen behind the brain? ────────────────────────────
+def report_now_freshness():
+    """The portability question, made checkable. `now.md` is what the next session — or the
+    next device — reads first, so the risk is not that it is wrong but that the work moved
+    after it was last written. Reported, never enforced: mid-session it is *expected* to
+    lag, and the fix is `/close`."""
+    dates = _last_touched()
+    now_rel = rel(BRAIN / "now.md")
+    now_date = dates.get(now_rel)
+    if not now_date:
+        return
+    newer = sorted(((d, f) for f, d in dates.items()
+                    if f != now_rel and f.startswith("brain/") and d > now_date), reverse=True)
+    if not newer:
+        print(f"  now.md     current as of {now_date}")
+        return
+    print(f"  now.md     last written {now_date}; {len(newer)} brain file(s) changed since "
+          f"— run /close")
+    for d, f in newer[:4]:
+        print(f"               {d}  {f}")
+    if len(newer) > 4:
+        print(f"               … and {len(newer) - 4} more")
+
+
+# ── REPORT ── tombstoned files still living in the brain ─────────────────────
+def report_archive_candidates():
+    """The mirror of the tombstone FAIL. That one catches a dead file with no warning label;
+    this one catches a file that carries the label but never moved, which is how `archive/`
+    stays empty while the live brain fills with material nobody may cite."""
+    stragglers = []
+    for path in md_files(SCAN_DIRS):
+        if path.stem.startswith("0000"):
+            continue  # the template's "copy me; do not cite" is not a tombstone
+        if TOMBSTONE in path.read_text(encoding="utf-8")[:1200].lower():
+            stragglers.append(rel(path))
+    if not stragglers:
+        return
+    print(f"  archive    {len(stragglers)} tombstoned file(s) still outside archive/:")
+    for s in stragglers:
+        print(f"               {s} — move it, so the live brain holds only citable material")
+
+
+# ── REPORT ── the glossary ────────────────────────────────────────────────────
+def report_glossary():
+    """Proper nouns are the class of information a new session most often lacks, and the one
+    most likely to be invented confidently. Counting is all this can honestly do."""
+    p = BRAIN / "glossary.md"
+    if not p.exists():
+        print("  glossary   brain/glossary.md is missing — it owns people and project shorthand")
+        return
+    text = p.read_text(encoding="utf-8")
+    def count(section: str) -> int:
+        m = re.search(rf"^## {section}\s*\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+        return len(re.findall(r"^-\s+\*\*", m.group(1), re.M)) if m else 0
+    hot, full = count("Hot"), count("Full")
+    if hot + full == 0:
+        print("  glossary   empty — seed it at /setup from the People answers")
+        return
+    warn = "  ← over a dozen; demote the cold ones" if hot > 12 else ""
+    print(f"  glossary   {hot} hot · {full} full{warn}")
+    inferred = len(re.findall(r"`?inferred`?", text, re.I))
+    if inferred:
+        print(f"               {inferred} entry/entries marked inferred — good, keep it that way")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
@@ -471,6 +616,10 @@ def main() -> int:
         report_question_numbers()
         report_tags()
         report_config()
+        report_glossary()
+        report_orphans()
+        report_archive_candidates()
+        report_now_freshness()
         report_feed()
         print()
 

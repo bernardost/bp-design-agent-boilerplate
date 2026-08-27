@@ -37,6 +37,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/decisions/` | one numbered file per decision, logged unprompted as they're reached |
 | `brain/insights/` | durable realizations, one idea per file, `[[wiki-linked]]` |
 | `brain/tags.md` | the tag vocabulary — global across the whole brain |
+| `brain/glossary.md` | people, nicknames, acronyms, codenames — the project's proper nouns |
 | `brain/open-questions.md` | questions with owner tags: who can answer |
 | `brain/braindumps/` | verbatim dumps; processing routes content out, never rewrites |
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
@@ -45,8 +46,8 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
-| `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout of where things stand |
-| `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/reviewer` |
+| `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
+| `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -57,9 +58,11 @@ of work as it goes, so the brain on your phone is never more than one step behin
   `doctor.py` refuses to let you past.
 - **Stages end by a bar written on entry.** Otherwise every next step is genuinely useful and
   nothing ever ends.
-- **Tags are global to the brain.** A decision and an insight share one vocabulary — and
-  because tags and `[[links]]` are what Obsidian reads, opening `brain/` as a vault gives you
-  the interconnected graph with nothing installed and nothing committed.
+- **Tags are global to the brain.** A decision and an insight share one vocabulary, and
+  `feed.html` draws the result — notes, shared tags, and the links between them — as an inline
+  SVG graph. Stdlib only, self-contained, nothing uploaded. Because tags and `[[links]]` are
+  also what Obsidian reads, opening `brain/` as a vault works too, and a `brain.canvas` is
+  written for it; nothing depends on either.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its

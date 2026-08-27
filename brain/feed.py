@@ -28,7 +28,9 @@ resolve from a local page anyway.
 """
 
 import argparse
+import hashlib
 import html
+import math
 import json
 import re
 import subprocess
@@ -48,7 +50,8 @@ from config import PROJECT_NAME, TRACKER_PREFIX  # noqa: E402
 
 _KEY = rf"{TRACKER_PREFIX}-\d+" if TRACKER_PREFIX else r"(?!x)x"   # never-matching if None
 
-SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md")
+SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
+           "tags.md", "glossary.md")
 
 
 # ---------------------------------------------------------------------------------------------
@@ -371,6 +374,311 @@ def freshness() -> tuple[bool, list[str]]:
 
 
 # ---------------------------------------------------------------------------------------------
+# The graph — the brain as nodes, without requiring anything to be installed
+# ---------------------------------------------------------------------------------------------
+#
+# The visualization question has an obvious wrong answer: emit a format only one app can read.
+# A `.canvas` is trivial to write and, outside Obsidian, its `file` nodes are dead paths; every
+# other viewer is either a cloud app (uploading a client's material) or an npm dependency. So
+# the primary artifact is an **inline SVG in this page** — stdlib-only, self-contained, opens
+# in any browser, nothing leaves the machine. The `.canvas` is written too, because it costs
+# forty lines and hands a graph to anyone who does open `brain/` as a vault. Nothing depends
+# on it.
+#
+# Layout is Fruchterman-Reingold with a golden-angle starting spiral and a fixed iteration
+# count: **deterministic**, so regenerating the page produces the same picture and a diff means
+# the brain changed, not that the simulation wobbled.
+
+GRAPH_DIRS = ("decisions", "insights", "braindumps", "briefings")
+KIND_OF = {"decisions": "decision", "insights": "insight",
+           "braindumps": "braindump", "briefings": "briefing"}
+
+
+def _frontmatter_tags(text: str) -> list:
+    if not text.startswith("---"):
+        return []
+    end = text.find("\n---", 3)
+    if end == -1:
+        return []
+    m = re.search(r"^tags:\s*\[(.*?)\]", text[3:end], re.M)
+    if not m:
+        return []
+    return [t.strip().strip("\"'") for t in m.group(1).split(",") if t.strip()]
+
+
+def graph_data() -> tuple:
+    """Nodes are brain files plus one node per tag in use; edges are wiki-links between files
+    and membership between a file and its tags.
+
+    Tags are nodes rather than invisible grouping because a tag shared by a decision and an
+    insight is the thing the owner asked to be able to see."""
+    nodes, edges = [], []
+    texts = {}
+    for d in GRAPH_DIRS:
+        folder = BRAIN / d
+        if not folder.exists():
+            continue
+        for path in sorted(folder.glob("*.md")):
+            if path.name == "README.md" or path.stem.startswith("0000"):
+                continue
+            texts[path] = path.read_text(encoding="utf-8")
+            head = re.search(r"^#\s+(.+)$", texts[path], re.M)
+            label = head.group(1).strip() if head else path.stem
+            label = re.sub(r"^\d{4}\s*[—-]\s*", "", label)
+            nodes.append({"id": path.stem, "label": label, "kind": KIND_OF[d],
+                          "path": path, "tags": _frontmatter_tags(texts[path])})
+
+    by_id = {n["id"]: n for n in nodes}
+    numbered = {n["id"][:4]: n["id"] for n in nodes if re.match(r"^\d{4}-", n["id"])}
+
+    for path, text in texts.items():
+        src = path.stem
+        seen = set()
+        body = text
+        for target in re.findall(r"\[\[([^\]|#]+?)\]\]", body):
+            t = target.strip()
+            t = numbered.get(t, t)
+            if t in by_id and t != src:
+                seen.add(t)
+        for num, full in numbered.items():
+            if full == src:
+                continue
+            if re.search(rf"(?<![\w-]){num}(?![\w-])", body):
+                seen.add(full)
+        for t in seen:
+            edges.append({"a": src, "b": t, "kind": "link"})
+
+    tag_use: dict = {}
+    for n in nodes:
+        for t in n["tags"]:
+            tag_use.setdefault(t, []).append(n["id"])
+    for tag, members in sorted(tag_use.items()):
+        tid = f"tag:{tag}"
+        nodes.append({"id": tid, "label": tag, "kind": "tag", "path": BRAIN / "tags.md",
+                      "tags": []})
+        for m in members:
+            edges.append({"a": m, "b": tid, "kind": "tag"})
+
+    deg: dict = {n["id"]: 0 for n in nodes}
+    for e in edges:
+        deg[e["a"]] = deg.get(e["a"], 0) + 1
+        deg[e["b"]] = deg.get(e["b"], 0) + 1
+    for n in nodes:
+        n["deg"] = deg.get(n["id"], 0)
+    return nodes, edges
+
+
+def layout(nodes: list, edges: list, w: float = 900, h: float = 560) -> None:
+    """Fruchterman-Reingold, deterministic. Sets x/y on each node in place."""
+    n = len(nodes)
+    if n == 0:
+        return
+    golden = math.pi * (3 - math.sqrt(5))
+    for i, node in enumerate(nodes):
+        r = (w / 2.6) * math.sqrt((i + 0.5) / n)
+        node["x"] = w / 2 + r * math.cos(i * golden)
+        node["y"] = h / 2 + r * math.sin(i * golden)
+    if n == 1:
+        return
+
+    idx = {node["id"]: i for i, node in enumerate(nodes)}
+    pairs = [(idx[e["a"]], idx[e["b"]]) for e in edges if e["a"] in idx and e["b"] in idx]
+    k = math.sqrt((w * h) / n)
+    temp = w / 8
+    iters = 260
+    for step in range(iters):
+        dx = [0.0] * n
+        dy = [0.0] * n
+        for i in range(n):
+            for j in range(i + 1, n):
+                ddx = nodes[i]["x"] - nodes[j]["x"]
+                ddy = nodes[i]["y"] - nodes[j]["y"]
+                d2 = ddx * ddx + ddy * ddy
+                if d2 < 0.01:
+                    ddx, ddy, d2 = 0.1 * (i - j + 1), 0.1, 0.02
+                force = (k * k) / d2
+                dx[i] += ddx * force
+                dy[i] += ddy * force
+                dx[j] -= ddx * force
+                dy[j] -= ddy * force
+        for a, b in pairs:
+            ddx = nodes[a]["x"] - nodes[b]["x"]
+            ddy = nodes[a]["y"] - nodes[b]["y"]
+            d = math.hypot(ddx, ddy) or 0.01
+            force = (d * d) / k / d
+            dx[a] -= ddx * force
+            dy[a] -= ddy * force
+            dx[b] += ddx * force
+            dy[b] += ddy * force
+        for i, node in enumerate(nodes):
+            d = math.hypot(dx[i], dy[i]) or 1.0
+            node["x"] += dx[i] / d * min(d, temp)
+            node["y"] += dy[i] / d * min(d, temp)
+            # A weak pull to centre keeps disconnected islands from drifting off the canvas.
+            node["x"] += (w / 2 - node["x"]) * 0.012
+            node["y"] += (h / 2 - node["y"]) * 0.012
+        temp = max(temp * 0.955, 0.6)
+
+    # Rotate the settled cloud so its widest spread runs horizontally. A force layout has no
+    # preferred orientation, so without this the same graph lands portrait or landscape at
+    # random-looking whim — and a page 900 wide by 660 tall wants landscape. Principal axis
+    # via the covariance matrix; deterministic, and it changes nothing about the topology.
+    cx = sum(node["x"] for node in nodes) / n
+    cy = sum(node["y"] for node in nodes) / n
+    sxx = sum((node["x"] - cx) ** 2 for node in nodes)
+    syy = sum((node["y"] - cy) ** 2 for node in nodes)
+    sxy = sum((node["x"] - cx) * (node["y"] - cy) for node in nodes)
+    theta = 0.5 * math.atan2(2 * sxy, sxx - syy)
+    cos_t, sin_t = math.cos(-theta), math.sin(-theta)
+    for node in nodes:
+        ox, oy = node["x"] - cx, node["y"] - cy
+        node["x"] = cx + ox * cos_t - oy * sin_t
+        node["y"] = cy + ox * sin_t + oy * cos_t
+
+
+def graph_svg(nodes: list, edges: list, g: dict) -> str:
+    """Inline SVG. Node anchors carry the same `data-*` attributes as a prose reference, so the
+    page's existing tooltip and click-to-open handlers work on the graph for free."""
+    if not nodes:
+        return ('<p style="font-size:13.5px;color:var(--dim);margin:0">Nothing to draw yet — '
+                'the graph fills in as decisions, insights and tags accumulate.</p>')
+    # Scale to fill the width, then let the viewBox height follow the content's own aspect.
+    # A force layout settles into a roughly circular blob; fitting it into a fixed rectangle
+    # leaves dead space that reads as a drawing error rather than as a graph drawn to fit.
+    W, pad, H_MAX = 900, 46, 660
+    xs = [n["x"] for n in nodes]
+    ys = [n["y"] for n in nodes]
+    minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+    span_x, span_y = max(maxx - minx, 1), max(maxy - miny, 1)
+    sc = (W - 2 * pad) / span_x
+    if span_y * sc + 2 * pad > H_MAX:
+        sc = (H_MAX - 2 * pad) / span_y
+    H = round(span_y * sc + 2 * pad)
+    offx = (W - span_x * sc) / 2
+    offy = (H - span_y * sc) / 2
+    for n in nodes:
+        n["px"] = offx + (n["x"] - minx) * sc
+        n["py"] = offy + (n["y"] - miny) * sc
+
+    pos = {n["id"]: (n["px"], n["py"]) for n in nodes}
+    out = [f'<svg class="graph" viewBox="0 0 {W} {H}" role="img" '
+           f'aria-label="the brain as a graph of {len(nodes)} notes and tags">']
+    for e in edges:
+        if e["a"] not in pos or e["b"] not in pos:
+            continue
+        x1, y1 = pos[e["a"]]
+        x2, y2 = pos[e["b"]]
+        cls = "e-tag" if e["kind"] == "tag" else "e-link"
+        out.append(f'<line class="{cls}" x1="{x1:.1f}" y1="{y1:.1f}" '
+                   f'x2="{x2:.1f}" y2="{y2:.1f}"/>')
+    # Labels, placed so they do not collide. A force layout puts nodes where the forces want
+    # them, not where two captions both fit, and overlapping text is the difference between a
+    # diagram and a mess. Highest-degree nodes claim their spot first; a label with nowhere to
+    # go is dropped rather than drawn on top of another.
+    placed: list = []
+
+    def fits(cx_: float, cy_: float, text: str) -> bool:
+        w2 = len(text) * 2.35 + 3
+        box = (cx_ - w2, cy_ - 6, cx_ + w2, cy_ + 5)
+        for b in placed:
+            if not (box[2] < b[0] or box[0] > b[2] or box[3] < b[1] or box[1] > b[3]):
+                return False
+        placed.append(box)
+        return True
+
+    show_all = len(nodes) <= 44
+    for n in sorted(nodes, key=lambda z: -z["deg"]):
+        r = 5.0 + min(n["deg"], 9) * 1.15
+        label = n["label"] if len(n["label"]) <= 24 else n["label"][:23].rstrip(" ,;:") + "…"
+        entry = g.get(n["id"])
+        attrs = ""
+        if entry:
+            attrs = (f' class="ref gnode {n["kind"]}"'
+                     f' href="{html.escape(str(entry["path"]))}"'
+                     f' data-title="{html.escape(entry["title"])}"'
+                     f' data-kind="{html.escape(entry["kind"])}"'
+                     f' data-note="{html.escape(entry.get("note", ""))}"'
+                     f' data-gloss="{html.escape(entry["gloss"])}"'
+                     f' data-path="{html.escape(str(entry["path"].relative_to(ROOT)))}"')
+        elif n["kind"] == "tag":
+            members = sum(1 for e in edges if e["kind"] == "tag" and e["b"] == n["id"])
+            attrs = (f' class="ref gnode tag" href="{html.escape(str(BRAIN / "tags.md"))}"'
+                     f' data-title="{html.escape(n["label"])}" data-kind="tag"'
+                     f' data-note="{members} file(s)"'
+                     f' data-gloss="A theme shared across the brain. Defined in tags.md."'
+                     f' data-path="brain/tags.md"')
+        else:
+            attrs = (f' class="ref gnode {n["kind"]}"'
+                     f' href="{html.escape(str(n["path"]))}"'
+                     f' data-title="{html.escape(n["label"])}"'
+                     f' data-kind="{n["kind"]}" data-note=""'
+                     f' data-gloss="{html.escape(_first_para(n["path"].read_text()))}"'
+                     f' data-path="{html.escape(str(n["path"].relative_to(ROOT)))}"')
+        out.append(f'<a{attrs}>')
+        if n["kind"] == "tag":
+            out.append(f'<rect class="n-{n["kind"]}" x="{n["px"] - r:.1f}" '
+                       f'y="{n["py"] - r:.1f}" width="{2 * r:.1f}" height="{2 * r:.1f}" '
+                       f'rx="2.5" transform="rotate(45 {n["px"]:.1f} {n["py"]:.1f})"/>')
+        else:
+            out.append(f'<circle class="n-{n["kind"]}" cx="{n["px"]:.1f}" '
+                       f'cy="{n["py"]:.1f}" r="{r:.1f}"/>')
+        if show_all or n["deg"] >= 3 or n["kind"] == "tag":
+            below, above = n["py"] + r + 10, n["py"] - r - 5
+            ly = below if fits(n["px"], below, label) else (
+                above if fits(n["px"], above, label) else None)
+            if ly is not None:
+                out.append(f'<text class="l-{n["kind"]}" x="{n["px"]:.1f}" '
+                           f'y="{ly:.1f}">{html.escape(label)}</text>')
+        out.append("</a>")
+    out.append("</svg>")
+
+    counts = Counter(n["kind"] for n in nodes)
+    legend = " · ".join(f'<span class="lg {k}">{counts[k]} {k}{"s" if counts[k] != 1 else ""}</span>'
+                        for k in ("decision", "insight", "braindump", "briefing", "tag")
+                        if counts.get(k))
+    links = sum(1 for e in edges if e["kind"] == "link")
+    return (f'<div class="legend">{legend} · '
+            f'<span class="lg">{links} link{"s" if links != 1 else ""}</span></div>'
+            + "".join(out))
+
+
+def write_canvas(nodes: list, edges: list) -> int:
+    """Also emit `brain/brain.canvas` (JSON Canvas 1.0) — for anyone who opens `brain/` as an
+    Obsidian vault. Optional by construction: nothing reads it back, and deleting it changes
+    nothing. Ids are md5-derived so they are stable across runs."""
+    if not nodes:
+        return 0
+
+    def nid(key: str) -> str:
+        return hashlib.md5(key.encode()).hexdigest()[:16]
+
+    cnodes, cedges = [], []
+    for n in nodes:
+        if n["kind"] == "tag":
+            cnodes.append({"id": nid(n["id"]), "type": "text",
+                           "text": f"#{n['label']}", "x": int(n["x"] * 2.2),
+                           "y": int(n["y"] * 2.2), "width": 180, "height": 60,
+                           "color": "5"})
+        else:
+            cnodes.append({"id": nid(n["id"]), "type": "file",
+                           "file": str(n["path"].relative_to(BRAIN)),
+                           "x": int(n["x"] * 2.2), "y": int(n["y"] * 2.2),
+                           "width": 320, "height": 120})
+    ids = {c["id"] for c in cnodes}
+    for e in edges:
+        a, b = nid(e["a"]), nid(e["b"])
+        if a not in ids or b not in ids:
+            continue          # never emit a dangling fromNode/toNode
+        cedges.append({"id": nid(e["a"] + "->" + e["b"]), "fromNode": a, "fromSide": "right",
+                       "toNode": b, "toSide": "left"})
+    assert len({c["id"] for c in cnodes}) == len(cnodes), "duplicate canvas node id"
+    (BRAIN / "brain.canvas").write_text(
+        json.dumps({"nodes": cnodes, "edges": cedges}, indent=1), encoding="utf-8")
+    return len(cnodes)
+
+
+
+# ---------------------------------------------------------------------------------------------
 # The page
 # ---------------------------------------------------------------------------------------------
 
@@ -450,6 +758,33 @@ button{font:inherit;font-family:ui-sans-serif,system-ui,sans-serif;cursor:pointe
 .cond .more{font-size:13.5px;color:var(--dim);margin-top:6px;display:none}
 .cond.open .more{display:block}
 .cond .claim{cursor:pointer}
+
+/* ── the graph ───────────────────────────────────────────────────────── */
+svg.graph{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+svg.graph line{stroke:var(--line)}
+svg.graph line.e-link{stroke-width:1.5;stroke:var(--faint);opacity:.7}
+svg.graph line.e-tag{stroke-width:1.1;stroke:var(--accent);stroke-dasharray:2 4;opacity:.5}
+svg.graph .n-decision{fill:var(--accent)}
+svg.graph .n-insight{fill:var(--ok)}
+svg.graph .n-braindump{fill:var(--warn)}
+svg.graph .n-briefing{fill:var(--dim)}
+svg.graph .n-tag{fill:none;stroke:var(--faint);stroke-width:1.6}
+svg.graph text{font-family:ui-sans-serif,system-ui,sans-serif;font-size:9.5px;
+  text-anchor:middle;fill:var(--dim);pointer-events:none}
+svg.graph text.l-tag{fill:var(--faint);font-size:9px;letter-spacing:.04em;text-transform:uppercase}
+svg.graph a.gnode{cursor:pointer}
+svg.graph a.gnode:hover circle,svg.graph a.gnode:hover rect{stroke:var(--ink);stroke-width:2}
+svg.graph a.gnode:hover text{fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:-2px 0 8px;
+  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;color:var(--dim)}
+.legend .lg{display:inline-flex;align-items:center;gap:5px}
+.legend .lg::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
+.legend .lg.decision::before{background:var(--accent)}
+.legend .lg.insight::before{background:var(--ok)}
+.legend .lg.braindump::before{background:var(--warn)}
+.legend .lg.briefing::before{background:var(--dim)}
+.legend .lg.tag::before{background:transparent;border:1.5px solid var(--faint);
+  border-radius:1px;transform:rotate(45deg);width:7px;height:7px}
 
 /* ── feed cards ──────────────────────────────────────────────────────── */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
@@ -693,6 +1028,17 @@ def build() -> str:
             'Tap a condition for the full wording from the decision that owns it.</p>'
             + "".join(rows) + '</div>')
 
+    # ── the graph ────────────────────────────────────────────────────────────────────────────
+    gnodes, gedges = graph_data()
+    layout(gnodes, gedges)          # once; graph_svg and write_canvas share the result
+    write_canvas(gnodes, gedges)
+    out.append('<div class="panel"><div class="kicker">the brain · '
+               f'{len(gnodes)} note(s) and tag(s), how they connect</div>'
+               '<p style="font-size:13.5px;color:var(--dim);margin:-2px 0 10px">'
+               'Solid lines are links between notes; dashed lines are a shared tag. '
+               'Hover a node for what it says, click to open the file.</p>'
+               + graph_svg(gnodes, gedges, g) + '</div>')
+
     # ── the feed ─────────────────────────────────────────────────────────────────────────────
     out.append(f'<div class="kicker" style="margin:30px 0 12px">the feed · '
                f'{len(waiting)} waiting on you</div>')
@@ -784,8 +1130,11 @@ def main() -> int:
     OUT.write_text(build())
     items = feed_items()
     waiting = [i for i in items if i["status"] == "awaiting-you"]
+    nodes, _ = graph_data()
+    canvas = BRAIN / "brain.canvas"
     print(f"{OUT.relative_to(ROOT)}  ·  {len(items)} item(s), {len(waiting)} awaiting you"
-          f"  ·  {len(glossary())} glossary entries")
+          f"  ·  {len(glossary())} glossary entries  ·  {len(nodes)} graph node(s)"
+          + (f"  ·  {canvas.relative_to(ROOT)}" if canvas.exists() else ""))
     if args.open:
         subprocess.run(["open", str(OUT)], check=False)
     return 0

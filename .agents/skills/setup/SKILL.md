@@ -34,10 +34,7 @@ arrangement? Where does the work actually live — this repo, a Figma file, a si
 `brain/project-brief.md`, and the identity lines at the top of `AGENTS.md`.
 
 **People.** Who are the stakeholders — name, role, and what routes to each? Who decides? Who
-has to be kept informed but doesn't decide? → `brain/project-brief.md` (People), **and the
-same names into `brain/glossary.md`** under `## Hot`. Ask the follow-up that saves the most
-future confusion: what do people around here call things — nicknames, acronyms, the client's
-internal name for the product? Those go in the glossary too.
+has to be kept informed but doesn't decide? → `brain/project-brief.md` (People).
 
 **Sources.** What should be watched outside this repo: Slack channels, meeting recordings
 (Fathom, Granola), a mail label, a calendar, a Linear team, Notion pages, a Figma file? Ask
@@ -101,7 +98,7 @@ project's decisions, and keeping them would mean the owner's first act is deleti
 ## 4 · The repo, and why it matters
 
 Ask whether there is a remote yet, and **explain the reason rather than just asking**: with a
-remote, this same workspace opens in Claude Code on the web and on their phone. The brain
+remote, this same workspace opens in Codex on the web and on their phone. The brain
 travels only if it is pushed — that is the whole value, and it is not obvious from the outside.
 
 - Recommend a **private** repo. Public is a choice the owner makes explicitly, out loud, and
@@ -128,14 +125,11 @@ whole charter at them.
 - `/close` — wrap up. Rewrites `now.md`, lints, regenerates the page, pushes.
 - `/reviewer` — a separate session that critiques the work independently and writes findings
   to `brain/reviews/`. It reads `brain/review-lens.md`, which you just wrote.
-- `/briefing` — pulls the sources you just declared into a dated, attributed catch-up, then
-  files what matters. Use it after time away.
 - `/setup` — re-runnable. This, again, to change an answer or add a source.
 
 Mention two things about the record, briefly: decisions get logged **unprompted** as they are
-reached, and `brain/feed.html` draws the brain as a graph of notes and shared tags, so the
-interconnected view needs nothing installed. (It also writes `brain/brain.canvas` for anyone
-who opens `brain/` as an Obsidian vault — optional, and nothing depends on it.)
+reached, and tags are global to the brain, so opening `brain/` in Obsidian gives the
+interconnected graph free — optional, and nothing here depends on it.
 
 ## 6 · Verify, then hand over
 
