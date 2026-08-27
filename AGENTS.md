@@ -121,6 +121,25 @@ within the asked scope — for project work, the stage discipline above is the s
 everything else, the request is. Don't spawn subagents or add verification passes beyond
 `doctor.py` unless asked.
 
+## Generated artifacts — the house style
+
+Absent art direction from the owner, anything you generate for them to read — `feed.html`, a
+rendered page, a document — follows this:
+
+- **Inter** for titles and body; a real monospace for code. Comfortable sizes and generous
+  leading.
+- **White background, black text.** Commit to it: no `prefers-color-scheme` block that flips
+  the page to dark at the whim of an OS setting.
+- Structure with **white space and hairline rules**, not rounded cards with drop shadows.
+  Confident typographic hierarchy, a comfortable measure, letterspaced uppercase for small
+  metadata labels.
+- **Colour carries intent only** — committing is ink, discarding is the one red on the page,
+  references are the one habitual blue.
+
+The standard to hold it to: *an architecture magazine, not a generic AI-generated dark-mode
+dashboard.* It is an interface for consuming information with attention, and it should be
+interesting to look at. Ask before departing from this; do not split the difference.
+
 ## Commands (project skills)
 
 `/setup` (first run, and re-runnable) · `/braindump` (dump, saved verbatim, then routed) ·

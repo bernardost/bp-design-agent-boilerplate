@@ -22,7 +22,9 @@ person scanning it. So the glossary is built from the files themselves and every
 page carries its own definition on hover and its own link on click. **Nothing here is a summary
 someone maintains**; if a decision's title changes, the tooltip changes with it.
 
-Dependency-free and offline, matching the rest of the tree. The page is a local file rather than
+Dependency-free, matching the rest of the tree: no packages, no build step. The one network
+request is the webfont stylesheet — Inter and IBM Plex Mono, which fall back to the system
+stack offline; set `FONT_LINK = ""` to remove even that. The page is a local file rather than
 anything hosted: it may carry confidential project facts, and `file://` links into the repo only
 resolve from a local page anyway.
 """
@@ -49,6 +51,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config import PROJECT_NAME, TRACKER_PREFIX  # noqa: E402
 
 _KEY = rf"{TRACKER_PREFIX}-\d+" if TRACKER_PREFIX else r"(?!x)x"   # never-matching if None
+
+FONT_LINK = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link rel="stylesheet" referrerpolicy="no-referrer" '
+    'href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&'
+    'family=IBM+Plex+Mono:wght@400;500&display=swap">'
+)
 
 SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
            "tags.md", "glossary.md")
@@ -684,192 +694,251 @@ def write_canvas(nodes: list, edges: list) -> int:
 
 CSS = """
 *,*::before,*::after{box-sizing:border-box}
-:root{
-  --bg:#fbfaf8; --panel:#fff; --ink:#1a1a1a; --dim:#6b6b6b; --faint:#8f8f8f;
-  --line:#e6e3dd; --accent:#7a5cff; --accent-soft:#efeaff;
-  --warn:#b4531a; --warn-soft:#fdf0e6; --ok:#2f7a4f; --ok-soft:#e9f5ee;
-  --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05);
-  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#131316; --panel:#1a1a1f; --ink:#eceaf2; --dim:#a2a0ab; --faint:#807e8a;
-  --line:#2c2c34; --accent:#a78bfa; --accent-soft:#2a2340;
-  --warn:#f0a06a; --warn-soft:#3a2618; --ok:#7fd6a4; --ok-soft:#16301f;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-}}
-:root[data-theme="dark"]{
-  --bg:#131316; --panel:#1a1a1f; --ink:#eceaf2; --dim:#a2a0ab; --faint:#807e8a;
-  --line:#2c2c34; --accent:#a78bfa; --accent-soft:#2a2340;
-  --warn:#f0a06a; --warn-soft:#3a2618; --ok:#7fd6a4; --ok-soft:#16301f;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-}
-body{margin:0;background:var(--bg);color:var(--ink);
-  font:16px/1.62 ui-serif,Georgia,"Iowan Old Style",serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:820px;margin:0 auto;padding:32px 20px 120px}
-h1,h2,h3,h4,h5{font-family:ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif;
-  line-height:1.25;margin:0 0 .4em}
-h1{font-size:26px;letter-spacing:-.02em}
-h3{font-size:19px;letter-spacing:-.01em}
-h4{font-size:16px}
-h5{font-size:14px;color:var(--dim)}
-p{margin:0 0 .85em}
-ul{margin:0 0 .9em;padding-left:1.15em}
-li{margin:.25em 0}
-code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);
-  padding:.08em .34em;border-radius:4px;word-break:break-word}
-hr{border:0;border-top:1px solid var(--line);margin:1.4em 0}
-a{color:inherit}
-.kicker{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 10px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:22px 24px;margin:0 0 20px;box-shadow:var(--shadow)}
-.panel.tight{padding:16px 20px}
 
-/* ── top bar ─────────────────────────────────────────────────────────── */
-.top{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
-  flex-wrap:wrap;margin-bottom:22px}
-.top .meta{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;color:var(--faint)}
-.pill{display:inline-block;font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;
-  font-weight:600;padding:3px 9px;border-radius:999px;background:var(--accent-soft);
-  color:var(--accent);letter-spacing:.02em}
-.pill.warn{background:var(--warn-soft);color:var(--warn)}
-.pill.ok{background:var(--ok-soft);color:var(--ok)}
-button{font:inherit;font-family:ui-sans-serif,system-ui,sans-serif;cursor:pointer}
+/* One deliberate look: white paper, black ink. There is no dark-mode block, and that is a
+   decision rather than an omission — a page that flips to a dark dashboard at the whim of an
+   OS setting is the thing this design exists to not be. */
+:root{
+  --paper:#ffffff;
+  --ink:#0d0d0e;
+  --ink-2:#3a3a3e;      /* secondary prose */
+  --ink-3:#6e6e75;      /* metadata */
+  --ink-4:#9a9aa1;      /* faintest legible */
+  --rule:rgba(13,13,14,.13);
+  --rule-soft:rgba(13,13,14,.07);
+  --wash:#f6f5f2;       /* warm paper tint for insets */
+  --blue:#12408f;       /* references, links: the one habitual colour */
+  --blue-wash:#eaf0fb;
+  --ochre:#8a5a12;      /* awaiting, unsent, draft */
+  --ochre-wash:#fbf3e4;
+  --green:#1f6640;      /* met, answered, inbound */
+  --green-wash:#eaf3ed;
+  --red:#a52218;        /* destructive only */
+  --sans:"Inter","Inter var",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+}
+
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.72;
+  font-feature-settings:"kern" 1,"liga" 1,"calt" 1;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.wrap{max-width:812px;margin:0 auto;padding:72px 28px 160px}
+
+h1,h2,h3,h4,h5{font-family:var(--sans);margin:0 0 .45em;font-weight:600}
+h1{font-size:clamp(32px,4.4vw,45px);line-height:1.08;letter-spacing:-.033em;
+  text-wrap:balance;margin-bottom:.3em}
+h3{font-size:23px;line-height:1.26;letter-spacing:-.021em;text-wrap:balance}
+h4{font-size:18px;letter-spacing:-.012em}
+h5{font-size:15px;color:var(--ink-3)}
+p{margin:0 0 1.05em;max-width:68ch}
+ul{margin:0 0 1.05em;padding-left:1.15em}
+li{margin:.34em 0;max-width:66ch}
+strong,b{font-weight:600}
+em,i{font-style:italic}
+a{color:inherit}
+code{font-family:var(--mono);font-size:.855em;background:var(--wash);
+  padding:.1em .36em;border-radius:3px;word-break:break-word;
+  font-feature-settings:"kern" 1}
+hr{border:0;border-top:1px solid var(--rule);margin:2.4em 0}
+button{font:inherit;font-family:var(--sans);cursor:pointer}
+
+/* Small letterspaced label. The structural device of the whole page: it names a section
+   without needing a box drawn around it. */
+.kicker{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 18px}
+
+/* Sections are separated by air and a hairline, never by a rounded card with a shadow. */
+.panel{padding:0;margin:0 0 58px;border-top:1px solid var(--rule);padding-top:30px}
+.panel.tight{margin-bottom:38px}
+
+/* ── masthead ────────────────────────────────────────────────────────── */
+.top{margin:0 0 46px}
+.top .kicker{margin-bottom:22px}
+.top .meta{margin-top:20px;font-size:13px;line-height:1.6;color:var(--ink-4);
+  font-variant-numeric:tabular-nums}
+.top .meta code{background:none;padding:0;color:var(--ink-3)}
+
+.pill{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;padding:0;color:var(--ink-3);background:none}
+.pill.warn{color:var(--ochre)}
+.pill.ok{color:var(--green)}
+.pill.warn::before,.pill.ok::before{content:"";display:inline-block;width:5px;height:5px;
+  border-radius:50%;margin-right:6px;vertical-align:.14em}
+.pill.warn::before{background:var(--ochre)}
+.pill.ok::before{background:var(--green)}
 
 /* ── stage strip ─────────────────────────────────────────────────────── */
-.stages{display:flex;gap:6px;margin:2px 0 18px;flex-wrap:wrap}
-.stage{flex:1 1 90px;min-width:90px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);
-  background:var(--panel);font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;
-  color:var(--faint);text-align:center}
-.stage.done{background:var(--ok-soft);color:var(--ok);border-color:transparent}
-.stage.here{background:var(--accent);color:#fff;border-color:transparent;font-weight:600;
-  box-shadow:var(--shadow)}
-.cond{display:flex;gap:11px;padding:11px 0;border-top:1px solid var(--line);align-items:flex-start}
-.cond:first-of-type{border-top:0}
-.cond .dot{flex:0 0 auto;width:19px;height:19px;border-radius:50%;margin-top:2px;
-  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;font-weight:700;
-  display:grid;place-items:center;background:var(--line);color:var(--dim)}
-.cond.met .dot{background:var(--ok);color:#fff}
-.cond.partly .dot{background:var(--warn);color:#fff}
-.cond .claim{font-size:14.5px}
-.cond .ev{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12.5px;color:var(--dim);
-  margin-top:3px}
-.cond .more{font-size:13.5px;color:var(--dim);margin-top:6px;display:none}
+.stages{display:flex;gap:0;margin:0 0 52px;flex-wrap:wrap;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+.stage{flex:1 1 130px;min-width:130px;padding:13px 4px 12px;font-size:12.5px;
+  color:var(--ink-4);border-right:1px solid var(--rule-soft)}
+.stage:last-child{border-right:0}
+.stage b{display:block;font-family:var(--mono);font-size:11px;font-weight:500;
+  letter-spacing:.04em;margin-bottom:2px}
+.stage.done{color:var(--ink-3)}
+.stage.here{color:var(--ink);font-weight:600}
+.stage.here b{color:var(--blue)}
+
+/* ── exit conditions ─────────────────────────────────────────────────── */
+.cond{display:flex;gap:20px;padding:17px 0;border-top:1px solid var(--rule-soft);
+  align-items:baseline}
+.cond:first-of-type{border-top:0;padding-top:4px}
+.cond .dot{flex:0 0 auto;width:auto;min-width:22px;font-family:var(--mono);font-size:15px;
+  font-weight:400;color:var(--ink-4);text-align:left}
+.cond.met .dot{color:var(--green)}
+.cond.partly .dot{color:var(--ochre)}
+.cond .claim{font-size:17px;cursor:pointer;max-width:62ch}
+.cond .claim:hover{color:var(--blue)}
+.cond .ev{font-size:14px;color:var(--ink-3);margin-top:5px;max-width:64ch}
+.cond .status{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-4);margin-right:9px}
+.cond.met .status{color:var(--green)}
+.cond.partly .status{color:var(--ochre)}
+.cond:not(.met):not(.partly) .status{color:var(--red)}
+.cond .more{font-size:15.5px;color:var(--ink-2);margin-top:11px;display:none;max-width:64ch;
+  padding-left:14px;border-left:2px solid var(--rule)}
 .cond.open .more{display:block}
-.cond .claim{cursor:pointer}
 
 /* ── the graph ───────────────────────────────────────────────────────── */
-svg.graph{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
-svg.graph line{stroke:var(--line)}
-svg.graph line.e-link{stroke-width:1.5;stroke:var(--faint);opacity:.7}
-svg.graph line.e-tag{stroke-width:1.1;stroke:var(--accent);stroke-dasharray:2 4;opacity:.5}
-svg.graph .n-decision{fill:var(--accent)}
-svg.graph .n-insight{fill:var(--ok)}
-svg.graph .n-braindump{fill:var(--warn)}
-svg.graph .n-briefing{fill:var(--dim)}
-svg.graph .n-tag{fill:none;stroke:var(--faint);stroke-width:1.6}
-svg.graph text{font-family:ui-sans-serif,system-ui,sans-serif;font-size:9.5px;
-  text-anchor:middle;fill:var(--dim);pointer-events:none}
-svg.graph text.l-tag{fill:var(--faint);font-size:9px;letter-spacing:.04em;text-transform:uppercase}
+svg.graph{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y;
+  margin:6px 0 2px}
+svg.graph line.e-link{stroke:var(--ink-4);stroke-width:1.1;opacity:.62}
+svg.graph line.e-tag{stroke:var(--blue);stroke-width:1;stroke-dasharray:1.5 4;opacity:.4}
+svg.graph .n-decision{fill:var(--blue)}
+svg.graph .n-insight{fill:var(--green)}
+svg.graph .n-braindump{fill:var(--ochre)}
+svg.graph .n-briefing{fill:var(--ink-4)}
+svg.graph .n-tag{fill:var(--paper);stroke:var(--ink-3);stroke-width:1.3}
+svg.graph text{font-family:var(--sans);font-size:9.5px;font-weight:450;
+  text-anchor:middle;fill:var(--ink-2);pointer-events:none}
+svg.graph text.l-tag{fill:var(--ink-4);font-size:8.5px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase}
 svg.graph a.gnode{cursor:pointer}
 svg.graph a.gnode:hover circle,svg.graph a.gnode:hover rect{stroke:var(--ink);stroke-width:2}
-svg.graph a.gnode:hover text{fill:var(--ink)}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin:-2px 0 8px;
-  font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;color:var(--dim)}
-.legend .lg{display:inline-flex;align-items:center;gap:5px}
-.legend .lg::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--line)}
-.legend .lg.decision::before{background:var(--accent)}
-.legend .lg.insight::before{background:var(--ok)}
-.legend .lg.braindump::before{background:var(--warn)}
-.legend .lg.briefing::before{background:var(--dim)}
-.legend .lg.tag::before{background:transparent;border:1.5px solid var(--faint);
-  border-radius:1px;transform:rotate(45deg);width:7px;height:7px}
+svg.graph a.gnode:hover text{fill:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 4px;font-size:12px;color:var(--ink-3)}
+.legend .lg{display:inline-flex;align-items:center;gap:6px}
+.legend .lg::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink-4)}
+.legend .lg.decision::before{background:var(--blue)}
+.legend .lg.insight::before{background:var(--green)}
+.legend .lg.braindump::before{background:var(--ochre)}
+.legend .lg.briefing::before{background:var(--ink-4)}
+.legend .lg.tag::before{background:var(--paper);border:1.3px solid var(--ink-3);
+  border-radius:1px;transform:rotate(45deg);width:6px;height:6px}
 
-/* ── feed cards ──────────────────────────────────────────────────────── */
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:20px 22px;margin:0 0 16px;box-shadow:var(--shadow);position:relative}
-.card.answered{opacity:.6}
+/* ── the feed ────────────────────────────────────────────────────────── */
+.card{padding:34px 0 4px;margin:0;border-top:1px solid var(--rule);position:relative}
+.card.answered{opacity:.55;transition:opacity .18s}
 .card.answered:hover{opacity:1}
-/* A settled item folds to its title and its answer. Live ones are open, and can still be
-   folded away by hand. */
-details.fold>summary{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12.5px;
-  color:var(--dim);cursor:pointer;list-style:none;padding:2px 0 8px}
-details.fold>summary::-webkit-details-marker{display:none}
-details.fold>summary::before{content:"▸ ";color:var(--accent)}
-details.fold[open]>summary::before{content:"▾ "}
-details.fold[open]>summary{color:var(--faint)}
-.card .cardhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
-.card .idtag{font-family:var(--mono);font-size:11px;color:var(--faint)}
-.card h3{margin:0 0 10px}
-.facts{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
-.fact{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;color:var(--dim);
-  background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px 9px}
-.fact b{color:var(--ink);font-weight:600}
-.body{font-size:15px}
+.card .cardhead{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
+.card .idtag{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--ink-4)}
+.card h3{margin:0 0 16px}
+
+.facts{display:flex;flex-wrap:wrap;gap:0 26px;margin:0 0 20px;padding:12px 0;
+  border-top:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+.fact{font-size:13px;color:var(--ink-3);background:none;border:0;padding:0}
+.fact b{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-4);margin-bottom:1px}
+.body{font-size:17px;color:var(--ink-2)}
 .body p:last-child{margin-bottom:0}
-details.body-more>summary{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12.5px;
-  color:var(--accent);cursor:pointer;list-style:none;padding:4px 0;font-weight:600}
+.body strong{color:var(--ink)}
+
+/* Disclosure: a quiet line of type, not a widget. */
+details.fold>summary,details.body-more>summary{font-size:13px;color:var(--ink-3);
+  cursor:pointer;list-style:none;padding:4px 0;font-weight:500;letter-spacing:.005em}
+details.fold>summary::-webkit-details-marker,
 details.body-more>summary::-webkit-details-marker{display:none}
-details.body-more>summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
-details.body-more[open]>summary::before{content:"▾ "}
+details.fold>summary::before,details.body-more>summary::before{content:"+";
+  font-family:var(--mono);color:var(--blue);margin-right:9px;font-size:12px}
+details.fold[open]>summary::before,details.body-more[open]>summary::before{content:"–"}
+details.fold>summary:hover,details.body-more>summary:hover{color:var(--ink)}
+details.fold[open]>summary{color:var(--ink-4)}
+details.body-more{margin-top:6px}
 
 /* ── answering ───────────────────────────────────────────────────────── */
-.answer{margin-top:15px;padding-top:14px;border-top:1px dashed var(--line)}
-.opts{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
-.opt{border:1px solid var(--line);background:var(--panel);color:var(--ink);
-  border-radius:9px;padding:7px 13px;font-size:13.5px;transition:.12s}
-.opt:hover{border-color:var(--accent);color:var(--accent)}
-.opt.picked{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-textarea{width:100%;min-height:52px;resize:vertical;font:14px/1.5 ui-sans-serif,system-ui,sans-serif;
-  color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;
-  padding:9px 11px}
-textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
-.saved{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11.5px;color:var(--ok);
-  margin-top:6px;height:14px}
+.answer{margin-top:26px;padding-top:20px;border-top:1px solid var(--rule)}
+.opts{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:13px}
+/* An option is a considered choice, so it reads as type in a hairline frame until picked,
+   then commits to ink. */
+.opt{border:1px solid var(--rule);background:var(--paper);color:var(--ink);
+  border-radius:2px;padding:9px 15px;font-size:14.5px;transition:.14s ease}
+.opt:hover{border-color:var(--ink);}
+.opt.picked{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:500}
+textarea{width:100%;min-height:64px;resize:vertical;
+  font:16px/1.6 var(--sans);color:var(--ink);background:var(--wash);
+  border:1px solid transparent;border-radius:2px;padding:13px 15px}
+textarea::placeholder{color:var(--ink-4)}
+textarea:focus{outline:none;background:var(--paper);border-color:var(--ink)}
+.saved{font-size:12px;color:var(--green);margin-top:8px;height:16px;letter-spacing:.02em}
 
-/* ── reference tooltips ──────────────────────────────────────────────── */
-a.ref{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--accent);
-  cursor:help}
-a.ref:hover{background:var(--accent-soft)}
-span.ref.dead{color:var(--dim);border-bottom:1px dotted var(--dim)}
-a.path{color:var(--accent);text-decoration:none}
-a.path:hover code{outline:1px solid var(--accent)}
-#tip{position:fixed;z-index:99;max-width:400px;background:var(--panel);color:var(--ink);
-  border:1px solid var(--line);border-radius:11px;padding:13px 15px;box-shadow:var(--shadow);
-  font:13.5px/1.5 ui-sans-serif,system-ui,sans-serif;display:none;pointer-events:none}
-#tip .k{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:3px}
-#tip .t{font-weight:600;margin-bottom:5px;font-size:14px}
-#tip .n{font-size:11.5px;color:var(--faint);margin-bottom:6px}
-#tip .g{color:var(--dim)}
-#tip .open{margin-top:8px;font-size:11.5px;color:var(--faint)}
+/* ── references and their tooltips ───────────────────────────────────── */
+a.ref{color:var(--blue);text-decoration:none;
+  border-bottom:1px solid rgba(18,64,143,.32);cursor:help}
+a.ref:hover{background:var(--blue-wash);border-bottom-color:var(--blue)}
+span.ref.dead{color:var(--ink-4);border-bottom:1px dotted var(--ink-4)}
+a.path{color:var(--blue);text-decoration:none}
+a.path:hover code{background:var(--blue-wash)}
+#tip{position:fixed;z-index:99;max-width:392px;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule);border-radius:3px;padding:16px 18px;
+  box-shadow:0 1px 2px rgba(13,13,14,.05),0 14px 40px rgba(13,13,14,.13);
+  font-size:14px;line-height:1.6;display:none;pointer-events:none}
+#tip .k{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:5px}
+#tip .t{font-weight:600;margin-bottom:7px;font-size:16px;letter-spacing:-.012em;
+  line-height:1.32}
+#tip .n{font-size:12px;color:var(--ink-4);margin-bottom:8px}
+#tip .g{color:var(--ink-2)}
+#tip .open{margin-top:11px;padding-top:9px;border-top:1px solid var(--rule-soft);
+  font-size:11.5px;color:var(--ink-4)}
 
-/* ── comms ───────────────────────────────────────────────────────────── */
-.thread{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--line);
-  font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;align-items:baseline}
+/* ── the thread ──────────────────────────────────────────────────────── */
+.thread{display:flex;gap:18px;padding:13px 0;border-top:1px solid var(--rule-soft);
+  font-size:15px;align-items:baseline}
 .thread:first-of-type{border-top:0}
-.thread .d{flex:0 0 78px;color:var(--faint);font-size:11.5px;font-variant-numeric:tabular-nums}
-.thread .dir{flex:0 0 62px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+.thread .d{flex:0 0 84px;color:var(--ink-4);font-family:var(--mono);font-size:12px;
+  font-variant-numeric:tabular-nums}
+.thread .dir{flex:0 0 44px;font-size:10px;font-weight:600;letter-spacing:.13em;
   text-transform:uppercase}
-.thread .dir.out{color:var(--accent)}
-.thread .dir.in{color:var(--ok)}
-.thread a{text-decoration:none}
-.thread a:hover{text-decoration:underline}
+.thread .dir.out{color:var(--blue)}
+.thread .dir.in{color:var(--green)}
+.thread a{text-decoration:none;border-bottom:1px solid var(--rule)}
+.thread a:hover{border-bottom-color:var(--ink)}
 
-/* ── sticky footer ───────────────────────────────────────────────────── */
-.dock{position:fixed;left:0;right:0;bottom:0;background:var(--panel);
-  border-top:1px solid var(--line);padding:11px 20px;display:flex;gap:12px;
-  align-items:center;justify-content:center;flex-wrap:wrap;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
-.dock .count{font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;color:var(--dim)}
-.dock button{border-radius:9px;padding:8px 15px;font-size:13.5px;border:1px solid var(--line);
-  background:var(--panel);color:var(--ink)}
-.dock button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-.dock button:disabled{opacity:.45;cursor:not-allowed}
-.nowbody{font-size:15px}
-.nowbody h2,.nowbody h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--faint);margin-top:1.3em}
-@media (max-width:560px){.wrap{padding:20px 14px 130px}.thread .d{flex-basis:64px}}
+/* ── the dock ────────────────────────────────────────────────────────── */
+.dock{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(1.4) blur(8px);
+  border-top:1px solid var(--rule);padding:14px 22px;display:flex;gap:16px;
+  align-items:center;justify-content:center;flex-wrap:wrap}
+.dock .count{font-size:13.5px;color:var(--ink-3)}
+/* Intent, in the colour: committing is ink, discarding is the only red on the page. */
+.dock button{border-radius:2px;padding:10px 18px;font-size:14px;
+  border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);transition:.14s}
+.dock button:hover{border-color:var(--ink);color:var(--ink)}
+.dock button.primary{background:var(--ink);border-color:var(--ink);color:var(--paper);
+  font-weight:500}
+.dock button.primary:hover{background:#000}
+.dock #clear{border-color:transparent;color:var(--ink-4)}
+.dock #clear:hover{color:var(--red);border-color:rgba(165,34,24,.4)}
+.dock button:disabled{opacity:.36;cursor:not-allowed}
+.dock button.primary:disabled:hover{background:var(--ink)}
+
+/* ── now.md ──────────────────────────────────────────────────────────── */
+.nowbody{font-size:18px;line-height:1.7}
+.nowbody p{max-width:64ch}
+.nowbody h2,.nowbody h3{font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.15em;color:var(--ink-4);margin:1.9em 0 .55em;letter-spacing:.15em}
+.nowbody>*:first-child{margin-top:0}
+.nowbody em{color:var(--ink-3)}
+
+@media (max-width:640px){
+  .wrap{padding:44px 20px 150px}
+  body{font-size:16.5px}
+  .nowbody{font-size:17px}
+  .thread .d{flex-basis:72px}
+  .stage{flex-basis:50%;min-width:50%}
+  .facts{gap:0 18px}
+}
 """
 
 JS = """
@@ -985,12 +1054,13 @@ def build() -> str:
         cls = "here" if "current" in state else ("done" if "exited" in state else "")
         short = label.split("·", 1)[1].strip() if "·" in label else label
         stages.append(f'<div class="stage {cls}" title="{html.escape(state)}">'
-                      f'<b>{num}</b> · {html.escape(short)}</div>')
+                      f'<b>{num}</b>{html.escape(short)}</div>')
 
     out = [f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Feed — {PROJECT_NAME}</title><style>{CSS}</style></head><body>
+<title>Feed — {PROJECT_NAME}</title>
+{FONT_LINK}<style>{CSS}</style></head><body>
 <div id="tip"></div>
 <div class="wrap">
 <div class="top">
@@ -1011,14 +1081,17 @@ def build() -> str:
     if conds:
         met = sum(1 for c in conds if c["status"] == "met")
         rows = []
+        words = {"met": "met", "partly": "partly", "unknown": "not met"}
         for c in conds:
             cls = c["status"] if c["status"] in ("met", "partly") else ""
-            mark = "✓" if c["status"] == "met" else ("~" if c["status"] == "partly" else c["n"])
+            word = words.get(c["status"], "not met")
+            ev = (f'<span class="status">{word}</span>'
+                  + (_inline(c["evidence"], g) if c["evidence"] else ""))
             rows.append(
-                f'<div class="cond {cls}"><div class="dot">{mark}</div><div>'
+                f'<div class="cond {cls}"><div class="dot">{c["n"]}</div><div>'
                 f'<div class="claim">{_inline(c["claim"], g)}</div>'
-                + (f'<div class="ev">{_inline(c["evidence"], g)}</div>' if c["evidence"] else "")
-                + f'<div class="more">{_inline(c["detail"], g)}</div></div></div>')
+                f'<div class="ev">{ev}</div>'
+                f'<div class="more">{_inline(c["detail"], g)}</div></div></div>')
         out.append(
             '<div class="panel"><div class="kicker">what has to be true to leave '
             f'{html.escape(stage.split("·")[0].strip())} '
@@ -1067,7 +1140,7 @@ def build() -> str:
         # that is open by default pushes the live question below the fold.
         live = item["status"] == "awaiting-you"
         if live:
-            fold_label = "the detail"
+            fold_label = "hide"
         else:
             given = k.get("answered", "").strip()
             fold_label = (f"you said: {given}" if given
