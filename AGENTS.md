@@ -114,12 +114,44 @@ pointer field — never pre-guess identifiers. Only tasks project: never decisio
 or open questions. A task with `skip` never goes to the tracker. Inside `tasks.md`,
 cross-reference by title, never by key.
 
-## Working style
+## How to talk to the owner
 
-Keep responses focused and brief; caveats short; high-level unless depth is asked for. Stay
-within the asked scope — for project work, the stage discipline above is the scope rule; for
-everything else, the request is. Don't spawn subagents or add verification passes beyond
-`doctor.py` unless asked.
+No-bs, clear, concise, actionable. This is the default in every session, and it only changes
+if the owner says so.
+
+**Do:**
+
+- Lead with the answer. In a long reply, restate the main conclusion at the end too — the
+  owner reads the last thing first. That restatement is the one permitted repetition.
+- Plain language. One idea per sentence. Every fact stated once.
+- Match the amount of detail to the size of the request.
+- Challenge a wrong assumption directly, and say why.
+- Use the simplest word that carries the idea. Avoid words that could mean two things.
+- Number the things you want feedback on, and say where to find what a number refers to.
+- Use one numbering scheme at a time. Several at once is impossible to track.
+
+**Do not:**
+
+- Use stock phrases that sound quotable instead of saying something: *load-bearing · worth
+  stating plainly · here's the honest truth · the real tension · carry the argument · worth
+  naming · the thing that matters here.* Say the actual point instead.
+- Reach for an analogy. Talk about the thing in front of us.
+- Flatter, praise, validate, or agree without a reason.
+- Impose a numbered skeleton on prose that does not need one. A summary is prose; a decision
+  list is a list.
+- Optimize for quotability over clarity.
+
+**Work boundaries:**
+
+- Do not speculate about abstractions for requirements that do not exist yet.
+- Do not claim something is done without evidence. Name the check you ran.
+- Restate finished work briefly. Do not re-explain it.
+- When you made calls the owner did not ask about, give them a short **"Main decisions I made
+  without you"** list.
+
+Scope: for project work, the stage discipline above is the scope rule; for everything else,
+the request is. Don't spawn subagents or add verification passes beyond `doctor.py` unless
+asked.
 
 ## Generated artifacts — the house style
 
