@@ -42,12 +42,14 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/braindumps/` | verbatim dumps; processing routes content out, never rewrites |
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
-| `brain/review-lens.md` | what "good" means on this project — the reviewer reads it |
+| `brain/lenses/` | what "good" means, one file per domain — `/reviewer` runs one per pass |
+| `brain/explorations/` | directions considered but not chosen; rejected ones stay |
+| `brain/references/` | the quality bar as images — measured against, never copied |
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
-| `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -67,6 +69,14 @@ of work as it goes, so the brain on your phone is never more than one step behin
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
   replacement and moves to `archive/`.
+- **Diverge before you converge, and keep the losers.** `/explore` puts six to eight
+  genuinely different directions on the table, seeded so they are not one idea four times.
+  They live in `brain/explorations/`, and picking one produces exactly one decision that
+  links back — the only seam between the two halves.
+- **Two critics, one standard.** `/critique` is the fast loop while building: a fresh-context
+  critic that sees only the render, scores it, and writes nothing. `/reviewer craft` is the
+  slow independent pass that writes findings. Both read `brain/lenses/craft.md`, so there is
+  one bar and not two.
 
 ## Requirements
 

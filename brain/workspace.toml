@@ -35,6 +35,20 @@ remote = false                     # true once a remote is configured and push i
 visibility = "private"             # "private" | "public" — public is an explicit choice
 push_each_unit = true              # commit + push every completed unit of work, unprompted
 
+[generation]
+# Image and video generation, for design work that needs real assets rather than a CSS
+# gradient standing in for art. A coding agent with no generator reaches for gradients,
+# glows and shapes — `brain/lenses/craft.md` scores those as tells, so this is what lets it
+# score better honestly.
+#
+# route: "" (none) | "builtin" (the agent's own tool) | "subscription" (drive another CLI
+# that bills a seat) | "api" (a key in .env.agents).
+route = ""
+# Keys live in `.env.agents` at the repo root — gitignored, dev-only, and they must never
+# ship inside a deliverable. Give them a tight spend limit; an agent in a loop is the exact
+# shape of workload that empties an uncapped key.
+env_file = ".env.agents"
+
 [confidential]
 # Directories holding client or third-party material. Kept out of git from day one, and
 # read-only to the assistant when they are source material from outside.

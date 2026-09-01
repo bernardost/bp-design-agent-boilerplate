@@ -29,6 +29,7 @@ DEFAULTS: dict = {
     "tasks": {"labels": ["design", "research", "content", "handoff", "method",
                          "blocked-on-external", "bar", "deferred"]},
     "git": {"remote": False, "visibility": "private", "push_each_unit": True},
+    "generation": {"route": "", "env_file": ".env.agents"},
     "confidential": {"paths": ["context/"]},
 }
 
@@ -111,6 +112,9 @@ GIT_REMOTE = bool(CONFIG["git"]["remote"])
 GIT_VISIBILITY = CONFIG["git"]["visibility"]
 PUSH_EACH_UNIT = bool(CONFIG["git"]["push_each_unit"])
 CONFIDENTIAL_PATHS = CONFIG["confidential"].get("paths") or []
+# "" means the project generates no assets; the scripts test for None.
+GENERATION_ROUTE = CONFIG["generation"].get("route") or None
+GENERATION_ENV_FILE = CONFIG["generation"].get("env_file") or ".env.agents"
 
 
 if __name__ == "__main__":

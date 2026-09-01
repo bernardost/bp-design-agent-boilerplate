@@ -11,3 +11,6 @@ brain/feed.html
 # e.g.:
 # context/client-context/
 brain/brain.canvas
+
+# Generation keys — dev-only, tightly capped, and they never ship in a deliverable.
+.env.agents

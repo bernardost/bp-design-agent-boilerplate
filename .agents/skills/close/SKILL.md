@@ -21,6 +21,8 @@ your replies goes to its owning file now:
 - a question raised → `brain/open-questions.md`, with an owner tag: who can answer
 - a decision that needs the owner → `brain/feed-items.md`, stating what it blocks
 - raw thinking not yet routed → `brain/braindumps/`, verbatim
+- directions weighed but not chosen → `brain/explorations/`, with a verdict on each.
+  If one was picked, that is a decision above, and it links back to the exploration
 
 If there is nothing, say so. An empty step is fine; a skipped one is not.
 

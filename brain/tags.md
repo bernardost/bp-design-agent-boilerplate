@@ -31,6 +31,7 @@ end up describing this project's themes, not these.*
 - `brief` — what the client asked for, and how that has moved
 - `research` — what we learned about users, the market, or the existing thing
 - `concept` — direction, exploration, the shape of the idea
+- `exploration` — a spread of options put on the table before one was chosen
 - `craft` — visual and interaction execution: type, colour, motion, detail
 - `accessibility` — who can and cannot use what we made
 - `system` — tokens, components, patterns, the reusable layer

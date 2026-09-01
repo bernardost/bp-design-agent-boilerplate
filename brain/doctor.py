@@ -49,7 +49,8 @@ TASK_LINE = re.compile(
 )
 
 # Directories whose .md files participate in [[link]] resolution.
-LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps"]
+LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps",
+             BRAIN / "explorations"]
 
 # Files that describe what is true *now*. Only these may not carry a dead pointer.
 # A dated record (a decision, an insight, a findings file) citing a since-superseded decision was
@@ -387,7 +388,7 @@ def report_tags():
                 vocab[m.group(1)] = m.group(2)
 
     for path in md_files([BRAIN / "decisions", BRAIN / "insights", BRAIN / "braindumps",
-                          BRAIN / "briefings"]):
+                          BRAIN / "briefings", BRAIN / "explorations"]):
         if path.name == "README.md" or path.stem.startswith("0000"):
             continue
         text = path.read_text(encoding="utf-8")
@@ -421,6 +422,69 @@ def report_tags():
         print(f"               one file only: {', '.join(singles)} — a theme of one is a [[link]]")
     if untagged:
         print(f"               {len(untagged)} file(s) with no tags, e.g. {untagged[0]}")
+
+
+# ── REPORT ── the lenses the reviewer can be pointed at ───────────────────────
+def report_lenses():
+    """`brain/lenses/` holds what "good" means, one file per domain, and `/reviewer` runs
+    exactly one per pass. Not a FAIL: a clone legitimately ships `craft.md` unfilled, and the
+    reviewer is required to say so in its own verdict. What is worth printing is which lenses
+    exist and which are still template — an unfilled lens reviewed against silently is the
+    failure mode the whole split was meant to prevent."""
+    d = BRAIN / "lenses"
+    if not d.exists():
+        print("  lenses     brain/lenses/ is missing — /reviewer has no standard to read")
+        return
+    found, unfilled = [], []
+    for path in sorted(d.glob("*.md")):
+        if path.name == "README.md":
+            continue
+        found.append(path.stem)
+        text = path.read_text(encoding="utf-8")
+        # The house convention for an unwritten section: an italic parenthetical.
+        if re.search(r"^\*\(", text, re.M) or "{{" in text:
+            unfilled.append(path.stem)
+    if not found:
+        print("  lenses     none defined — /reviewer has no standard to read")
+        return
+    print(f"  lenses     {len(found)}: {', '.join(found)}")
+    if unfilled:
+        print(f"               still template: {', '.join(unfilled)} — /setup fills these, and\n"
+              f"               the reviewer must say so in its verdict until they are written")
+
+
+# ── REPORT ── explorations, and whether any of them ever landed ───────────────
+def report_explorations():
+    """An exploration is options, not a decision (AGENTS.md). Two things rot here and neither
+    is a rule with no exceptions, so both print. A file with no verdicts is an unfinished
+    session — normal mid-run, stale after a week. A file whose surviving direction never
+    produced a decision is the seam failing quietly: the work moved on, and the record never
+    recorded what was picked."""
+    d = BRAIN / "explorations"
+    if not d.exists():
+        return
+    files = [p for p in sorted(d.glob("*.md")) if p.name != "README.md"]
+    if not files:
+        print("  explore    no explorations filed yet — /explore writes them")
+        return
+    no_verdict, unlanded = [], []
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        if not re.search(r"^Verdict:", text, re.M | re.I):
+            no_verdict.append(rel(path))
+            continue
+        live = len(re.findall(r"^Verdict:\s*live", text, re.M | re.I))
+        # Did any decision link back? That link is the only legitimate seam.
+        cited = any(f"[[{path.stem}]]" in q.read_text(encoding="utf-8")
+                    for q in md_files([BRAIN / "decisions"]))
+        if live and not cited:
+            unlanded.append(rel(path))
+    print(f"  explore    {len(files)} exploration(s) filed")
+    for f in no_verdict:
+        print(f"               no verdicts yet: {f} — every direction needs live|rejected")
+    for f in unlanded:
+        print(f"               live direction, no decision cites it: {f}\n"
+              f"               → picking one means a numbered decision that links back")
 
 
 # ── REPORT ── is this workspace actually configured? ──────────────────────────
@@ -617,6 +681,8 @@ def main() -> int:
         report_tags()
         report_config()
         report_glossary()
+        report_lenses()
+        report_explorations()
         report_orphans()
         report_archive_candidates()
         report_now_freshness()

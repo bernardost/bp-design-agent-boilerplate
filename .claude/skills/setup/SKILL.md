@@ -53,10 +53,27 @@ here: a projection, written outward at wrap-up and never read back as authority.
 makes "is this required before we can move on?" a grep instead of an argument.
 → `brain/workspace.toml` (`tasks.labels`).
 
-**What "good" means here.** What would make this project's output bad? For design work this is
-usually accessibility, brand and token consistency, file hygiene in the design tool, handoff
-completeness, and whether the artifact matches the brief. → `brain/review-lens.md`, which
-`/reviewer` reads on every pass.
+**What "good" means here — two answers, two files.** `brain/lenses/` holds one standard per
+domain, and `/reviewer` runs exactly one per pass.
+
+- *Record* — ships filled in; it judges the brain, not the work, and is the same everywhere.
+  Read it, do not rewrite it. → `brain/lenses/record.md`.
+- *Craft* — the one you have to write. **Ask what the work should feel like, and hold out for
+  words that reject something.** "Tactile, clicky, satisfying; I pictured cartoony and it felt
+  tacky" is usable. "Clean and modern" describes nothing and rules nothing out — push back
+  once, in those terms. Then ask the second question, which people skip: **what do you not
+  want flagged?** Settled visual territory, work still in exploration, anything a later stage
+  owns. → sections 3 and 4 of `brain/lenses/craft.md`.
+
+Offer to seed `brain/references/` while you are here — a handful of images whose *execution*
+is the bar, and any anti-references. A critic scores better against a shown bar than a
+described one. Client material there is confidential like anything else from outside.
+
+**Generation.** Does this project need real images or video, or is it type and layout? A
+coding agent with no generator fakes texture with gradients, which the craft lens scores as a
+tell. If yes, pick the route — the agent's own tool, another CLI billed to a subscription, or
+a capped API key in `.env.agents` — and say plainly that the key is dev-only and never ships.
+→ `brain/workspace.toml` (`generation.route`).
 
 **Confidential material.** Is there client or third-party source material? It goes in
 `context/` — read-only, never edited — and stays out of git.
@@ -86,7 +103,7 @@ Confirm out loud first, listing what will go. Then:
 
 - The boilerplate ships blank, so usually there is nothing to clear. Check anyway:
   `brain/braindumps/`, `brain/decisions/`, `brain/insights/`, `brain/reviews/`,
-  `brain/briefings/` should hold only `README.md` files and
+  `brain/briefings/`, `brain/explorations/` should hold only `README.md` files and
   `brain/decisions/0000-decision-template.md`. Empty anything else.
 - `rm -rf archive/` if it is present — it holds the boilerplate's own design rationale, which
   is not this project's record.
@@ -126,8 +143,16 @@ whole charter at them.
 - `/decide <topic>` — capture one decision deliberately, with its context and consequences.
 - `/status` — one screen: where we are, what's next, what's blocked, what's open.
 - `/close` — wrap up. Rewrites `now.md`, lints, regenerates the page, pushes.
-- `/reviewer` — a separate session that critiques the work independently and writes findings
-  to `brain/reviews/`. It reads `brain/review-lens.md`, which you just wrote.
+- `/explore` — go wide before committing. Six to eight genuinely different directions,
+  seeded so they are not the same idea four times, then sharpened against your reactions.
+  Filed in `brain/explorations/`; rejected ones stay.
+- `/critique` — the fast loop while building. Screenshots the work, hands it to a critic that
+  sees only the picture, scores it against `brain/lenses/craft.md`, repeats until it holds up.
+  Writes nothing to the brain.
+- `/reviewer <lens> <scope>` — a separate session that critiques independently and writes
+  findings to `brain/reviews/`. It takes a lens: `record` for whether the project's record is
+  honest, `craft` for whether the work is any good to look at. The craft lens is the one you
+  just wrote.
 - `/briefing` — pulls the sources you just declared into a dated, attributed catch-up, then
   files what matters. Use it after time away.
 - `/setup` — re-runnable. This, again, to change an answer or add a source.

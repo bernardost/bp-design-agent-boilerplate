@@ -40,6 +40,10 @@ is configured, `git pull` before you touch anything — another device may have 
   service without the owner's say-so.
 - When citing anything numbered (decisions, standards, tracker issues), restate the content,
   not just the number.
+- **Generation keys are dev-only.** `generation.route` in `brain/workspace.toml` says how this
+  project makes images and video; any key lives in `.env.agents`, which is gitignored and
+  **must never ship inside a deliverable**. Cap the spend — an agent looping on renders is
+  exactly the workload that empties an uncapped key overnight.
 
 ## Always-on behaviors
 
@@ -48,7 +52,9 @@ is configured, `git pull` before you touch anything — another device may have 
   polish beyond the stage's exit bar — "it isn't finished" is always true and never on its
   own a reason to stay). Answer "what next" in terms of the current stage's exit bar —
   `brain/plan.md` links them, and a stage entered without a bar gets its bar decision
-  written before the work does.
+  written before the work does. **Going wide inside the stage you are in is not running
+  ahead** — `/explore` is a legitimate state that ends when a direction is picked, and
+  `now.md` may say the work is exploring.
 - **Ears.** A decision stated or reached in conversation → a numbered file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -83,12 +89,18 @@ is configured, `git pull` before you touch anything — another device may have 
   current state → `brain/now.md` · the stage arc and each stage's exit bar → `brain/plan.md` ·
   reviews → `brain/reviews/` · decisions awaiting the owner → `brain/feed-items.md` · the tag
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
-  `brain/glossary.md`** · what "good" means here → `brain/review-lens.md` · watched external
-  sources → `brain/sources.md` · every project constant → `brain/workspace.toml`.
+  `brain/glossary.md`** · what "good" means here, one file per domain →
+  `brain/lenses/` · **directions considered but not chosen → `brain/explorations/`** ·
+  watched external sources → `brain/sources.md` · every project constant →
+  `brain/workspace.toml`.
 - **Tags are global to the brain.** One vocabulary across decisions, insights, braindumps and
   briefings — a decision and an insight sharing a tag is the point. Frontmatter
   `tags: [a, b]`, defined in `brain/tags.md`. A tag is a theme; a `[[wiki-link]]` is a claim
   about two specific notes. A theme with one member should have been a link.
+- **An exploration is not a decision.** Options live in `brain/explorations/` and stay there,
+  rejected ones included. Picking one produces exactly one numbered decision that links back
+  to the exploration — that link is the only seam between diverging and converging, and
+  nothing may treat a direction as chosen before it exists.
 - **Files are the truth; outward tools (the tracker, `feed.html`) are projections** —
   written, never read back as authority. If they disagree, the file wins.
 - **The `now.md` test:** if it would still be true in two weeks, it belongs in its owning
@@ -151,12 +163,18 @@ if the owner says so.
 
 Scope: for project work, the stage discipline above is the scope rule; for everything else,
 the request is. Don't spawn subagents or add verification passes beyond `doctor.py` unless
-asked.
+asked — invoking `/critique` or `/explore` **is** the ask, and the carve-out is theirs alone.
 
 ## Generated artifacts — the house style
 
 Absent art direction from the owner, anything you generate for them to read — `feed.html`, a
-rendered page, a document — follows this:
+rendered page, a document — follows this.
+
+**This governs artifacts made for the owner to read, and nothing else. It is not the
+product's aesthetic and is never inherited by the work.** What {{PRODUCT_NAME}} should look
+like is a project decision, explored with `/explore` and judged against
+`brain/lenses/craft.md`; applying the rules below to it by default would substitute this
+file's taste for the project's, which is exactly the safe average good design has to beat.
 
 - **Inter** for titles and body; a real monospace for code. Comfortable sizes and generous
   leading.
@@ -176,7 +194,10 @@ interesting to look at. Ask before departing from this; do not split the differe
 
 `/setup` (first run, and re-runnable) · `/braindump` (dump, saved verbatim, then routed) ·
 `/decide <topic>` (capture a decision) · `/status` (one-screen readout) · `/close` (wrap up) ·
-`/reviewer` (become the independent reviewer) · `/briefing` (pull the watched sources).
+`/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
+`brain/lenses/`) · `/briefing` (pull the watched sources) · **`/explore` (go wide before
+committing to a direction) · `/critique` (score a render against the craft lens until it
+holds up — writes nothing)**.
 
 These live in `.claude/skills/<name>/SKILL.md`. Outside Claude Code there is no autocomplete:
 **when the owner types `/name`, read `.claude/skills/name/SKILL.md` and follow it.**

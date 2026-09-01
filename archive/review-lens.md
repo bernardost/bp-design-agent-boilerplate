@@ -1,3 +1,10 @@
+> **Retired 2026-09-01 — do not cite.** Replaced by `brain/lenses/`, which splits this
+> file's single standard into one file per domain: `brain/lenses/record.md` (provenance,
+> stage discipline, claim-versus-page — what `/reviewer` judged by default) and
+> `brain/lenses/craft.md` (visual quality, restraint, AI tells). The reason for the split:
+> the two disagree about what context the reviewer may read, so they could not share a file.
+> Kept because a retired rule is training material.
+
 # Review lens
 
 *What "good" means **on this project**. The `/reviewer` skill holds what never bends —
