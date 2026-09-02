@@ -467,9 +467,21 @@ def report_explorations():
     if not files:
         print("  explore    no explorations filed yet — /explore writes them")
         return
-    no_verdict, unlanded = [], []
+    no_verdict, unlanded, thin, stale = [], [], [], []
     for path in files:
         text = path.read_text(encoding="utf-8")
+
+        # A direction with no specimen renders as an empty frame in `spread.py` — which is
+        # the point of showing the gap rather than hiding it, but eight of them means the
+        # page is prose again and there is nothing to compare at a glance.
+        dirs = len(re.findall(r"^###\s+", text, re.M))
+        specs = len(re.findall(r"^```specimen\b", text, re.M))
+        if dirs and specs < dirs:
+            thin.append((rel(path), dirs - specs, dirs))
+        page = path.with_suffix(".html")
+        if dirs and (not page.exists() or page.stat().st_mtime < path.stat().st_mtime):
+            stale.append(rel(path))
+
         if not re.search(r"^Verdict:", text, re.M | re.I):
             no_verdict.append(rel(path))
             continue
@@ -485,6 +497,11 @@ def report_explorations():
     for f in unlanded:
         print(f"               live direction, no decision cites it: {f}\n"
               f"               → picking one means a numbered decision that links back")
+    for f, missing, total in thin:
+        print(f"               {missing} of {total} directions have no specimen: {f}")
+    for f in stale:
+        print(f"               page not rendered or older than the file: {f}\n"
+              f"               → python3 brain/spread.py")
 
 
 # ── REPORT ── is this workspace actually configured? ──────────────────────────

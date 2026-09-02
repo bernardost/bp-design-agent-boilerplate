@@ -78,7 +78,8 @@ is configured, `git pull` before you touch anything — another device may have 
   owning files → update `tasks.md` → **rewrite `now.md` from scratch, never edit it**
   (rewriting is what enforces the one-screen limit) → `python3 brain/doctor.py` →
   regenerate `brain/feed.html` (which also draws the brain as a graph, and writes
-  `brain/brain.canvas` for anyone who opens `brain/` as an Obsidian vault) → commit and push →
+  `brain/brain.canvas` for anyone who opens `brain/` as an Obsidian vault) and any
+  exploration page with `brain/spread.py` → commit and push →
   push the tracker projection.
 
 ## Record-keeping invariants (doctor.py enforces what it can)

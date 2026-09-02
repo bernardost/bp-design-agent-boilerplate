@@ -22,6 +22,23 @@ choices nobody made; filed in `insights/` they would claim a durability they hav
   produced it cannot be re-run, which makes it an anecdote rather than a record.
 - **Nothing here is authority.** `now.md` may say the work is exploring; it may not cite a
   direction as though it were chosen.
+- **Every direction carries a specimen.** Eight directions described in prose is a wall of
+  text, and a wall of text gets judged on which one was *described* best. The specimen is
+  what makes the spread comparable at a glance, so it is part of the file, not a nicety.
+
+## The specimen
+
+A fenced ` ```specimen ` block inside each direction: self-contained HTML and CSS, no scripts,
+no external assets, around fifteen lines. Palette as swatches, the type pairing set in the
+real faces at a real size, the layout logic as a few blocks. `python3 brain/spread.py` renders
+the file to a page next to it, each specimen inside a sandboxed frame — so a direction's own
+colours and type are its own, and cannot be overridden by the page around them or leak into it.
+
+**A specimen is not a mockup.** It shows the ingredients, not the screen. Building the screen
+at pitch stage is how a well-executed weak idea beats a roughly-sketched strong one, which is
+the exact failure `/explore` exists to prevent — and it makes the command slow enough that
+nobody runs it. The rendered page is a projection like any other: delete it and nothing is
+lost, because this file is the record.
 
 ## The file shape
 
@@ -36,6 +53,12 @@ Seed: <the string> · Brief: <one line — what was asked for>
 ### A — <name>
 <two or three lines: the idea, and what makes it different from the others>
 Verdict: live | rejected — <the reason, in the owner's words where there are any>
+
+```specimen
+<div style="height:100%;background:#faf8f4;padding:16px;font:13px/1.5 Inter,sans-serif">
+  … swatches, the type pairing set for real, the layout logic as a few blocks …
+</div>
+```
 
 ### B — <name>
 …

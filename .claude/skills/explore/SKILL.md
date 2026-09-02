@@ -1,6 +1,6 @@
 ---
 name: explore
-description: Generate genuinely different design directions before committing to one — seeded for variety, sharpened against the owner's taste, filed in brain/explorations/. Use for /explore, "give me options", "what else could this be", or whenever work is about to converge on the first idea anyone had.
+description: Generate genuinely different design directions before committing to one — seeded for variety, sharpened against the owner's taste, filed in brain/explorations/ and rendered as a page you can judge at a glance. Use for /explore, "give me options", "what else could this be", or whenever work is about to converge on the first idea anyone had.
 ---
 
 # Explore — go wide on purpose
@@ -37,13 +37,28 @@ tidied version of it.
 three lines each. Name each one. At this stage they are pitches, not designs — resist
 building.
 
-Then check the spread honestly before showing them: if four of them differ only in colour,
-they are one direction and you owe the owner three more. Real variance means disagreeing
-about layout logic, density, tone, and what the work is *for*, not about hue. Include at
-least one that is uncomfortable — the rule the article and the practice agree on is that the
-safe six are the ones nobody remembers. Say which one that is.
+Each direction also gets a **specimen**: fifteen-odd lines of self-contained HTML and CSS
+showing its palette, its type pairing set in the real faces, and its layout logic as a few
+blocks. `brain/explorations/README.md` has the rule that matters — a specimen shows the
+ingredients, not the screen. Build the screen and the best-executed pitch wins instead of the
+best idea, which is the failure this command exists to prevent.
 
-**3 · Sharpen against the owner's taste, and this is the step that matters.** Ask what they
+Then check the spread honestly: if four of them differ only in colour, they are one direction
+and you owe the owner three more. Real variance means disagreeing about layout logic,
+density, tone, and what the work is *for*, not about hue. Include at least one that is
+uncomfortable — the safe six are the ones nobody remembers. Say which one that is.
+
+**3 · Write the file, render it, and hand over the page.** The markdown goes to
+`brain/explorations/YYYY-MM-DD-<topic>.md` in the shape README specifies, seeds included,
+tagged from `brain/tags.md`. Then `python3 brain/spread.py` and give the owner the path.
+
+Do this *before* asking for reactions, not after. Eight directions pasted into a chat window
+is too much to judge, so what gets judged is whichever one you described best. The page puts
+the specimens side by side, which is what lets taste act on the work rather than on the prose
+about it. Your own spread check gets easier here too: if the eight specimens look alike on
+one screen, they were one direction and no amount of distinct prose changes that.
+
+**4 · Sharpen against the owner's taste, and this is the step that matters.** Ask what they
 react to, and take the reaction in their own words — *"tactile, clicky, satisfying; I pictured
 cartoony and it felt tacky; needs texture"* is usable, *"more modern"* is not. Push back for
 specifics when what you get is an adjective that rejects nothing.
@@ -52,11 +67,10 @@ Then rewrite the shortlist through what they said. This is the whole point of th
 directions the owner steered are ones only this project could have produced, where directions
 the model picked unaided are ones any project would have.
 
-**4 · Record verdicts.** Every direction gets `live` or `rejected` and a reason. Rejected
-directions stay in the file — see `brain/explorations/README.md` for why.
-
-**5 · Write the file.** `brain/explorations/YYYY-MM-DD-<topic>.md`, in the shape that README
-specifies, seeds included. Tag it from `brain/tags.md`.
+**5 · Record verdicts and re-render.** Every direction gets `live` or `rejected` and a reason.
+Rejected directions stay in the file, and stay on the page — greyed and in place, never
+deleted. See `brain/explorations/README.md` for why. Re-run `spread.py` so the page and the
+file agree.
 
 **6 · Hand over a build prompt.** For each surviving direction, write a concise prompt that
 an agent could build a first pass from: the aesthetic, the layout logic, what it must not do,
@@ -81,7 +95,9 @@ chosen, and `now.md` says the work is exploring rather than naming a direction.
   settled question needs the owner to say they are re-opening it; quietly generating
   alternatives to a logged decision is contradiction, and the charter says raise it instead.
 - **Do not converge early.** Recommending a favourite in step 2 collapses the spread you were
-  asked to produce. Recommend after step 3, when the owner's taste is in the room.
+  asked to produce. Recommend after step 4, when the owner's taste is in the room.
+- **The page is a projection, never the record.** `spread.py` writes HTML next to the
+  markdown and never reads it back. If the two disagree, the file wins and you re-render.
 - **Do not carry the house style into the work.** `AGENTS.md` describes how artifacts *for
   the owner to read* should look. It is not the product's aesthetic, and a direction that
   inherits it by default is one direction fewer.

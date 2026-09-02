@@ -48,6 +48,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
+| `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
 
@@ -73,6 +74,10 @@ of work as it goes, so the brain on your phone is never more than one step behin
   genuinely different directions on the table, seeded so they are not one idea four times.
   They live in `brain/explorations/`, and picking one produces exactly one decision that
   links back — the only seam between the two halves.
+- **Show the spread, don't describe it.** Eight directions in prose get judged on which was
+  described best. `brain/spread.py` renders them side by side — each with a specimen of its
+  palette, type and layout logic — so taste acts on the work instead of on the writing
+  about it.
 - **Two critics, one standard.** `/critique` is the fast loop while building: a fresh-context
   critic that sees only the render, scores it, and writes nothing. `/reviewer craft` is the
   slow independent pass that writes findings. Both read `brain/lenses/craft.md`, so there is

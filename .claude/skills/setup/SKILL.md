@@ -145,7 +145,8 @@ whole charter at them.
 - `/close` — wrap up. Rewrites `now.md`, lints, regenerates the page, pushes.
 - `/explore` — go wide before committing. Six to eight genuinely different directions,
   seeded so they are not the same idea four times, then sharpened against your reactions.
-  Filed in `brain/explorations/`; rejected ones stay.
+  Filed in `brain/explorations/` and rendered as a page — every direction's specimen side by
+  side, so you judge the work rather than the writing about it. Rejected ones stay.
 - `/critique` — the fast loop while building. Screenshots the work, hands it to a critic that
   sees only the picture, scores it against `brain/lenses/craft.md`, repeats until it holds up.
   Writes nothing to the brain.

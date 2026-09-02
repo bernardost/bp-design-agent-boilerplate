@@ -4,13 +4,18 @@ __pycache__/
 .venv/
 venv/
 
-# Generated projection — rebuild with `python3 brain/feed.py`
+# Generated projections — rebuild with `python3 brain/feed.py` / `python3 brain/spread.py`
 brain/feed.html
+brain/explorations/*.html
 
 # If the project acquires confidential source material, keep it out from day one,
 # e.g.:
 # context/client-context/
 brain/brain.canvas
+
+# Screenshot and trace dumps from browser tooling — an agent that renders the work leaves
+# these behind, and they are not the record.
+.playwright-mcp/
 
 # Generation keys — dev-only, tightly capped, and they never ship in a deliverable.
 .env.agents

@@ -56,6 +56,7 @@ judgment of whether it holds.
 ```
 python3 brain/doctor.py
 python3 brain/feed.py
+python3 brain/spread.py
 ```
 
 Fix every FAIL; read the reports and act on the ones that matter — an unknown tag, a stale
