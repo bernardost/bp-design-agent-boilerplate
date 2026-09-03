@@ -66,6 +66,12 @@ is configured, `git pull` before you touch anything — another device may have 
   deliverable is aimed at the wrong thing. Every claim in it that came from outside this repo
   carries a source tag (`brain/sources.md` owns the format); anything you worked out rather
   than heard is marked `^[inferred]`.
+- **Everything for the owner lives in the repo.** A message you drafted for them to send, a
+  page for them to read, a file they have to act on: it goes in the folder that owns it, and
+  you say the path. **Never a scratch or temp directory** — that is your own workspace, its
+  path is unguessable, and a draft email written there is a draft email nobody sends. Messages
+  for the owner to send go to `brain/drafts/` (format in its README); a rendered page goes in
+  `brain/`. The test is whether they could find it tomorrow without asking you.
 - **Ears.** A decision stated or reached in conversation → a numbered file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -101,7 +107,8 @@ is configured, `git pull` before you touch anything — another device may have 
   current state → `brain/now.md` · the stage arc and each stage's exit bar → `brain/plan.md` ·
   **the agreed understanding of the project, and the owner's approval of it, → the `Status:`
   line in `brain/project-brief.md`** ·
-  reviews → `brain/reviews/` · decisions awaiting the owner → `brain/feed-items.md` · the tag
+  reviews → `brain/reviews/` · **messages written for the owner to send, before and after
+  they go out → `brain/drafts/`** · decisions awaiting the owner → `brain/feed-items.md` · the tag
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
   `brain/glossary.md`** · what "good" means here, one file per domain →
   `brain/lenses/` · **directions considered but not chosen → `brain/explorations/`** ·

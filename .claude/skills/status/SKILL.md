@@ -16,6 +16,7 @@ Output one screen, no more:
 - **Open questions** — grouped by owner tag, count + the most urgent one each
 - **Recent decisions** — the last 3, one line each
 - **Tasks** — counts by status, and anything `doing` by title
+- **Waiting on you to send** — unsent drafts in `brain/drafts/`, by subject and recipient
 
 If now.md's date is older than the newest decision or task change, note that
 it may be stale and offer to reconcile — or say it is worth `/close`-ing.

@@ -520,6 +520,67 @@ def report_config():
         print(f"  config     {PROJECT_NAME} · {tr} · remote {'on' if GIT_REMOTE else 'off'}")
 
 
+# ── REPORT ── is anything drafted and still waiting on the owner to send it? ──
+def report_drafts():
+    """A message written for the owner and never sent is the cheapest thing in the workspace
+    to lose, and losing it costs a week of someone else's waiting.
+
+    The format is `brain/drafts/README.md`. Three things break here: a draft addressed to
+    nobody cannot be sent; a draft still unsent after a week is either forgotten or was never
+    needed; and a file whose name misses `YYYY-MM-DD-slug.md` is invisible to the feed, which
+    is the same as not existing.
+    """
+    folder = BRAIN / "drafts"
+    if not folder.exists():
+        return
+    files = [p for p in sorted(folder.glob("*.md")) if p.name != "README.md"]
+    if not files:
+        print("  drafts     none written — a message for the owner to send lands here")
+        return
+
+    from datetime import date
+    today = date.today()
+    unsent, stale, unaddressed, badname, nosentdate = [], [], [], [], []
+    for path in files:
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})-(.+)\.md$", path.name)
+        if not m:
+            badname.append(rel(path))
+            continue
+        text = path.read_text(encoding="utf-8")
+        fm = re.match(r"^---\n(.*?)\n---", text, re.S)
+        meta = {}
+        if fm:
+            for ln in fm.group(1).splitlines():
+                k, _, v = ln.partition(":")
+                if _:
+                    meta[k.strip()] = v.strip()
+        sent = (meta.get("status", "draft").lower() == "sent")
+        if sent:
+            if not meta.get("sent"):
+                nosentdate.append(rel(path))
+            continue
+        unsent.append(rel(path))
+        if not meta.get("to"):
+            unaddressed.append(rel(path))
+        try:
+            days = (today - date.fromisoformat(m.group(1))).days
+        except ValueError:
+            days = 0
+        if days >= 7:
+            stale.append((rel(path), days))
+
+    print(f"  drafts     {len(files)} draft(s) · {len(unsent)} waiting on the owner to send")
+    for f in unaddressed:
+        print(f"               no `to:` — cannot be sent: {f}")
+    for f, d in stale:
+        print(f"               unsent for {d} days: {f}\n"
+              "               → send it, or say why it is not needed and mark it")
+    for f in nosentdate:
+        print(f"               status: sent but no `sent:` date: {f}")
+    for f in badname:
+        print(f"               name is not YYYY-MM-DD-slug.md, so the feed cannot see it: {f}")
+
+
 # ── REPORT ── is there a brief, was it agreed, and is anything in it unsourced? ─
 def report_brief():
     """The brief is the gate `/brief` exists to hold: the owner's yes to a stated
@@ -761,6 +822,7 @@ def main() -> int:
         report_glossary()
         report_lenses()
         report_brief()
+        report_drafts()
         report_explorations()
         report_orphans()
         report_archive_candidates()

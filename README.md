@@ -46,6 +46,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
 | `brain/references/` | the quality bar as images — measured against, never copied |
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
+| `brain/drafts/` | messages written for you to send — before they go out, and after |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
@@ -76,6 +77,10 @@ of work as it goes, so the brain on your phone is never more than one step behin
   attribution, click for the timestamped moment in the recording. Anything the assistant
   worked out rather than heard is marked `^[inferred]` in ochre. The requirement is absolute
   and it costs the reader nothing, which is the only way a requirement like that survives.
+- **Nothing for you is left outside the repo.** A drafted email goes to `brain/drafts/` and
+  shows up on the feed with a button that copies it, ready to paste and send. Not a scratch
+  directory whose path you would have to be told — that is how a written message becomes an
+  unsent one.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its

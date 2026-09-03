@@ -21,6 +21,8 @@ your replies goes to its owning file now:
 - a question raised → `brain/open-questions.md`, with an owner tag: who can answer
 - a decision that needs the owner → `brain/feed-items.md`, stating what it blocks
 - raw thinking not yet routed → `brain/braindumps/`, verbatim
+- a message you wrote for the owner to send → `brain/drafts/`, with `to:` filled in. Never a
+  scratch directory: a draft they cannot find is a draft they never send
 - directions weighed but not chosen → `brain/explorations/`, with a verdict on each.
   If one was picked, that is a decision above, and it links back to the exploration
 
@@ -82,5 +84,5 @@ decisions, insights, or open questions. A `skip` pointer never goes.
 ## 8 · Hand over in five lines or fewer
 
 What moved, what is unrecorded and why, the single next action, and anything the owner owes
-someone else. Write it for the next session — which may be on a phone, with no memory of this
+someone else — **including every draft still waiting to be sent, by name.** Write it for the next session — which may be on a phone, with no memory of this
 one.

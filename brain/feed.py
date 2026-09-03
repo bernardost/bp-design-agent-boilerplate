@@ -441,25 +441,42 @@ def bar_conditions() -> tuple[str, list[dict]]:
     return stage, conds
 
 
-def comms() -> list[dict]:
-    """The external thread from `comms/`, newest first — rendered only if the folder exists."""
+def drafts() -> list[dict]:
+    """Messages written for the owner to send, newest first, from `brain/drafts/`.
+
+    This replaced a `comms/` folder that `feed.py` rendered, nothing documented, and no clone
+    ever created — which is exactly how a drafted email ends up in a scratch directory the
+    owner has no reason to know the path of. One documented home, inside the brain, listed on
+    the page they already read.
+
+    The **body is what gets sent**, verbatim, so the copy button can hand it over unedited.
+    """
+    folder = BRAIN / "drafts"
+    if not folder.exists():
+        return []
     out = []
-    for direction in ("outbound", "inbound"):
-        folder = ROOT / "comms" / direction
-        if not folder.exists():
+    for path in sorted(folder.glob("*.md")):
+        if path.name == "README.md":
             continue
-        for path in folder.glob("*.md"):
-            m = re.match(r"^(\d{4}-\d{2}-\d{2})-(.+)\.md$", path.name)
-            if not m:
-                continue
-            first = ""
-            for ln in path.read_text().splitlines():
-                if ln.startswith("# "):
-                    first = ln[2:].strip()
-                    break
-            title = re.sub(r"\*\*|`", "", first) or m.group(2).replace("-", " ")
-            out.append({"date": m.group(1), "direction": direction, "path": path,
-                        "title": title, "draft": "DRAFT" in path.name})
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})-(.+)\.md$", path.name)
+        if not m:
+            continue
+        text = path.read_text(encoding="utf-8")
+        fm = re.match(r"^---\n(.*?)\n---\n?", text, re.S)
+        meta, body = {}, text
+        if fm:
+            body = text[fm.end():]
+            for ln in fm.group(1).splitlines():
+                k, _, v = ln.partition(":")
+                if _:
+                    meta[k.strip()] = v.strip()
+        out.append({
+            "date": m.group(1), "path": path, "body": body.strip(),
+            "to": meta.get("to", ""), "channel": (meta.get("channel") or "other").lower(),
+            "subject": meta.get("subject") or m.group(2).replace("-", " "),
+            "status": (meta.get("status") or "draft").lower(),
+            "sent": meta.get("sent", ""),
+        })
     return sorted(out, key=lambda c: c["date"], reverse=True)
 
 
@@ -1001,6 +1018,22 @@ a.path:hover code{background:var(--blue-wash)}
 #tip .open{margin-top:11px;padding-top:9px;border-top:1px solid var(--rule-soft);
   font-size:11.5px;color:var(--ink-4)}
 
+/* ── drafts waiting to be sent ───────────────────────────────────────── */
+.draft{padding:19px 0 21px;border-top:1px solid var(--rule)}
+.draft:first-of-type{border-top:0}
+.draft .dmeta{font-family:var(--mono);font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.draft .dmeta .noone{color:var(--red);text-transform:none;letter-spacing:0}
+.draft .dsubject{font-size:18px;font-weight:500;letter-spacing:-.012em;margin-bottom:7px}
+.draft .dpeek{font-size:14.5px;line-height:1.6;color:var(--ink-3);max-width:66ch;
+  margin-bottom:13px}
+.draft .dact{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.draft .dact button{font-family:var(--sans);font-size:13px;padding:7px 13px;
+  border:1px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer}
+.draft .dact button:hover{background:var(--ink);color:var(--paper)}
+.draft .dact button.done{border-color:var(--blue);color:var(--blue);background:var(--paper)}
+.draft .dact .path{font-size:12.5px;color:var(--ink-3)}
+
 /* ── the thread ──────────────────────────────────────────────────────── */
 .thread{display:flex;gap:18px;padding:13px 0;border-top:1px solid var(--rule-soft);
   font-size:15px;align-items:baseline}
@@ -1108,6 +1141,21 @@ document.getElementById('clear').addEventListener('click',()=>{
 });
 tally();
 
+/* a draft's whole body onto the clipboard — the body IS the message, so it pastes unedited */
+document.querySelectorAll('.draft').forEach(d=>{
+  const b=d.querySelector('.copy-draft'), src=d.querySelector('.draft-src');
+  if(!b||!src) return;
+  b.addEventListener('click',async()=>{
+    const text=src.textContent;
+    try{ await navigator.clipboard.writeText(text); }
+    catch(e){ const t=document.createElement('textarea');t.value=text;document.body.append(t);
+              t.select();document.execCommand('copy');t.remove(); }
+    const old=b.textContent; b.textContent='copied — paste it and send';
+    b.classList.add('done');
+    setTimeout(()=>{b.textContent=old;b.classList.remove('done');},2400);
+  });
+});
+
 /* conditions expand */
 document.querySelectorAll('.cond .claim').forEach(c=>{
   c.addEventListener('click',()=>c.closest('.cond').classList.toggle('open'));
@@ -1155,7 +1203,7 @@ def build() -> str:
     g = glossary()
     items = feed_items()
     stage, conds = bar_conditions()
-    thread = comms()
+    thread = drafts()
     now_md = (BRAIN / "now.md").read_text()
     now_md = re.sub(r"^# Now\s*\n", "", now_md)
     now_md = re.sub(r"^\*20.*?\*\s*$", "", now_md, count=1, flags=re.M | re.S)
@@ -1277,20 +1325,42 @@ def build() -> str:
   </details>
 </div>""")
 
-    # ── the client thread ────────────────────────────────────────────────────────────────────
+    # ── messages waiting to be sent ──────────────────────────────────────────────────────────
+    # Unsent first and in full, because an unsent draft is an action the owner owes someone.
+    # Sent ones stay as a quiet list: what we actually told a client is part of the record.
     if thread:
-        rows = []
         today = date.today()
-        for c in thread[:9]:
+        unsent = [c for c in thread if c["status"] != "sent"]
+        sent = [c for c in thread if c["status"] == "sent"]
+        rows = []
+        for i, c in enumerate(unsent):
             days = (today - date.fromisoformat(c["date"])).days
-            tag = "out" if c["direction"] == "outbound" else "in"
-            draft = ' <span class="pill warn">draft, unsent</span>' if c["draft"] else ""
+            age = ("today" if days == 0 else f"{days}d old")
+            stale = ' <span class="pill warn">still unsent</span>' if days >= 7 else ""
+            to = (html.escape(c["to"]) if c["to"]
+                  else '<span class="noone">addressed to nobody</span>')
             rows.append(
-                f'<div class="thread"><div class="d">{c["date"]}</div>'
-                f'<div class="dir {tag}">{tag}</div>'
-                f'<div><a href="{html.escape(str(c["path"]))}">{html.escape(c["title"])}</a>'
-                f'{draft} <span style="color:var(--faint)">· {days}d ago</span></div></div>')
-        out.append('<div class="panel"><div class="kicker">the thread · newest first</div>'
+                f'<div class="draft" data-id="d{i}">'
+                f'<div class="dmeta">{html.escape(c["channel"])} · to {to} · '
+                f'{c["date"]} · {age}{stale}</div>'
+                f'<div class="dsubject">{html.escape(c["subject"])}</div>'
+                f'<div class="dpeek">{html.escape(" ".join(c["body"].split())[:230])}…</div>'
+                f'<div class="dact"><button class="copy-draft">Copy the message</button>'
+                f'<a class="path" href="{html.escape(str(c["path"]))}">'
+                f'open {html.escape(c["path"].name)}</a></div>'
+                f'<pre class="draft-src" hidden>{html.escape(c["body"])}</pre>'
+                f'</div>')
+        for c in sent[:6]:
+            rows.append(
+                f'<div class="thread"><div class="d">{c["sent"] or c["date"]}</div>'
+                f'<div class="dir out">sent</div>'
+                f'<div><a href="{html.escape(str(c["path"]))}">'
+                f'{html.escape(c["subject"])}</a>'
+                f' <span style="color:var(--ink-4)">· {html.escape(c["channel"])}'
+                f'{" · to " + html.escape(c["to"]) if c["to"] else ""}</span></div></div>')
+        kicker = (f"waiting for you to send · {len(unsent)}" if unsent
+                  else "messages · all sent")
+        out.append(f'<div class="panel"><div class="kicker">{kicker}</div>'
                    + "".join(rows) + '</div>')
 
     out.append(f"""</div>
