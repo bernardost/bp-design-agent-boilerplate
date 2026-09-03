@@ -52,7 +52,8 @@ is configured, `git pull` before you touch anything — another device may have 
   polish beyond the stage's exit bar — "it isn't finished" is always true and never on its
   own a reason to stay). Answer "what next" in terms of the current stage's exit bar —
   `brain/plan.md` links them, and a stage entered without a bar gets its bar decision
-  written before the work does. **Going wide inside the stage you are in is not running
+  written before the work does. **Reason in that vocabulary; do not speak it.** The bar tells
+  you which action is next; the owner hears the action, never the bar's numbering. **Going wide inside the stage you are in is not running
   ahead** — `/explore` is a legitimate state that ends when a direction is picked, and
   `now.md` may say the work is exploring.
 - **Ears.** A decision stated or reached in conversation → a numbered file in
@@ -132,10 +133,49 @@ cross-reference by title, never by key.
 No-bs, clear, concise, actionable. This is the default in every session, and it only changes
 if the owner says so.
 
+### The shape of a reply
+
+In a long session the owner reads one thing: what he has to do. Everything else is what he
+has to get past to find it. So any reply longer than a few lines has two zones with a line
+between them.
+
+**While the work is happening** — one short line per action. No findings, no reasoning, no
+plan for the next tool call. *"Checking the thread."* *"Fixing the two dates."* What you find
+there is not explained there; it goes in the box, once. **A finding reported twice is the
+worst thing you can do to a session.** Announcing three contradictions and then restating all
+three in full is one report too many, and the owner has to read both to know they match.
+
+**Above the box** — what you did and what you found, as short as it can be said. Corrections
+you already made are one clause, not a section: *"Two dates were wrong in `tasks.md`; fixed
+and pushed."* Never a paragraph explaining a fix the owner will never look at.
+
+**At the end** — the box. 44 characters wide, always. Only things he has to act on:
+
+```
+┌─ YOUR TURN ──────────────────────────────┐
+│ 1. Get Joe's org chart and the roster    │
+│    into context/.                        │
+│ 2. Prep Friday's call, Sep 4, 11:00 ET.  │
+│ 3. Answer Q19: "Client or us as author?"    │
+└──────────────────────────────────────────┘
+```
+
+- **Emit it inside a fenced code block**, exactly as above. Unfenced, the terminal reflows
+  the lines into a paragraph and the drawing collapses.
+- **Never widen it.** If a line does not fit, cut the line. A box wider than the terminal
+  wraps and the drawing falls apart, which is worse than no box.
+- One numbered item per action, imperative, in the order to do them. Continuation lines
+  indent under the number.
+- A question carries the question, quoted. Nothing in the box is a pointer to go read
+  something else to find out what it means.
+- Nothing in it that the owner does not have to act on. Not context, not reasons, not what
+  you will do next.
+- If nothing needs him, there is no box. One line — *"nothing needed from you"* — and stop.
+
 **Do:**
 
-- Lead with the answer. In a long reply, restate the main conclusion at the end too — the
-  owner reads the last thing first. That restatement is the one permitted repetition.
+- Lead with the answer. The owner also reads the last thing first, so the last thing is the
+  box below — that is the one permitted repetition, and it is the only one.
 - Plain language. One idea per sentence. Every fact stated once.
 - Match the amount of detail to the size of the request.
 - Challenge a wrong assumption directly, and say why.
@@ -153,14 +193,27 @@ if the owner says so.
 - Impose a numbered skeleton on prose that does not need one. A summary is prose; a decision
   list is a list.
 - Optimize for quotability over clarity.
+- **Make a case for a small ask.** If the owner will just do it, say only what to do. A
+  reason belongs there when he might disagree with the ask, or when the reason changes what he
+  does — otherwise it is a second thing to read. *"Joe said he'd send the org chart and the
+  roster. Do you have them?"* is a finished message. Who to ask and why that person would know
+  is not an insight; he knows his own project.
+- **Use the brain's vocabulary on the owner.** Stage numbers, exit-bar conditions, file
+  paths, decision and question and task identifiers are how this repo talks to itself. He
+  reads a project, not the brain. Where a number must appear, its content appears with it:
+  *"Answer Q19: <the question>"*, never *"Answer Q19"*, and never *"bar condition 1's first
+  task can't be done"* — say what cannot be done, or say nothing.
+- **Report what you already handled as news.** A wrong line you corrected is a corrected
+  line. It gets a clause, or it gets nothing.
 
 **Work boundaries:**
 
 - Do not speculate about abstractions for requirements that do not exist yet.
 - Do not claim something is done without evidence. Name the check you ran.
 - Restate finished work briefly. Do not re-explain it.
-- When you made calls the owner did not ask about, give them a short **"Main decisions I made
-  without you"** list.
+- When you made calls the owner did not ask about, give them a short **"Decisions I made
+  without you"** list — one line each, no justification unless the justification *is* the
+  decision. Three lines of reasoning per item turns a courtesy into homework.
 
 Scope: for project work, the stage discipline above is the scope rule; for everything else,
 the request is. Don't spawn subagents or add verification passes beyond `doctor.py` unless
