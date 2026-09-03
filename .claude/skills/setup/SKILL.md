@@ -138,6 +138,10 @@ say when it is worth wrapping, so they never have to guess.
 End with the commands, one line each, in the order they'll first want them. Do not paste the
 whole charter at them.
 
+- `/brief` — the first thing to run once any real context exists. States the project back to
+  you as a page: what I understood, what I still do not know, the plan, and the next steps —
+  with every claim from outside this repo quietly linked to the moment in the recording or
+  thread it came from. **The work does not start until you approve it.**
 - `/braindump` — talk at length, unstructured. Saved verbatim, then routed into decisions,
   insights, tasks and questions. **The one to reach for first.**
 - `/decide <topic>` — capture one decision deliberately, with its context and consequences.
@@ -163,12 +167,25 @@ reached, and `brain/feed.html` draws the brain as a graph of notes and shared ta
 interconnected view needs nothing installed. (It also writes `brain/brain.canvas` for anyone
 who opens `brain/` as an Obsidian vault — optional, and nothing depends on it.)
 
-## 6 · Verify, then hand over
+## 6 · One last answer: does the brief get published?
 
-Run `python3 brain/doctor.py` and `python3 brain/feed.py`, and fix what they report — an
+`brief.publish` in `brain/workspace.toml`. `/brief` always writes `brain/brief.html` locally.
+`true` also publishes it as an artifact — readable on a phone, shareable with a client — and
+that sends whatever the brief quotes to an external service, which is the thing the
+confidential rule governs. Ask once, in one sentence, and record the answer. Default `false`.
+
+## 7 · Verify, then hand over
+
+Run `python3 brain/doctor.py`, `python3 brain/feed.py` and `python3 brain/brief.py`, and
+fix what they report — an
 unfilled placeholder, an unknown tag, a task line that misses the grammar. Then commit, push
 if a remote exists, and report in a few lines: what the project is now called, what got
 written where, what is `wanted` and not connected, and the single next action.
 
 **Do not claim a step you skipped.** If a probe failed or the owner deferred an answer, say
 so and leave the file honest.
+
+Then, if any real context already exists — a `context/` folder, a reachable recording, a
+thread the owner pointed at — say that the next step is `/brief`, and offer to run it now.
+Setup configures the workspace; the brief is what gets the project agreed. A clone that stops
+here has a tidy brain and no shared understanding of what it is for.

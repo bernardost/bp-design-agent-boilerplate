@@ -30,6 +30,7 @@ DEFAULTS: dict = {
                          "blocked-on-external", "bar", "deferred"]},
     "git": {"remote": False, "visibility": "private", "push_each_unit": True},
     "generation": {"route": "", "env_file": ".env.agents"},
+    "brief": {"publish": False},
     "confidential": {"paths": ["context/"]},
 }
 
@@ -112,6 +113,8 @@ GIT_REMOTE = bool(CONFIG["git"]["remote"])
 GIT_VISIBILITY = CONFIG["git"]["visibility"]
 PUSH_EACH_UNIT = bool(CONFIG["git"]["push_each_unit"])
 CONFIDENTIAL_PATHS = CONFIG["confidential"].get("paths") or []
+# Publishing the brief sends what it quotes to an external service. False until the owner says.
+BRIEF_PUBLISH = bool(CONFIG["brief"].get("publish"))
 # "" means the project generates no assets; the scripts test for None.
 GENERATION_ROUTE = CONFIG["generation"].get("route") or None
 GENERATION_ENV_FILE = CONFIG["generation"].get("env_file") or ".env.agents"

@@ -65,6 +65,58 @@ SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md"
 
 
 # ---------------------------------------------------------------------------------------------
+# Citations — where a claim came from, one hover away and never in the sentence's way
+# ---------------------------------------------------------------------------------------------
+#
+# The brain's source tag, written inline in any markdown file:
+#
+#     The client wants SSO before launch. ^[Dana · kickoff call · 2026-08-11 14:20](https://meetings…)
+#     The roster is stale. ^[Ravi · #client-portal · 2026-08-28]
+#     Two more workstreams are coming. ^[inferred]
+#
+# It renders as a superscript numeral, which is the entire point: `AGENTS.md` requires every
+# claim about what a client said to carry who said it and when, and a brief that prints that
+# provenance inline becomes unreadable — the owner ends up reading the citations instead of
+# the argument. So the claim stays clean, the marker is 0.62em at 62% opacity, and the source
+# is on hover, on click, and in the list at the foot of the page.
+#
+# `^[inferred]` is not numbered. It is the charter's anti-laundering mark, and it renders as
+# its own word in ochre so an unsourced claim cannot pass as a sourced one.
+
+CITES: list[dict] = []
+_CITE_IX: dict[str, int] = {}
+
+
+def cite_reset() -> None:
+    """Numbering is per page. Every builder calls this before it renders anything."""
+    CITES.clear()
+    _CITE_IX.clear()
+
+
+def cite_n(label: str, url: str) -> int:
+    """The number for one source, reusing it when the same source is cited twice."""
+    key = f"{label}\x1f{url}"
+    if key not in _CITE_IX:
+        CITES.append({"n": len(CITES) + 1, "label": label, "url": url})
+        _CITE_IX[key] = len(CITES)
+    return _CITE_IX[key]
+
+
+def cite_list_html() -> str:
+    """The reference list. Empty string when nothing on the page was cited, so a page with no
+    claims does not grow an empty apparatus."""
+    if not CITES:
+        return ""
+    rows = []
+    for c in CITES:
+        label = html.escape(c["label"])
+        body = (f'<a href="{c["url"]}" target="_blank" rel="noreferrer">{label}</a>'
+                if c["url"] else f'{label} <span class="nolink">no link recorded</span>')
+        rows.append(f'<li id="src-{c["n"]}"><span class="n">{c["n"]}</span>{body}</li>')
+    return f'<ol class="srclist">{"".join(rows)}</ol>'
+
+
+# ---------------------------------------------------------------------------------------------
 # The glossary — every reference on the page defines itself
 # ---------------------------------------------------------------------------------------------
 
@@ -229,6 +281,28 @@ def _inline(text: str, g: dict) -> str:
         return lift(f"<code>{inner}</code>")
     out = re.sub(r"`([^`]+)`", code, out)
 
+    # `^[who · where · when](url)` — a source tag. Must run before the plain-link rule below,
+    # which would otherwise eat the bracket pair and leave a stray caret in the prose.
+    def src(m):
+        label, url = m.group(1), (m.group(2) or "")
+        if label.strip().lower() == "inferred":
+            return lift('<span class="cite inferred" title="inferred — no source recorded, '
+                        'and not to be cited as one">inferred</span>')
+        n = cite_n(label, url)
+        # `text` was escaped on entry, so `url` and `label` already are: escaping again here
+        # would turn a `&` in a timestamped link into `&amp;amp;`.
+        href = url or f"#src-{n}"
+        return lift(f'<a class="ref cite" href="{href}" '
+                    + ('target="_blank" rel="noreferrer" ' if url else "")
+                    + f'data-kind="source" data-title="{label}" data-note="" '
+                    + 'data-gloss="' + ("Opens the source at the moment quoted."
+                                          if url else
+                                          "No link recorded — this attribution is all the "
+                                          "record has for the claim.") + '" '
+                    + f'data-path="{url or "the source list at the foot of the page"}">'
+                    ) + str(n) + lift("</a>")
+    out = re.sub(r"\^\[([^\]]+)\](?:\(([^)\s]+)\))?", src, out)
+
     def link(m):
         return lift(f'<a href="{html.escape(m.group(2))}" target="_blank" '
                     f'rel="noreferrer">') + m.group(1) + lift("</a>")
@@ -259,6 +333,20 @@ def render_md(text: str, g: dict) -> str:
             parts.append(f"<h{level}>{_inline(h.group(2), g)}</h{level}>")
             continue
         lines = block.splitlines()
+        if all(re.match(r"^\s*\d+[.)]\s+", ln) or ln.startswith("  ") for ln in lines) \
+                and re.match(r"^\s*\d+[.)]\s+", lines[0]):
+            items, cur = [], ""
+            for ln in lines:
+                if re.match(r"^\s*\d+[.)]\s+", ln):
+                    if cur:
+                        items.append(cur)
+                    cur = re.sub(r"^\s*\d+[.)]\s+", "", ln)
+                else:
+                    cur += " " + ln.strip()
+            if cur:
+                items.append(cur)
+            parts.append("<ol>" + "".join(f"<li>{_inline(i, g)}</li>" for i in items) + "</ol>")
+            continue
         if all(re.match(r"^\s*[-*]\s+", ln) or ln.startswith("  ") for ln in lines) \
                 and re.match(r"^\s*[-*]\s+", lines[0]):
             items, cur = [], ""
@@ -732,7 +820,7 @@ h3{font-size:23px;line-height:1.26;letter-spacing:-.021em;text-wrap:balance}
 h4{font-size:18px;letter-spacing:-.012em}
 h5{font-size:15px;color:var(--ink-3)}
 p{margin:0 0 1.05em;max-width:68ch}
-ul{margin:0 0 1.05em;padding-left:1.15em}
+ul,ol{margin:0 0 1.05em;padding-left:1.35em}
 li{margin:.34em 0;max-width:66ch}
 strong,b{font-weight:600}
 em,i{font-style:italic}
@@ -877,6 +965,27 @@ a.ref{color:var(--blue);text-decoration:none;
   border-bottom:1px solid rgba(18,64,143,.32);cursor:help}
 a.ref:hover{background:var(--blue-wash);border-bottom-color:var(--blue)}
 span.ref.dead{color:var(--ink-4);border-bottom:1px dotted var(--ink-4)}
+
+/* Citations. Small, faint, blue: present for anyone who wants to check a claim, invisible to
+   anyone reading the argument. The rule this implements is in `brain/sources.md` — a claim
+   about what a client said carries who said it, and a brief that carries it inline is a brief
+   nobody finishes. Deliberately no background and no underline, unlike a.ref, because a
+   marker that highlights on hover next to every second sentence turns the page into a rash. */
+a.ref.cite{font-family:var(--mono);font-size:.6em;font-weight:500;vertical-align:.45em;
+  color:var(--blue);opacity:.6;border:0;background:none;padding:0 .06em;margin-left:.1em;
+  text-decoration:none;transition:opacity .14s}
+a.ref.cite:hover{opacity:1;background:none;border:0}
+.cite.inferred{font-family:var(--mono);font-size:.64em;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ochre);vertical-align:.35em;margin-left:.28em;
+  cursor:help;border-bottom:1px dotted var(--ochre)}
+
+ol.srclist{list-style:none;padding:0;margin:0;counter-reset:none}
+ol.srclist li{display:flex;gap:14px;padding:9px 0;border-top:1px solid var(--rule-soft);
+  font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+ol.srclist li:first-child{border-top:0}
+ol.srclist .n{flex:0 0 22px;font-family:var(--mono);font-size:11.5px;color:var(--ink-4);
+  padding-top:2px}
+ol.srclist .nolink{color:var(--ink-4);font-size:12px;margin-left:6px}
 a.path{color:var(--blue);text-decoration:none}
 a.path:hover code{background:var(--blue-wash)}
 #tip{position:fixed;z-index:99;max-width:392px;background:var(--paper);color:var(--ink);
@@ -1004,6 +1113,11 @@ document.querySelectorAll('.cond .claim').forEach(c=>{
   c.addEventListener('click',()=>c.closest('.cond').classList.toggle('open'));
 });
 
+"""
+
+# The tooltip is the only interactive part a second page needs, so it is its own constant —
+# `brief.py` imports it rather than keeping a copy that can drift.
+TIP_JS = """
 /* reference tooltips — hover on a pointer, tap on touch */
 const tip=document.getElementById('tip');
 let pinned=null;
@@ -1033,6 +1147,8 @@ document.addEventListener('click',e=>{
   if(pinned&&!e.target.closest('a.ref')){pinned=null;tip.style.display='none';}
 });
 """
+
+JS = JS + TIP_JS
 
 
 def build() -> str:

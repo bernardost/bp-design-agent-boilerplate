@@ -56,6 +56,16 @@ is configured, `git pull` before you touch anything — another device may have 
   you which action is next; the owner hears the action, never the bar's numbering. **Going wide inside the stage you are in is not running
   ahead** — `/explore` is a legitimate state that ends when a direction is picked, and
   `now.md` may say the work is exploring.
+- **Ground it before you move it.** When the first real context lands — a kickoff recording,
+  a thread, a folder of client material, a long braindump — the next thing you produce is
+  **the brief**, not the work: *what I understood · what I still do not know · the shape of
+  the work · what I would do next*. Run `/brief`; it writes `brain/project-brief.md`, fills
+  the unknowns and the plan, and renders `brain/brief.html` for the owner to read and
+  approve. **Do not start stage-1 work off a brief nobody has agreed to** — a project moving
+  on your private reading of it is the expensive failure, and it only surfaces once a
+  deliverable is aimed at the wrong thing. Every claim in it that came from outside this repo
+  carries a source tag (`brain/sources.md` owns the format); anything you worked out rather
+  than heard is marked `^[inferred]`.
 - **Ears.** A decision stated or reached in conversation → a numbered file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -89,6 +99,8 @@ is configured, `git pull` before you touch anything — another device may have 
   decisions → `brain/decisions/` · insights → `brain/insights/` · questions →
   `brain/open-questions.md` (with an owner tag: who can answer) · tasks → `brain/tasks.md` ·
   current state → `brain/now.md` · the stage arc and each stage's exit bar → `brain/plan.md` ·
+  **the agreed understanding of the project, and the owner's approval of it, → the `Status:`
+  line in `brain/project-brief.md`** ·
   reviews → `brain/reviews/` · decisions awaiting the owner → `brain/feed-items.md` · the tag
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
   `brain/glossary.md`** · what "good" means here, one file per domain →
@@ -114,7 +126,9 @@ is configured, `git pull` before you touch anything — another device may have 
 - **A correction is not done until the grep is clean:** propagate it the same turn, fix every
   live hit, paste the grep showing zero hits outside tombstones.
 - **Label evidence, never launder it:** claims about what a client or stakeholder said carry
-  who said it and when, or are marked `inferred`. Confident inventions are the main error
+  who said it and when, or are marked `inferred`. In the brain's markdown that is one inline
+  form, `^[who · where · when](link)` — rendered as a faint superscript numeral, so the
+  requirement costs the reader nothing (`brain/sources.md`). Confident inventions are the main error
   source. Anything pulled from Slack, a meeting recording, or email carries its source and
   date on the line — and a name or codename you had to decode goes to `brain/glossary.md`,
   which is where a guess would otherwise harden into a fact.
@@ -240,13 +254,19 @@ file's taste for the project's, which is exactly the safe average good design ha
 - **Colour carries intent only** — committing is ink, discarding is the one red on the page,
   references are the one habitual blue.
 
+- **Evidence is present and quiet.** Where a page states something that came from outside
+  this repo, the source is one hover away and never in the sentence — a faint superscript
+  numeral, the full attribution listed at the foot. A page that prints its provenance inline
+  is a page nobody finishes, and a page with no provenance at all is one nobody can check.
+
 The standard to hold it to: *an architecture magazine, not a generic AI-generated dark-mode
 dashboard.* It is an interface for consuming information with attention, and it should be
 interesting to look at. Ask before departing from this; do not split the difference.
 
 ## Commands (project skills)
 
-`/setup` (first run, and re-runnable) · `/braindump` (dump, saved verbatim, then routed) ·
+`/setup` (first run, and re-runnable) · **`/brief` (state the project back and get it
+approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
 `/decide <topic>` (capture a decision) · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
 `brain/lenses/`) · `/briefing` (pull the watched sources) · **`/explore` (go wide before

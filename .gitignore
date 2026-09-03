@@ -4,8 +4,9 @@ __pycache__/
 .venv/
 venv/
 
-# Generated projections — rebuild with `python3 brain/feed.py` / `python3 brain/spread.py`
+# Generated projections — rebuild with `python3 brain/feed.py` / `brief.py` / `spread.py`
 brain/feed.html
+brain/brief.html
 brain/explorations/*.html
 
 # If the project acquires confidential source material, keep it out from day one,

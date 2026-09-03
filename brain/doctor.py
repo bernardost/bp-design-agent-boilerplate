@@ -520,6 +520,67 @@ def report_config():
         print(f"  config     {PROJECT_NAME} · {tr} · remote {'on' if GIT_REMOTE else 'off'}")
 
 
+# ── REPORT ── is there a brief, was it agreed, and is anything in it unsourced? ─
+def report_brief():
+    """The brief is the gate `/brief` exists to hold: the owner's yes to a stated
+    understanding of the project, before the work advances on an unstated one.
+
+    Three things rot here, and none of them is a rule without exceptions.
+
+    A brief with no `Status:` line has never been put in front of anyone. An *approved* brief
+    naming no decision is a verbal yes, which the record does not keep. And a section of prose
+    carrying no `^[…]` source tag is a claim about a client with nothing behind it — which is
+    the charter's "label evidence, never launder it" rule, made countable.
+    """
+    path = BRAIN / "project-brief.md"
+    if not path.exists():
+        print("  brief      brain/project-brief.md is missing")
+        return
+    text = path.read_text(encoding="utf-8")
+
+    m = re.search(r"^Status:\s*(.+)$", text, re.M)
+    if not m:
+        print("  brief      no Status: line — nothing records whether it was ever agreed\n"
+              "               → add `Status: draft` under the title, then /brief")
+    elif m.group(1).strip().lower().startswith("approved"):
+        if not re.search(r"\[\[\d{4}", m.group(1)):
+            print("  brief      approved but names no decision — a verbal yes the record "
+                  "does not keep\n"
+                  "               → Status: approved YYYY-MM-DD · [[NNNN-slug]]")
+        else:
+            print(f"  brief      {m.group(1).strip()}")
+    else:
+        print(f"  brief      {m.group(1).strip()} — awaiting the owner")
+
+    # Sections holding real prose but no attribution, and sections still holding the template's
+    # own parenthetical prompt. Both are printed by name so there is something to act on.
+    unsourced, unwritten = [], []
+    for sec in re.finditer(r"^##\s+(.+?)\s*\n(.*?)(?=^##\s|\Z)", text, re.M | re.S):
+        name, body = sec.group(1).strip(), sec.group(2).strip()
+        if not body or re.fullmatch(r"\*\(.*?\)\*", body, re.S):
+            unwritten.append(name)
+        elif "^[" not in body:
+            unsourced.append(name)
+    if unwritten:
+        print(f"               {len(unwritten)} section(s) unwritten: {', '.join(unwritten)}")
+    if unsourced:
+        print(f"               {len(unsourced)} section(s) with no source tag: "
+              f"{', '.join(unsourced)}\n"
+              "               → ^[who · where · when](link), or ^[inferred] if it is yours")
+
+    page = BRAIN / "brief.html"
+    if not page.exists():
+        if not IS_TEMPLATE:
+            print("               page not rendered — python3 brain/brief.py")
+    else:
+        stale = [f for f in ("project-brief.md", "open-questions.md", "plan.md", "tasks.md")
+                 if (BRAIN / f).exists()
+                 and (BRAIN / f).stat().st_mtime > page.stat().st_mtime]
+        if stale:
+            print(f"               page STALE behind {', '.join(stale)} — "
+                  "python3 brain/brief.py")
+
+
 # ── REPORT ── has the page been regenerated since the files moved? ────────────
 def report_feed():
     """The page is a projection. Stale is not a failure — it is a projection, and it is
@@ -699,6 +760,7 @@ def main() -> int:
         report_config()
         report_glossary()
         report_lenses()
+        report_brief()
         report_explorations()
         report_orphans()
         report_archive_candidates()

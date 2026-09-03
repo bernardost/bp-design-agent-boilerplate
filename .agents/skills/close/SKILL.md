@@ -57,10 +57,15 @@ judgment of whether it holds.
 python3 brain/doctor.py
 python3 brain/feed.py
 python3 brain/spread.py
+python3 brain/brief.py
 ```
 
 Fix every FAIL; read the reports and act on the ones that matter — an unknown tag, a stale
 page, an unfilled config answer. Do not report a passing run you did not see.
+
+Two of those reports are about the brief, and both mean the same thing: the owner has not
+agreed to something the work is running on. A brief still `draft` after the work has moved,
+or sections carrying no source tag, is worth a line in the hand-over rather than a silent pass.
 
 ## 6 · Commit and push
 

@@ -48,9 +48,10 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
+| `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
-| `.claude/skills/` | `/setup` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -66,6 +67,15 @@ of work as it goes, so the brain on your phone is never more than one step behin
   SVG graph. Stdlib only, self-contained, nothing uploaded. Because tags and `[[links]]` are
   also what Obsidian reads, opening `brain/` as a vault works too, and a `brain.canvas` is
   written for it; nothing depends on either.
+- **Nothing starts until the brief is agreed.** Once the first context lands, `/brief` states
+  the project back as a page — what was understood, what is still unknown and who can answer
+  it, the stage arc, the next steps — and waits for a yes. The failure it prevents is the
+  expensive one: work advancing for weeks on the assistant's private reading of the project.
+- **Evidence is present and quiet.** A claim that came from outside the repo carries
+  `^[who · where · when](link)`, which renders as a faint superscript numeral — hover for the
+  attribution, click for the timestamped moment in the recording. Anything the assistant
+  worked out rather than heard is marked `^[inferred]` in ochre. The requirement is absolute
+  and it costs the reader nothing, which is the only way a requirement like that survives.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
@@ -85,5 +95,5 @@ of work as it goes, so the brain on your phone is never more than one step behin
 
 ## Requirements
 
-Python 3 for the two scripts — standard library only, no dependencies. Works on a stock macOS
+Python 3 for the scripts — standard library only, no dependencies. Works on a stock macOS
 `python3`.

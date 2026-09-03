@@ -49,6 +49,14 @@ route = ""
 # shape of workload that empties an uncapped key.
 env_file = ".env.agents"
 
+[brief]
+# `/brief` renders `brain/brief.html` — the page the owner reads and approves before the work
+# moves. Publishing it as an artifact makes it readable on a phone and shareable with a
+# client; it also sends whatever the brief quotes to an external service, which is exactly
+# what the confidential rule below governs. Recording the answer here IS the owner's say-so,
+# so it is not asked every time.
+publish = false                    # true = also publish the page as an artifact and hand over the link
+
 [confidential]
 # Directories holding client or third-party material. Kept out of git from day one, and
 # read-only to the assistant when they are source material from outside.
