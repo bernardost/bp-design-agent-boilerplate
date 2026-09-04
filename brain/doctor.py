@@ -742,6 +742,12 @@ def report_now_freshness():
     next device — reads first, so the risk is not that it is wrong but that the work moved
     after it was last written. Reported, never enforced: mid-session it is *expected* to
     lag, and the fix is `/close`."""
+    # In the boilerplate itself `now.md` is a placeholder a clone fills in, so it can never be
+    # "fresh" and this report would advise /close forever — which is how a report teaches you
+    # to skip reading the reports.
+    if IS_TEMPLATE:
+        print("  now.md     placeholder — the template ships blank; a clone writes it at /setup")
+        return
     dates = _last_touched()
     now_rel = rel(BRAIN / "now.md")
     now_date = dates.get(now_rel)

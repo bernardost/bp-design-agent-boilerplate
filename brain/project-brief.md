@@ -4,7 +4,7 @@ Status: draft
 
 *Stable facts. Update only when the engagement itself changes. Volatile state lives in
 `now.md`. `Status:` above is the owner's approval — `draft` until they say yes, then
-`approved YYYY-MM-DD · [[NNNN-slug]]` naming the decision that recorded it. Every claim from
+`approved YYYY-MM-DD` followed by a wiki-link to the numbered decision that recorded it. Every claim from
 outside this repo carries a source tag; the format is in `brain/sources.md`. Render the page
 with `python3 brain/brief.py`.*
 
