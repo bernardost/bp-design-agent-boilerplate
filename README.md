@@ -52,6 +52,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
+| `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
 | `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath

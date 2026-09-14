@@ -93,11 +93,12 @@ is configured, `git pull` before you touch anything — another device may have 
   that file — concede or defend, explicitly. Silent compliance is not a response.
 - **Close the loop** with `/close` before ending any session that moved the work: append to
   owning files → update `tasks.md` → **rewrite `now.md` from scratch, never edit it**
-  (rewriting is what enforces the one-screen limit) → `python3 brain/doctor.py` →
-  regenerate `brain/feed.html` (which also draws the brain as a graph, and writes
-  `brain/brain.canvas` for anyone who opens `brain/` as an Obsidian vault) and any
-  exploration page with `brain/spread.py` → commit and push →
-  push the tracker projection.
+  (rewriting is what enforces the one-screen limit) → `python3 brain/render.py`, which lints
+  and rebuilds every projection in one command: `feed.html` (which also draws the brain as a
+  graph, and writes `brain.canvas` for anyone who opens `brain/` as an Obsidian vault), the
+  exploration pages, and `brief.html` → commit and push → push the tracker projection.
+  **Closing is minutes, not a second session** — push-as-you-go means most of it is already
+  on disk, and a close that outlasts the work it records is one that gets skipped.
 
 ## Record-keeping invariants (doctor.py enforces what it can)
 

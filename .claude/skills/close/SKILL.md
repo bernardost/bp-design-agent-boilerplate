@@ -11,6 +11,12 @@ this, and it is one word so it never gets skipped.
 
 Work in this order. It is a sequence, not a menu.
 
+**It is not eight sessions of work, either.** Push-as-you-go means most of what follows is
+already on disk: step 1 catches the remainder, it does not re-derive the session. Steps 1 to 4
+write to four different files — read them in one batch, write what each needs, and do not
+narrate a step whose answer is "nothing". The whole close is minutes, and a close that takes
+longer than the work it is recording is a close that gets skipped.
+
 ## 1 · Route what is still only in the conversation
 
 Scan back over the session. Anything decided, realized, asked, or done that exists only in
@@ -56,11 +62,13 @@ judgment of whether it holds.
 ## 5 · Lint and render
 
 ```
-python3 brain/doctor.py
-python3 brain/feed.py
-python3 brain/spread.py
-python3 brain/brief.py
+python3 brain/render.py
 ```
+
+That is `doctor.py`, `feed.py`, `spread.py` and `brief.py` in one process — the same four
+reports under labelled rules, exiting non-zero on a doctor FAIL. Each still runs alone when
+that is what you want (`/explore` calls `spread.py`, `/brief` calls `brief.py --open`); this
+is the batch a close needs, as one command rather than four.
 
 Fix every FAIL; read the reports and act on the ones that matter — an unknown tag, a stale
 page, an unfilled config answer. Do not report a passing run you did not see.
@@ -71,9 +79,9 @@ or sections carrying no source tag, is worth a line in the hand-over rather than
 
 ## 6 · Commit and push
 
-If `git.remote` is true in `brain/workspace.toml`, commit and push. This is already the
-standing behavior for each unit of work; here it is the backstop. The message says what moved,
-not "update files".
+If `git.remote` is true in `brain/workspace.toml`, commit and push — one command, not four.
+This is already the standing behavior for each unit of work; here it is the backstop, so most
+of the time there is little left to send. The message says what moved, not "update files".
 
 ## 7 · Project changed tasks to the tracker
 
