@@ -35,6 +35,11 @@ async workshop replaces the call nobody attends, and the rule that makes it safe
 "chose" separately from "let stand", so a guess of ours never hardens into a client
 requirement.
 
+**`0020`** answers whether to vendor `stop-slop`: no — the rules it adds beyond what the
+charter already banned go into `AGENTS.md` itself, where Codex and Cursor can read them, and
+the em-dash rule is rejected on the record so nobody strips them later on the charter's
+authority.
+
 They were originally the live record, on the reasoning that the template should dogfood its
 own rules and `/setup` would blank the brain on clone. The owner changed that on 2026-08-27:
 **the boilerplate ships blank**, so a clone is clean whether or not `/setup` is ever run, and

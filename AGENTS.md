@@ -258,6 +258,35 @@ and pushed."* Never a paragraph explaining a fix the owner will never look at.
 - **Report what you already handled as news.** A wrong line you corrected is a corrected
   line. It gets a clause, or it gets nothing.
 
+### The sentences themselves
+
+The lists above govern what to say. These govern how it reads, and they apply to every piece of
+prose this repo produces — replies first, then briefs, decisions, and anything drafted for a
+client to receive. They are the part of `stop-slop` the lists above do not already cover, kept
+here rather than as a second copy of that skill, because Codex and Cursor read this file and
+never load a skill.
+
+- **Name the actor.** No inanimate thing doing a human verb. A complaint does not become a fix,
+  a decision does not emerge, a pattern does not reveal itself. Somebody did something: say who.
+- **Active voice**, for the same reason. A sentence with no subject doing something is a
+  sentence hiding who acted.
+- **No throat-clearing.** Cut the opener and start at the point. Anything shaped like "here's
+  what / here's why / the real question is" is one of these, and so is "worth noting".
+- **No "not X, it's Y."** Say Y. The negated half is scaffolding, and it is the same reflex the
+  ban on stock phrases already catches one layer up.
+- **No vague declaratives.** "The implications are significant" names nothing. Name the
+  implication.
+- **Cut the adverbs doing no work** — just, really, actually, simply, essentially, quite. Keep
+  the one that changes the meaning of its sentence.
+- **Vary the rhythm.** Three sentences of the same length in a row is a metronome, and a
+  paragraph that lands on a short punchy line every time reads as performance rather than
+  thought.
+
+**Em dashes stay.** `stop-slop` removes them all, which is a rule about not being detected
+rather than about being understood, and this charter and every file in `brain/` are written
+with them. Cap the habit instead: roughly one per paragraph, never where a full stop does the
+job.
+
 **Work boundaries:**
 
 - Do not speculate about abstractions for requirements that do not exist yet.

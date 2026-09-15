@@ -94,6 +94,11 @@ of work as it goes, so the brain on your phone is never more than one step behin
 - **Focus mode is assumed.** The charter is written for Claude Code's `/focus`, where you see
   only the final message of each turn — so that message carries everything, and nothing
   important lives in a tool call you never opened. `/focus` toggles it off.
+- **The prose rules live in the charter, not in a skill.** The parts of `stop-slop` the
+  charter did not already ban — name the actor, active voice, no throat-clearing, no "not X,
+  it's Y", no vague declaratives — are written into `AGENTS.md`, so Codex and Cursor get them
+  too. Em dashes are kept on purpose; that rule is about not being detected, not about being
+  understood.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
