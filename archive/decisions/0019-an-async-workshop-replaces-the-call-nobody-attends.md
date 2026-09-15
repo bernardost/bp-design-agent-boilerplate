@@ -34,7 +34,13 @@ Three things carry from the instance and are non-negotiable in the skill:
    Without the flag, every default they skipped past hardens into a client requirement — which
    is the failure mode this workspace's evidence rule exists to prevent, arriving by a new
    route.
-3. **The outline is cut before anything is built**, and the phone run happens before anything
+3. **Show, don't ask, and use his words on the cards.** Ranking, a pick-three, a draggable
+   2×2 with the peers already plotted, sitemaps as small trees in tabs, a wall of real
+   screenshots, sliders seeded where we think they sit. A question he has to picture in his
+   head is one he postpones, and the wording on every card comes from the recordings rather
+   than from our vocabulary, so he is recognizing a sentence instead of translating one. Plain
+   language, one idea per screen, no preamble.
+4. **The outline is cut before anything is built**, and the phone run happens before anything
    is sent. Seven of the instance's fixes were invisible in a headless walk at phone width and
    obvious in the owner's hand.
 

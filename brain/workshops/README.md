@@ -22,7 +22,7 @@ For: <name, role> · Sent: YYYY-MM-DD · Lives at: <url>
 
 ## Chapter 1 — <name>
 ### <screen title>
-Kind: single | checklist | rank | sliders | matrix | wall | fields | text
+Kind: rank | pick | slider | matrix | tabs | wall | flow | sentences | single | checklist | text
 Ask: <the question, in the words the stakeholder will read>
 Our assumption: <the option that arrives selected, and why we believe it>
 ^[who · where · when](link)   ← if the assumption came from something they said

@@ -43,9 +43,9 @@ screen two.
    wait for a moment where taste is the subject.
 6. **A tick must always add something.** "What should stay unsaid, all pre-ticked" reads as a
    trap. Invert it: "what may this say", nothing ticked. Ticking adds, never removes.
-7. **Taste questions get pictures; brief questions get words.** A peer wall, a 2×2, competing
-   sitemaps — those are visual because the answer is visual. A framing question is three cards
-   of prose because the answer is a sentence.
+7. **Show, don't ask.** A question the stakeholder has to picture in his head is a question
+   he postpones. Draw the thing and let him move, rank, tick or drag. The section below is
+   the working part of this rule.
 8. **Later screens read earlier answers.** Ask "what should each visitor take away?" using the
    audiences he ranked three screens ago, with a guess per audience. Building on his own
    answers is what makes it a workshop rather than a form.
@@ -59,6 +59,47 @@ screen two.
 12. **Phone first.** He will open it in a taxi. Every drawing survives 390 pixels or it is not
     in the build.
 13. **Never call it a quiz where he can see it.** To him it is the brief, in questions.
+
+## Make it answerable — the visual half
+
+This is where an async workshop is won or lost. The written outline is the content; the
+controls are what make answering cost seconds instead of thought. **A screen that could be a
+picture and is a paragraph instead is a screen he skips.**
+
+**Match the control to the shape of the answer.** These are the ones that earn their place, and
+each came from a board zone that worked in the room first:
+
+| The answer is… | The control | Looks like |
+|---|---|---|
+| an order of importance | **rank** — drag the cards, cross out the ones that don't apply | audience cards, each with one line explaining who they are |
+| a shortlist from many | **pick three** — a grid of stickies, three slots | "what must this do?" with the rest left as nice-to-have |
+| a position between two poles | **a 2×2 with a draggable marker**, peers already plotted on it | where the company sits among the people it will be compared to |
+| a reaction to alternatives | **tabs of drawn options**, one on screen at a time | three sitemaps as small trees, not three columns of bullets |
+| taste | **a wall of real screenshots**, tap what feels right | peer sites and outside references, each with one line of why it is there |
+| a word between two words | **a slider**, both ends labelled, seeded where we think it sits | discreet ←→ loud, investor ←→ operator |
+| a sequence | **a flow of boxes he can rewrite** | what a visitor lands on, reads, believes, then does |
+| a prohibition | **finish-the-sentence cards**, some already filled | "this must never…" with four of ours and a blank |
+| a sentence only he has | **one short text field**, and only here | the thesis line, the relationship in his words |
+
+**Seed every control with our guess, visibly.** A slider starts where we think it sits. A rank
+starts in an order. Stickies arrive with our words on them, sourced where they came from
+something he said. He is correcting, not composing, and correcting is fast.
+
+**Use his words on the cards.** Take the option wording, the brand adjectives and the slider
+pairs from the recordings and threads, not from your own vocabulary — and tag them, so he
+recognizes his own sentence instead of decoding ours. A guess in our language is a guess he has
+to translate before he can agree with it.
+
+**Write it the way you would say it.** Plain, non-technical, one idea per screen. No preamble —
+the title and one line of setup, then the control. Never the word "quiz", never our internal
+vocabulary (stage, bar, lens, exploration, IA), never a term of art where a plain one exists.
+If a screen needs a paragraph to explain what it is asking, the question is wrong, not the
+explanation.
+
+**Every drawing is built for 390 pixels.** Trees and 2×2s are SVG on a fixed viewBox, scaled,
+with labels flipped where they would run off the edge. Three things side by side become tabs.
+A wall of screenshots takes the full width and goes large — a desktop with one small image per
+row is a wasted screen.
 
 ## The run
 
