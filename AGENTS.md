@@ -7,6 +7,11 @@ judgment where judgment works, hard rules only where a failure taught us one.
 **This is the charter, and it is the only one.** `CLAUDE.md` imports this file so Claude Code
 reads it; Codex and Cursor read `AGENTS.md` directly. Never write a second copy.
 
+It is the only **project-level** charter, which is the whole of what it claims. Platform safety
+rules, what the owner asks for in the moment, and what the host actually permits all sit above
+it. Where this file and one of those disagree, this file is the one that yields — and says so
+rather than quietly working around it.
+
 > **Fresh clone?** Run `/setup`. It interviews the owner, writes `brain/workspace.toml` and
 > the current-state files, clears the template's own brain, and ends with the tour of the
 > commands. Nothing else here needs hand-editing first.
@@ -37,13 +42,22 @@ We say **decision**, not "ADR". Same discipline, no jargon.
 
 ## Orient first
 
-At session start, before anything substantive: `brain/workspace.toml` (**which projects exist,
-and their keys** — everything below depends on knowing them) → `brain/now.md` →
-`brain/tasks.md` (**never the tracker** — it's a projection) → `brain/plan.md` (**always know
-which stage each project sits in**, because two strands are rarely at the same one — `now.md`
-says which, and `plan.md` says what ends it) → `brain/project-brief.md` → the two or three
-newest files in `brain/decisions/`. Then `python3 brain/doctor.py`. If a remote
-is configured, `git pull` before you touch anything — another device may have moved the tree.
+**Orienting is for work that changes the project, not for every message.** A question about
+how the workspace works, a request to explain a file, a one-line lookup: answer it. Reading six
+files and running a linter first buys the owner nothing and costs him the wait. The full orient
+runs before you write to the brain, change a deliverable, or say where the work stands.
+
+When it runs, in this order: `brain/workspace.toml` (**which projects exist, and their keys** —
+everything below depends on knowing them) → `brain/now.md` → `brain/tasks.md` (**never the
+tracker** — it's a projection) → `brain/plan.md` (**always know which stage each project sits
+in**, because two strands are rarely at the same one — `now.md` says which, and `plan.md` says
+what ends it) → `brain/project-brief.md` → the two or three newest files in `brain/decisions/`.
+Then `python3 brain/doctor.py`.
+
+**Sync before writing, not before reading, and never onto a dirty tree.** With a remote
+configured: `git status` first. Clean → `git pull`, because another device may have moved the
+tree. Dirty → say what is uncommitted and deal with that first; a pull onto work in progress is
+how a session loses it. Read-only work needs none of this.
 
 ## Gotchas
 

@@ -89,6 +89,12 @@ If `git.remote` is true in `brain/workspace.toml`, commit and push — one comma
 This is already the standing behavior for each unit of work; here it is the backstop, so most
 of the time there is little left to send. The message says what moved, not "update files".
 
+## 6b · If you changed anything in `brain/*.py`
+
+Run `python3 brain/test_brain.py`. `doctor.py` lints the content of the brain and has nothing
+to say about the tools that render it — a renderer that drops every `[[link]]` passes the
+linter cleanly. CI runs this too, so the only thing skipping it buys you is finding out later.
+
 ## 7 · Project changed tasks to the tracker
 
 If a tracker is configured, push only the `tasks.md` lines that changed, and write the returned
