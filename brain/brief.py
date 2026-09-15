@@ -69,7 +69,7 @@ def status() -> tuple[str, str]:
     in a second file — so it is one line in the brief itself:
 
         Status: draft
-        Status: approved 2026-09-04 · [[0004-the-brief-is-approved]]
+        Status: approved 2026-09-04 · [[the-brief-is-approved]]
 
     An approved brief that names no decision is a verbal yes, which the record does not keep.
     `doctor.py` reports that; this page shows it.
@@ -154,10 +154,13 @@ def next_steps() -> tuple[list[dict], dict]:
 
 
 def stage_strip(plan_text: str) -> tuple[str, str]:
-    """The stage arc as a strip, and the name of the stage we are in."""
+    """The stage arc as a strip, and the name of the stage we are in.
+
+    `##` or `###`: a plan carrying several projects nests its stages one level under a project
+    heading, and a single-project plan written flat still reads."""
     here = ""
     cells = []
-    for m in re.finditer(r"^## (Stage (\d+) · [^—\n]+?) — \*?\*?(.+?)\*?\*?\s*$",
+    for m in re.finditer(r"^#{2,3} (Stage (\d+) · [^—\n]+?) — \*?\*?(.+?)\*?\*?\s*$",
                          plan_text, re.M):
         label, num, state = m.group(1), m.group(2), m.group(3)
         cls = "here" if "current" in state else ("done" if "exited" in state else "")
@@ -237,7 +240,9 @@ def build() -> str:
     steps, counts = next_steps()
     plan_text = (BRAIN / "plan.md").read_text(encoding="utf-8")
     strip, here = stage_strip(plan_text)
-    stage, conds = bar_conditions()
+    # The brief is the engagement's one approved understanding, so it shows the bars of every
+    # project that is inside a stage rather than picking one.
+    bars = bar_conditions()
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     # The approval strip. Three states, and "unset" is loud on purpose: a brief with no status
@@ -278,9 +283,10 @@ def build() -> str:
     secs.append(f'<div class="sec"><h2>What I still do not know</h2>{inner}</div>')
 
     # ── the plan ─────────────────────────────────────────────────────────────────────────────
-    if conds:
+    blocks = []
+    for bar_entry in bars:
         cells = []
-        for c in conds:
+        for c in bar_entry["conds"]:
             st = c["status"]
             mark = {"met": "met", "partly": "partly", "not-met": "not met"}.get(st, "unknown")
             ev = (f'<div class="ev">{render_md(c["evidence"], g)}</div>' if c.get("evidence")
@@ -289,15 +295,21 @@ def build() -> str:
                          f'<div><div class="claim"><span class="status">{mark}</span>'
                          f'{render_md(c["claim"], g)}</div>{ev}'
                          f'<div class="more">{render_md(c["detail"], g)}</div></div></div>')
-        bar = ("".join(cells)
+        head = (f'{html.escape(bar_entry["label"])} · ' if bar_entry["label"] and len(bars) > 1
+                else "")
+        blocks.append(f'<h3 style="margin-top:30px">{head}'
+                      f'{html.escape(bar_entry["stage"])} — what ends it</h3>'
+                      + "".join(cells))
+    if blocks:
+        bar = ("".join(blocks)
                + '<div class="rest">Every condition above is read from the decision that owns '
                  'it. Status is a judgment and comes from the BAR block in feed-items.md.</div>')
     else:
-        bar = ('<div class="gap">this stage has no exit bar — write it as a numbered decision '
-               'before the work goes further, or the stage cannot end</div>')
+        bar = ('<h3 style="margin-top:30px">What ends the current stage</h3>'
+               '<div class="gap">this stage has no exit bar — write it as a decision before '
+               'the work goes further, or the stage cannot end</div>')
     secs.append(f"""<div class="sec"><h2>The plan</h2>
       <div class="stages">{strip}</div>
-      <h3 style="margin-top:30px">{html.escape(stage)} — what ends it</h3>
       {bar}</div>""")
 
     # ── next steps ───────────────────────────────────────────────────────────────────────────

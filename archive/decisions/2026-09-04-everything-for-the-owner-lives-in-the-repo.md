@@ -1,7 +1,7 @@
 ---
 tags: [process, handoff]
 ---
-# 0015 — Everything for the owner lives in the repo
+# [[everything-for-the-owner-lives-in-the-repo]] — Everything for the owner lives in the repo
 Date: 2026-09-04 · Status: accepted
 
 ## Context
@@ -47,7 +47,7 @@ it tomorrow without asking.
 - `brain/drafts/` is the fourth thing on the feed that is explicitly "waiting on you", which
   is beginning to be the page's real subject.
 - What was said to a client is now part of the record, which the evidence-labelling rule in
-  [[0014-the-brief-is-a-gate-and-evidence-is-cited-quietly]] can cite like any other source.
+  [[the-brief-is-a-gate-and-evidence-is-cited-quietly]] can cite like any other source.
 - The general rule does the work here. This bug was one instance; the charter now covers the
   class, so the next one of its kind does not need its own decision.
 - Worth watching for elsewhere in the workspace: code that reads a path nothing documents. It

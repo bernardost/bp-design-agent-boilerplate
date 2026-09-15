@@ -19,8 +19,12 @@ description: Capture an unstructured braindump from the user, save it verbatim, 
 
 Extract and route, quoting or tightly paraphrasing the source:
 
-- **Decisions** (stated or clearly arrived at) → a new numbered file in
+- **Decisions** (stated or clearly arrived at) → a new `YYYY-MM-DD-slug.md` file in
   `brain/decisions/` (standard format, frontmatter tags), linked back to the dump.
+  **Route by project.** A dump legitimately covers several strands — that is why the dump
+  itself carries no project key and each thing routed out of it does. Where a passage does
+  not say which strand it is about, ask before filing rather than guessing; list the
+  ambiguous ones together in one question instead of interrupting per item.
 - **Insights** (durable realizations, not task-level) → small notes in
   `brain/insights/` with frontmatter tags and `[[links]]` to related notes.
 - **Tasks / next actions** → `brain/tasks.md`, in the line grammar, with labels

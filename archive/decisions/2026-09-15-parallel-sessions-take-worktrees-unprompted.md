@@ -1,7 +1,7 @@
 ---
 tags: [process]
 ---
-# 0017 — Parallel sessions take worktrees, unprompted
+# [[parallel-sessions-take-worktrees-unprompted]] — Parallel sessions take worktrees, unprompted
 Date: 2026-09-15 · Status: accepted
 
 ## Context
@@ -46,9 +46,17 @@ usual from inside a worktree.
 - A session that guesses wrong and takes a worktree nobody needed costs one branch and one
   line of text. That asymmetry is why the default is act-then-say rather than ask.
 - **Numbered files collide, and the worktree does not prevent it.** Writing this decision hit
-  exactly that: another session had already pushed its own `0016`, so three files had to be
+  exactly that: another session had already pushed its own `[[close-is-one-command-and-a-few-minutes]]`, so three files had to be
   renumbered on the rebase. Nothing detects it in advance, because the number a session picks
   depends on a commit it has not fetched. Two habits contain it — `git pull` before touching
   anything, which the charter's orient step already requires and which this session skipped,
   and renumbering on the rebase rather than forcing. Filenames are cheap to change while
   nothing cites them; the fix is to renumber before anything links to the number.
+
+---
+
+*Added 2026-09-15, after the fact: the consequence above treated the numbering collision as a
+discipline problem and prescribed pulling first and renumbering on the rebase. That was the
+wrong fix for the right observation. `[[decisions-are-dated-not-numbered]]` supersedes it —
+dated filenames remove the shared pool, which is what makes this decision's "decisions merge
+clean" claim true rather than aspirational. The rest of this decision stands.*

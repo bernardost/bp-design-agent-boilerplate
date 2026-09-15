@@ -1,7 +1,7 @@
 ---
 tags: [portability, git, onboarding]
 ---
-# 0006 — A private remote, and push as you go
+# [[a-private-remote-and-push-as-you-go]] — A private remote, and push as you go
 Date: 2026-08-26 · Status: accepted
 
 ## Context

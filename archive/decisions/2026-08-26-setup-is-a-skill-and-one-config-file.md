@@ -1,7 +1,7 @@
 ---
 tags: [onboarding, template-shape]
 ---
-# 0003 — /setup is a skill, and configuration is one file
+# [[setup-is-a-skill-and-one-config-file]] — /setup is a skill, and configuration is one file
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -25,18 +25,18 @@ Two changes.
    constants of their own. A prefix can no longer disagree with itself.
 2. **`/setup` is a re-runnable skill** (`.claude/skills/setup/`), not a block in the
    charter. It interviews, writes the config and the current-state files, blanks the
-   inherited brain per [[0001-a-design-project-workspace-that-resets-on-clone]], surveys
+   inherited brain per [[a-design-project-workspace-that-resets-on-clone]], surveys
    which connectors are actually reachable, ends with the command tour, and can be re-run
    later to add a source or a tracker.
 
 The quiz's answers each have a named destination: project identity and where the work
 lives → `project-brief.md` and the config · people and what routes to them →
 `project-brief.md` · watched sources → `brain/sources.md`
-([[0010-sources-are-declared-in-one-file]]) · tracker and task labels → the config · what
+([[sources-are-declared-in-one-file]]) · tracker and task labels → the config · what
 "good" means here → `brain/review-lens.md`
-([[0005-the-reviewers-lens-is-a-project-file]]) · the first stage and its bar → `plan.md`
+([[the-reviewers-lens-is-a-project-file]]) · the first stage and its bar → `plan.md`
 plus a bar decision · confidential material → `context/` and `.gitignore` · the remote →
-[[0006-a-private-remote-and-push-as-you-go]].
+[[a-private-remote-and-push-as-you-go]].
 
 ## Consequences
 

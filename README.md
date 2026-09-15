@@ -30,11 +30,11 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | Path | What it is |
 |---|---|
 | `AGENTS.md` | the charter — behaviors, invariants, session ritual. `CLAUDE.md` imports it |
-| `brain/workspace.toml` | every project constant, in one file, read by both scripts |
-| `brain/now.md` | the one-screen current state; rewritten, never grown (2000-char limit) |
-| `brain/plan.md` | the stage arc; each stage's exit bar is a decision written on entry |
+| `brain/workspace.toml` | every constant, in one file: the engagement, its projects, the tracker |
+| `brain/now.md` | the one-screen current state, a section per project; rewritten, never grown |
+| `brain/plan.md` | the stage arc per project; each stage's exit bar is a decision written on entry |
 | `brain/tasks.md` | the owner of task state, in a grep-able line grammar |
-| `brain/decisions/` | one numbered file per decision, logged unprompted as they're reached |
+| `brain/decisions/` | one dated file per decision, logged unprompted as they're reached |
 | `brain/insights/` | durable realizations, one idea per file, `[[wiki-linked]]` |
 | `brain/tags.md` | the tag vocabulary — global across the whole brain |
 | `brain/glossary.md` | people, nicknames, acronyms, codenames — the project's proper nouns |
@@ -50,6 +50,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/drafts/` | messages written for you to send — before they go out, and after |
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
+| `brain/redate.py` | one-way migration of an older `NNNN-` decision log to dated filenames |
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
@@ -58,6 +59,11 @@ of work as it goes, so the brain on your phone is never more than one step behin
 
 ## The ideas underneath
 
+- **One engagement, several projects, one brain.** A client relationship usually carries two
+  or three strands of work, and a single meeting covers all of them. Every record names its
+  strand; `feed.html`, `/status` and the tracker push filter on it. Nothing is stored per
+  project — compartmentalizing in the storage would fork the one log that makes a decision
+  findable, to buy a filter that render time gives away. With one project none of it appears.
 - **One owner per class of information.** Everything else links, never restates.
 - **Files are the truth; outward tools are projections.** The tracker and `feed.html` are
   written outward and never read back as authority.
@@ -91,6 +97,10 @@ of work as it goes, so the brain on your phone is never more than one step behin
 - **Parallel sessions get worktrees, silently.** Open as many tabs as you like. A session that
   notices another one working here takes a worktree and says so in one line, instead of
   stopping to ask you what you would like it to do about the situation you set up on purpose.
+- **A decision is dated, not numbered.** `brain/decisions/2026-09-15-the-slug.md`: the date
+  orders the log, the slug is what `[[links]]` point at. A number would have to be claimed
+  from a pool every open tab shares, and the collision only shows up at merge — which it did,
+  here, and cost a three-file renumber. `brain/redate.py` migrates an older log.
 - **Focus mode is assumed.** The charter is written for Claude Code's `/focus`, where you see
   only the final message of each turn — so that message carries everything, and nothing
   important lives in a tool call you never opened. `/focus` toggles it off.

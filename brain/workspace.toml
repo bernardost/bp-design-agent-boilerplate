@@ -4,16 +4,34 @@
 # brain/config.py. Edit it by hand or re-run `/setup` to change an answer.
 # Placeholders in {{braces}} are unfilled — `doctor.py` reports them.
 
-[project]
-name = "{{PROJECT_NAME}}"          # page titles, kickers, the tracker push
+[engagement]
+# The whole relationship this workspace serves: one client, one owner, one meeting stream.
+# (Older clones call this table `[project]`; both are read, `[engagement]` wins.)
+name = "{{ENGAGEMENT_NAME}}"       # page titles, kickers, the tracker push
 owner = "{{OWNER}}"
-# Where the work being designed actually lives. A design project's product is often not
-# in this repo: a Figma file, a live site, a deck. List every home, so a new session can
-# find the work without asking.
-work_lives = []                    # e.g. ["figma.com/file/…", "staging.example.com"]
 # True only in the boilerplate repo itself. `/setup` sets it false in a clone, which is
 # how `doctor.py` tells "this IS the template" from "a clone that never ran /setup".
 is_template = true
+
+[projects]
+# The strands of work inside the engagement. One engagement often carries several: a
+# meeting covers three of them at once, and the records must not blend. Every decision,
+# insight, exploration, workshop, feed item and task names the strand it belongs to, and
+# the projections filter on it — compartmentalize in the projection, never in the storage,
+# because splitting `decisions/` per strand would trade away the one-owner rule for a
+# filter you get free at render time.
+#
+# `keys` are lowercase-kebab and permanent (records cite them); `labels` are the display
+# names, same order, and are what headings in tasks.md, now.md and plan.md use.
+# One key here means a single-project workspace: nothing is tagged, nothing is filtered,
+# and `doctor.py` asks for none of it. The ceremony arrives with the second key.
+keys = ["{{PROJECT_KEY}}"]
+labels = ["{{PRODUCT_NAME}}"]
+# `all` is reserved: a record that governs the whole engagement rather than one strand.
+#
+# Where the work being designed actually lives, one entry per strand, `key: where`.
+# A design project's product is often not in this repo: a Figma file, a live site, a deck.
+work_lives = []                    # e.g. ["portal: figma.com/file/…", "site: staging.example.com"]
 
 [tracker]
 # The external tracker. `prefix = ""` means the project has no tracker: task pointers are
@@ -29,7 +47,7 @@ prefix = ""                        # the issue-key prefix, e.g. "PROJ" for PROJ-
 labels = ["design", "research", "content", "handoff", "method", "blocked-on-external", "bar", "deferred"]
 
 [git]
-# See decision 0006. A remote is what lets the same workspace open on a phone; recording
+# See decision [[a-private-remote-and-push-as-you-go]]. A remote is what lets the same workspace open on a phone; recording
 # the answer here IS the owner's say-so, so it is not asked again every session.
 remote = false                     # true once a remote is configured and push is authorized
 visibility = "private"             # "private" | "public" — public is an explicit choice

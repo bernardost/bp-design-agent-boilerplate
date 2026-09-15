@@ -1,7 +1,7 @@
 ---
 tags: [template-shape, onboarding]
 ---
-# 0001 — A design-project workspace that resets on clone
+# [[a-design-project-workspace-that-resets-on-clone]] — A design-project workspace that resets on clone
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -32,6 +32,6 @@ The product here is **the workspace itself**. There is no separate build directo
 
 - Every rule in the charter is tested against real use before a clone inherits it.
 - `/setup` is destructive by design, so it confirms before it wipes, and it refuses to run
-  a second time without `--reset` (see [[0003-setup-is-a-skill-and-one-config-file]]).
+  a second time without `--reset` (see [[setup-is-a-skill-and-one-config-file]]).
 - The template's decisions are the design rationale a future maintainer needs, and they are
   lost to each clone. That is correct: they are not that project's decisions.

@@ -24,7 +24,6 @@ from pathlib import Path
 BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
 
-NOW_MAX = 2000  # chars. "If it would still be true in two weeks, it doesn't belong."
 TOMBSTONE = "do not cite"
 
 # Project constants come from brain/workspace.toml via config.py — never from this file.
@@ -32,7 +31,25 @@ TOMBSTONE = "do not cite"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config import (  # noqa: E402
     CONFIG, TRACKER_PREFIX, TASK_LABELS, PROJECT_NAME, GIT_REMOTE, IS_TEMPLATE, placeholders,
+    MULTI_PROJECT, PROJECT_KEYS, PROJECT_LABEL, PROJECT_VALUES,
 )
+
+# chars. "If it would still be true in two weeks, it doesn't belong." A second strand of work
+# buys a small allowance and not a second screen: now.md answers "what is happening" for the
+# whole engagement, and an engagement with six strands still gets one screen to say it in.
+NOW_MAX = 2000 + 500 * max(0, len(PROJECT_KEYS) - 1)
+
+# Which record classes name the strand they belong to. Braindumps and briefings are
+# deliberately absent: both are verbatim captures that legitimately span the engagement, and
+# routing is what assigns a project — to the decision or task that comes out, not to the dump.
+PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "workshops")
+
+# Decision filenames are `YYYY-MM-DD-slug.md`: the date orders them, the slug identifies them.
+# The old `NNNN-slug.md` claimed a number from a pool shared with every parallel session, so
+# two sessions writing at once collided by construction. Legacy names still resolve and are
+# reported, never failed — a half-migrated tree has to keep working. `brain/redate.py` migrates.
+DATED_NAME = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9][a-z0-9-]*$")
+NUMBERED_NAME = re.compile(r"^(\d{4})-(?!\d{2}-\d{2})[a-z0-9][a-z0-9-]*$")
 
 
 # brain/tasks.md line grammar. Files own task state; the tracker is a projection, so the
@@ -83,6 +100,72 @@ def md_files(dirs):
 
 def rel(p: Path) -> str:
     return str(p.relative_to(ROOT))
+
+
+def frontmatter(text: str) -> str:
+    """The raw YAML-ish block between the opening and closing `---`, or ""."""
+    if not text.startswith("---"):
+        return ""
+    end = text.find("\n---", 3)
+    return text[3:end] if end != -1 else ""
+
+
+def record_project(text: str) -> str | None:
+    """The `project:` value in a record's frontmatter, or None if it carries none."""
+    m = re.search(r"^project:\s*(.+?)\s*$", frontmatter(text), re.M)
+    return m.group(1).strip().strip("\"'") if m else None
+
+
+def is_template_file(p: Path) -> bool:
+    """README and the `0000-` decision template describe the format; they are not records."""
+    return p.name == "README.md" or p.stem.startswith("0000")
+
+
+# ── FAIL 0 ── every record names the strand of work it belongs to ──────────────
+def check_record_projects():
+    """One engagement can carry several projects, and the records must not blend.
+
+    The failure this prevents is concrete: a question raised about one strand surfaced in the
+    owner's feed looking like business from another, and he answered the wrong project. The
+    fix is a `project:` key in frontmatter and a filter in every projection —
+    compartmentalize in the projection, never in the storage.
+
+    Silent below two strands. A workspace with one project has nothing to mix up, so the
+    tagging would be pure ceremony; it switches on with the second key in `workspace.toml`."""
+    if not MULTI_PROJECT:
+        notes.append("one project — records carry no `project:` key")
+        return
+    missing, unknown, counts = [], [], {}
+    for d in PROJECT_TAGGED_DIRS:
+        for path in md_files([BRAIN / d]):
+            if is_template_file(path):
+                continue
+            value = record_project(path.read_text(encoding="utf-8"))
+            if not value:
+                missing.append(rel(path))
+            elif value not in PROJECT_VALUES:
+                unknown.append((rel(path), value))
+            else:
+                counts[value] = counts.get(value, 0) + 1
+    if missing:
+        fails.append(
+            f"{len(missing)} record(s) name no project, and this engagement carries "
+            f"{len(PROJECT_KEYS)}.\n"
+            "      → " + "\n      → ".join(missing[:6])
+            + (f"\n      … and {len(missing) - 6} more" if len(missing) > 6 else "") + "\n"
+            f"      Add `project:` to the frontmatter. One of: {' '.join(PROJECT_KEYS)}, or\n"
+            f"      `all` for a record that governs the whole engagement. An untagged record\n"
+            f"      is invisible to every filtered view."
+        )
+    for path, value in unknown:
+        fails.append(
+            f"{path} — unknown project `{value}`.\n"
+            f"      One of: {' '.join(PROJECT_KEYS)}, or `all`.\n"
+            f"      Keys are declared in brain/workspace.toml under [projects]; an invented\n"
+            f"      one lands in no view at all."
+        )
+    if counts and not missing and not unknown:
+        notes.append("projects " + " ".join(f"{counts[k]} {k}" for k in sorted(counts)))
 
 
 # ── FAIL 1 ── now.md is a pointer file, not a narrative ────────────────────────
@@ -181,6 +264,54 @@ def task_lines() -> list[tuple[int, str]]:
     return out
 
 
+def task_sections() -> dict:
+    """`line number -> project key` for every task line, from the nearest `##` heading above it.
+
+    Tasks carry their strand in the document structure rather than in the line grammar: the
+    line is already dense, and a heading is what the owner reads anyway. A heading matches by
+    key or by display label, either case."""
+    tasks = BRAIN / "tasks.md"
+    if not tasks.exists():
+        return {}
+    by_name = {k.lower(): k for k in PROJECT_KEYS}
+    by_name.update({v.lower(): k for k, v in PROJECT_LABEL.items()})
+    out, current, fenced = {}, None, False
+    for line_no, line in enumerate(tasks.read_text(encoding="utf-8").splitlines(), 1):
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        if line.startswith("## "):
+            current = by_name.get(line[3:].strip().lower())
+        elif line.startswith("- `"):
+            out[line_no] = current
+    return out
+
+
+def check_task_projects():
+    """A task under no project heading belongs to nothing, and the tracker push has nowhere
+    to file it. Silent below two strands, like every other part of this."""
+    if not MULTI_PROJECT:
+        return
+    sections = task_sections()
+    orphans = [n for n, key in sections.items() if key is None]
+    if not orphans:
+        if sections:
+            per: dict = {}
+            for key in sections.values():
+                per[key] = per.get(key, 0) + 1
+            notes.append("tasks by project " + " ".join(f"{per[k]} {k}" for k in sorted(per)))
+        return
+    fails.append(
+        f"brain/tasks.md — {len(orphans)} task line(s) sit under no project heading "
+        f"(line{'s' if len(orphans) > 1 else ''} {', '.join(str(n) for n in orphans[:8])}"
+        + (" …" if len(orphans) > 8 else "") + ").\n"
+        f"      Every task belongs to one strand. Group them under a `## ` heading naming\n"
+        f"      the project: {' · '.join(PROJECT_LABEL[k] for k in PROJECT_KEYS)}"
+    )
+
+
 def check_tasks():
     """Files own task state. The grammar is enforced because the projection pointer
     lives on the line — if the shape rots, the push to the tracker stops being mechanical
@@ -235,6 +366,7 @@ def check_tasks():
     if unmirrored:
         notes.append(f"{unmirrored} not yet projected to the tracker")
 
+    check_task_projects()
     check_no_projection_keys_in_prose()
 
 
@@ -313,11 +445,66 @@ def report_historical_citations():
 
 
 # ── REPORT ── unresolved [[links]] ─────────────────────────────────────────────
+def slug_of(stem: str) -> str:
+    """`2026-09-15-focus-mode-is-the-default` → `focus-mode-is-the-default`.
+
+    The date orders the log; the slug is the identity. Links are written as `[[slug]]` so a
+    citation survives a corrected date, and so nothing in the brain depends on a position in
+    a sequence that two parallel sessions both try to claim."""
+    m = re.match(r"^\d{4}-\d{2}-\d{2}-(.+)$", stem)
+    return m.group(1) if m else stem
+
+
+def link_keys() -> dict:
+    """Every string a `[[link]]` may legitimately use → the file it resolves to.
+
+    Three forms, because all three are written in practice: the full stem, the bare slug of a
+    dated file, and the bare number of a legacy `NNNN-` one."""
+    files = [p for d in LINK_DIRS if d.exists() for p in d.rglob("*.md")]
+    files += list(BRAIN.glob("*.md"))  # now, plan, project-brief…
+    keys: dict = {}
+    slugs: dict = {}
+    for p in files:
+        keys.setdefault(p.stem, p)
+        if DATED_NAME.match(p.stem):
+            slugs.setdefault(slug_of(p.stem), []).append(p)
+        m = NUMBERED_NAME.match(p.stem)
+        if m:
+            keys.setdefault(m.group(1), p)
+    for slug, paths in slugs.items():
+        # An ambiguous slug is unciteable, which check_slug_collisions() fails on. Resolve it
+        # to the first so one bad pair does not print as a hundred broken links.
+        keys.setdefault(slug, paths[0])
+    return keys
+
+
+# ── FAIL 6 ── two records cannot share one slug ────────────────────────────────
+def check_slug_collisions():
+    """`[[the-portal-is-live]]` has to mean one file. Two decisions written under the same
+    slug on different days are each other's broken link, and no reader can tell which one a
+    citation meant — the one case in this scheme with no legitimate exception."""
+    slugs: dict = {}
+    for d in LINK_DIRS:
+        if not d.exists():
+            continue
+        for path in d.rglob("*.md"):
+            if is_template_file(path) or not DATED_NAME.match(path.stem):
+                continue
+            slugs.setdefault(slug_of(path.stem), []).append(rel(path))
+    for slug, paths in sorted(slugs.items()):
+        if len(paths) > 1:
+            fails.append(
+                f"two records share the slug `{slug}`, so `[[{slug}]]` names neither.\n"
+                "      → " + "\n      → ".join(paths) + "\n"
+                f"      Rename one to say what makes it different. The date orders the log;\n"
+                f"      the slug is the identity, and an identity has to be unique."
+            )
+
+
 def report_links():
     """NOT a failure. CLAUDE.md: 'a link to a note that doesn't exist yet marks future work.'
     Enforcing this would break the convention it is meant to protect, so it prints."""
-    known = {p.stem for d in LINK_DIRS if d.exists() for p in d.rglob("*.md")}
-    known |= {p.stem for p in BRAIN.glob("*.md")}  # now, plan, project-brief…
+    known = set(link_keys())
     unresolved: dict[str, list[str]] = {}
     for p in md_files(SCAN_DIRS):
         for target in re.findall(r"\[\[([^\]|#]+?)\]\]", p.read_text(encoding="utf-8")):
@@ -375,7 +562,8 @@ def report_question_numbers():
 # ── REPORT ── the tag vocabulary ───────────────────────────────────────────────
 def report_tags():
     """Tags are global to the brain: a decision and an insight sharing one is the point
-    (decision 0004). Unknown tags REPORT rather than FAIL — a new tag is usually legitimate,
+    ([[tags-are-global-and-the-vault-is-the-graph]]). Unknown tags REPORT rather than FAIL —
+    a new tag is usually legitimate,
     and failing on it would train you to ignore this output. What is worth seeing is the
     shape of the vocabulary: singletons that should have been [[links]], and files with no
     tags at all, which are invisible to every tag query and to the Obsidian graph."""
@@ -608,7 +796,7 @@ def report_brief():
         if not re.search(r"\[\[\d{4}", m.group(1)):
             print("  brief      approved but names no decision — a verbal yes the record "
                   "does not keep\n"
-                  "               → Status: approved YYYY-MM-DD · [[NNNN-slug]]")
+                  "               → Status: approved YYYY-MM-DD · [[decision-slug]]")
         else:
             print(f"  brief      {m.group(1).strip()}")
     else:
@@ -662,15 +850,20 @@ def report_feed():
 def _inbound() -> dict:
     """`stem -> {citing files}` across the scanned tree.
 
-    A decision is cited three ways in practice — `[[0007-slug]]`, `[[0007]]`, and the bare
-    token `0007` in prose — so all three count. Without that, every decision cited the way
-    the charter actually recommends (restate the content, cite the number) would read as an
-    orphan."""
+    A record is cited two ways in practice — by its full stem, `[[2026-09-15-the-slug]]`, and
+    by the slug alone, `[[the-slug]]` — plus, in a tree not yet migrated, by a legacy decision's
+    bare number. All of them count. Without that, every decision cited the way the charter
+    actually recommends would read as an orphan."""
     texts = {p: p.read_text(encoding="utf-8") for p in md_files(SCAN_DIRS)}
     keys = {}
     for p in texts:
         keys.setdefault(p.stem, p)
-        m = re.match(r"^(\d{4})-", p.name)
+        if DATED_NAME.match(p.stem):
+            keys.setdefault(slug_of(p.stem), p)
+        # A legacy `NNNN-slug` is still cited by its bare number. A dated `YYYY-MM-DD-slug`
+        # must NOT be — the leading group is the year, and every mention of "2026" would
+        # otherwise read as a citation of every decision written in it.
+        m = NUMBERED_NAME.match(p.stem)
         if m:
             keys.setdefault(m.group(1), p)
     out: dict = {p.stem: set() for p in texts}
@@ -808,11 +1001,80 @@ def report_glossary():
         print(f"               {inferred} entry/entries marked inferred — good, keep it that way")
 
 
+# ── FAIL 5 ── a question in the feed says which project it is about ────────────
+def check_feed_item_projects():
+    """The failure that produced this check: two items reached the owner's feed reading like
+    business from the strand he had open, and were about another one. He answered the wrong
+    project. A question with no strand on it is a question asked of the wrong context."""
+    if not MULTI_PROJECT:
+        return
+    path = BRAIN / "feed-items.md"
+    if not path.exists():
+        return
+    bad = []
+    for chunk in re.split(r"\n(?=## FEED-)", path.read_text(encoding="utf-8"))[1:]:
+        head = chunk.split("\n", 1)[0]
+        m = re.match(r"##\s*(FEED-\d+)", head)
+        if not m:
+            continue
+        value = re.search(r"^project:\s*(\S+)\s*$", chunk, re.M)
+        if not value:
+            bad.append((m.group(1), None))
+        elif value.group(1) not in PROJECT_VALUES:
+            bad.append((m.group(1), value.group(1)))
+    for item, value in bad:
+        fails.append(
+            f"brain/feed-items.md — {item} "
+            + (f"names unknown project `{value}`." if value else "names no project.") + "\n"
+            f"      Add a `project:` line. One of: {' '.join(PROJECT_KEYS)}, or `all`.\n"
+            f"      The feed renders it as a chip and filters on it; without one the owner\n"
+            f"      reads the question against whichever strand he happens to have open."
+        )
+
+
+# ── REPORT ── decision filenames, and what a numbered one still costs ──────────
+def report_decision_names():
+    """A decision is `YYYY-MM-DD-slug.md`. The date orders the log; the slug is the identity
+    that links point at. Neither is claimed from a pool, so two sessions writing at the same
+    time produce two files that merge clean — which is exactly what the old `NNNN-` names
+    could not do, because the next number depends on a commit the session has not fetched.
+
+    Legacy names are reported, never failed: a half-migrated tree has to keep working, and
+    the rename is one command."""
+    d = BRAIN / "decisions"
+    if not d.exists():
+        return
+    dated, numbered, odd = [], [], []
+    for path in sorted(d.glob("*.md")):
+        if is_template_file(path):
+            continue
+        if DATED_NAME.match(path.stem):
+            dated.append(path.stem)
+        elif NUMBERED_NAME.match(path.stem):
+            numbered.append(path.stem)
+        else:
+            odd.append(path.stem)
+    if not (dated or numbered or odd):
+        print("  decisions  none logged yet — /decide writes them")
+        return
+    print(f"  decisions  {len(dated) + len(numbered) + len(odd)} logged · {len(dated)} dated"
+          + (f" · {len(numbered)} still numbered" if numbered else "")
+          + (f" · {len(odd)} off-format" if odd else ""))
+    if numbered:
+        print(f"               numbered names collide between parallel sessions — "
+              f"python3 brain/redate.py --apply")
+    for stem in odd[:4]:
+        print(f"               off-format: {stem} — expected YYYY-MM-DD-slug")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
 
     check_now_size()
+    check_record_projects()
+    check_slug_collisions()
+    check_feed_item_projects()
     check_tombstones()
     check_stale_citations()
     check_tasks()
@@ -820,6 +1082,7 @@ def main() -> int:
     if not quiet:
         print("reports (never fail the run)")
         report_projection()
+        report_decision_names()
         report_links()
         report_historical_citations()
         report_duplication()

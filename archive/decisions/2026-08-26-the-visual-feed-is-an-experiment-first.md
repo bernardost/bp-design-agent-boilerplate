@@ -1,7 +1,7 @@
 ---
 tags: [interface]
 ---
-# 0008 — The visual feed is an experiment before it is a rule
+# [[the-visual-feed-is-an-experiment-first]] — The visual feed is an experiment before it is a rule
 Date: 2026-08-26 · Status: accepted
 
 ## Context

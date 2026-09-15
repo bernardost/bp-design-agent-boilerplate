@@ -12,6 +12,12 @@ tags: [onboarding, portability]
 ---
 ```
 
+**Not a project.** Which strand of work a record belongs to is `project:` in frontmatter, a
+separate key with a closed vocabulary from `[projects]` in `brain/workspace.toml`. Never make a
+tag for it: tags are open, global and thematic — a decision and an insight sharing one is the
+point — while a project is a compartment the projections filter on, and mixing the two would
+make both useless.
+
 **Tag or link?** A tag is membership in a theme; a wiki-link in double brackets is a claim about two
 specific notes. If a tag would have exactly one member, it wanted to be a link. `doctor.py`
 reports tags that aren't defined here, tags defined here and never used, and files with no

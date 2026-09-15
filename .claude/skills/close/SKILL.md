@@ -22,7 +22,8 @@ longer than the work it is recording is a close that gets skipped.
 Scan back over the session. Anything decided, realized, asked, or done that exists only in
 your replies goes to its owning file now:
 
-- a decision reached → a numbered file in `brain/decisions/`, with frontmatter tags
+- a decision reached → a `YYYY-MM-DD-slug.md` file in `brain/decisions/`, with frontmatter
+  tags and, in a multi-project engagement, its `project:` key
 - a durable realization → `brain/insights/`, linked with `[[wiki-links]]`
 - a question raised → `brain/open-questions.md`, with an owner tag: who can answer
 - a decision that needs the owner → `brain/feed-items.md`, stating what it blocks
@@ -44,17 +45,22 @@ not yet pushed to the tracker.
 ## 3 · Rewrite `brain/now.md` from scratch
 
 **Rewrite it. Do not edit it.** Rewriting is the only thing that enforces the one-screen
-limit; editing is how it became sixteen kilobytes the last time. Open a blank page and write:
-where we are against the current stage's bar, what's next and what unblocks it, what is
-blocked and on whom.
+limit; editing is how it became sixteen kilobytes the last time. Open a blank page and write,
+**one `##` section per project**: where that strand is against its own stage bar, what's next
+and what unblocks it. Blockers go in one section at the end, each naming its project.
+
+A strand nobody touched this session still gets its line — a project that goes quiet in
+`now.md` is one the owner stops seeing, which is the failure this file exists to prevent.
 
 The test for every line: *if it would still be true in two weeks, it belongs in its owning
-file, linked from here.* Hard limit 2000 characters, and `doctor.py` will fail the run if you
-exceed it.
+file, linked from here.* The limit is 2000 characters plus 500 for each project past the
+first, and `doctor.py` will fail the run if you exceed it.
 
 ## 4 · Refresh the bar status
 
-If the current stage has a bar, update the `## BAR` block in `brain/feed-items.md`: one line
+Each project inside a stage has its own bar. Update the `## BAR` block in
+`brain/feed-items.md` — lines are `project/n: status · evidence` once the engagement runs more
+than one strand, plain `n:` when it runs one: one line
 per condition, `met` / `partly` / `not-met`, each with its evidence or a pointer to it. The
 condition *text* is read from the decision that owns it and is never retyped here — only the
 judgment of whether it holds.

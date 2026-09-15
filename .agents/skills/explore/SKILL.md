@@ -79,9 +79,10 @@ this command's job, and `/critique` is what raises the first pass afterwards.
 
 ## Picking, later
 
-When the owner picks, that is a decision and it gets logged like any other — one numbered
-file in `brain/decisions/` saying what was picked, why, and what it costs, linking back to
-the exploration with `[[YYYY-MM-DD-topic]]`. **That link is the only seam between this
+When the owner picks, that is a decision and it gets logged like any other — one
+`YYYY-MM-DD-slug.md` file in `brain/decisions/` saying what was picked, why, and what it
+costs, carrying the same `project:` key as the exploration and linking back to it with
+`[[YYYY-MM-DD-topic]]`. **That link is the only seam between this
 directory and the record.** Until it exists, nothing in the brain may treat a direction as
 chosen, and `now.md` says the work is exploring rather than naming a direction.
 
@@ -91,6 +92,9 @@ chosen, and `now.md` says the work is exploring rather than naming a direction.
   runs ahead of the current stage; going wide inside the stage you are in is not that. It
   ends when a direction is picked, and if it has not ended after two rounds, say so — that is
   a real signal, and usually it means the brief is the thing that is unclear.
+- **Explore one project at a time.** The directions are judged against that strand's brief
+  and its lens, and a spread mixing two strands compares things that were never alternatives.
+  The file carries that strand's `project:` key.
 - **Do not explore what is already decided.** Check `brain/decisions/` first. Re-opening a
   settled question needs the owner to say they are re-opening it; quietly generating
   alternatives to a logged decision is contradiction, and the charter says raise it instead.

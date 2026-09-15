@@ -1,7 +1,7 @@
 ---
 tags: [portability, interface]
 ---
-# 0007 — Wrap-up is the assistant's call to make, out loud
+# [[wrap-up-is-the-assistants-call]] — Wrap-up is the assistant's call to make, out loud
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -30,7 +30,7 @@ The assistant owns the signal, and says it in one line the moment it is true:
 `/close` performs the ritual so it is one word, not a checklist the owner recites: append to
 owning files → update `tasks.md` → **rewrite `now.md` from scratch** → `python3
 brain/doctor.py` → regenerate `feed.html` → commit and push
-([[0006-a-private-remote-and-push-as-you-go]]) → project changed task lines to the tracker.
+([[a-private-remote-and-push-as-you-go]]) → project changed task lines to the tracker.
 
 Push-as-you-go does not replace this. Pushing keeps the *files* current; the wrap-up is what
 makes `now.md` true, and `now.md` is what the next session reads first.

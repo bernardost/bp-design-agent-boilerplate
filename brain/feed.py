@@ -16,7 +16,7 @@ the decision that owns them, tasks from `tasks.md`, and the decisions waiting on
 `feed-items.md`, which is the one file this adds.
 
 **The problem it solves is the reading cost, not the writing cost.** Every sentence in this
-workspace is dense with references — `0012`, `Q9`, `PROJ-7`, `[[an-insight-slug]]` — and each one
+workspace is dense with references — `[[a-decision-slug]]`, `Q9`, `PROJ-7`, `[[an-insight-slug]]` — and each one
 is a file the reader has to go and find. The compression is right for the record and wrong for a
 person scanning it. So the glossary is built from the files themselves and every reference on the
 page carries its own definition on hover and its own link on click. **Nothing here is a summary
@@ -48,7 +48,9 @@ OUT = BRAIN / "feed.html"
 # Project constants live in brain/workspace.toml and are read through config.py — never
 # duplicated here. `doctor.py` reads the same file, so a prefix cannot disagree with itself.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config import PROJECT_NAME, TRACKER_PREFIX  # noqa: E402
+from config import (  # noqa: E402
+    PROJECT_NAME, TRACKER_PREFIX, MULTI_PROJECT, PROJECT_KEYS, PROJECT_LABEL,
+)
 
 _KEY = rf"{TRACKER_PREFIX}-\d+" if TRACKER_PREFIX else r"(?!x)x"   # never-matching if None
 
@@ -169,7 +171,7 @@ def glossary() -> dict:
             "note": (status.group(1).strip() if status else ""),
             "path": path,
         }
-        g[path.stem] = g[m.group(1)]          # the full [[0011-slug]] form
+        g[path.stem] = g[m.group(1)]          # the full [[YYYY-MM-DD-slug]] form too
 
     for path in sorted((BRAIN / "insights").glob("*.md")):
         text = path.read_text()
@@ -390,7 +392,7 @@ def feed_items() -> list[dict]:
                 title = re.match(r"\*\*(.+)\*\*", s)
                 body_start = i + 1
                 continue
-            kv = re.match(r"^(owner|blocks|cost|options|answered):\s*(.*)$", s)
+            kv = re.match(r"^(project|owner|blocks|cost|options|answered):\s*(.*)$", s)
             if kv:
                 item["keys"][kv.group(1)] = kv.group(2).strip()
                 body_start = i + 1
@@ -400,45 +402,114 @@ def feed_items() -> list[dict]:
         item["title"] = title.group(1) if title else item["id"]
         item["body"] = "\n".join(lines[body_start:]).strip()
         item["options"] = [o.strip() for o in item["keys"].get("options", "").split("|") if o.strip()]
+        item["project"] = item["keys"].get("project", "").strip() or "all"
         items.append(item)
     return sorted(items, key=lambda i: -i["n"])
 
 
-def bar_conditions() -> tuple[str, list[dict]]:
-    """The current stage's exit conditions, from the decision that owns them.
+def decision_path(ref: str):
+    """A `[[link]]` from plan.md to the decision file it names.
 
-    The **text** is read from the decision — never retyped here, so it cannot drift from the decision.
-    The **status** of each is a judgment, and it is read from `feed-items.md`'s `## BAR` block,
-    which is the one place this tool asks to be told something rather than deriving it.
-    """
-    plan = (BRAIN / "plan.md").read_text()
-    m = re.search(r"^## (Stage \d+ · [^\n]*?) — \*\*current\*\*", plan, re.M)
-    stage = m.group(1) if m else "current stage"
-    bar_ref = re.search(r"\*\*Bar: \[\[([^\]]+)\]\]", plan)
-    conds = []
-    if bar_ref:
-        path = BRAIN / "decisions" / f"{bar_ref.group(1)}.md"
-        if path.exists():
-            body = path.read_text()
-            dec = body.split("## Decision", 1)[-1].split("\n## ", 1)[0]
-            for cm in re.finditer(r"^(\d)\.\s+\*\*(.+?)\*\*(.*?)(?=^\d\.\s+\*\*|\Z)",
-                                  dec, re.M | re.S):
-                conds.append({"n": cm.group(1), "claim": " ".join(cm.group(2).split()),
-                              "detail": " ".join(cm.group(3).split())[:400], "status": "unknown"})
-    status = {}
+    Links are written as `[[slug]]` — the date orders the log, the slug identifies the file —
+    so the slug has to be resolved against what is on disk. The full stem and a legacy
+    `NNNN-slug` still resolve, because a half-migrated tree has to keep working."""
+    d = BRAIN / "decisions"
+    direct = d / f"{ref}.md"
+    if direct.exists():
+        return direct
+    for path in sorted(d.glob("*.md")):
+        stem = path.stem
+        if re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem) == ref or re.sub(r"^\d{4}-", "", stem) == ref:
+            return path
+    return None
+
+
+def bar_status() -> dict:
+    """`(project, n) -> (status, evidence)` from `feed-items.md`'s `## BAR` block.
+
+    The condition **text** is read from the decision that owns it and never retyped. Whether
+    each is met is a judgment no file can derive, and this block is the one place the tool
+    asks to be told rather than deriving. Lines are `n: status · evidence`, prefixed
+    `project/n:` once the engagement runs more than one strand, because each exits its own bar."""
+    out = {}
     block = re.search(r"^## BAR\s*\n(.*?)(?=^## |\Z)", (BRAIN / "feed-items.md").read_text(),
                       re.M | re.S)
-    if block:
-        for ln in block.group(1).splitlines():
-            sm = re.match(r"^\s*(\d)\s*:\s*(met|not-met|partly)\s*·\s*(.*)$", ln.strip())
-            if sm:
-                status[sm.group(1)] = (sm.group(2), sm.group(3))
-    for c in conds:
-        if c["n"] in status:
-            c["status"], c["evidence"] = status[c["n"]]
-        else:
-            c["evidence"] = ""
-    return stage, conds
+    if not block:
+        return out
+    for ln in block.group(1).splitlines():
+        sm = re.match(r"^\s*(?:([a-z0-9-]+)/)?(\d)\s*:\s*(met|not-met|partly)\s*·\s*(.*)$",
+                      ln.strip())
+        if sm:
+            out[(sm.group(1), sm.group(2))] = (sm.group(3), sm.group(4))
+    return out
+
+
+def chip(key: str) -> str:
+    """The project a card is about, as a small uppercase label.
+
+    Monochrome on purpose: the house style spends colour on intent — committing, discarding,
+    a reference — and a strand of work is metadata, not intent. Nothing renders below two
+    strands, where the chip would say the same word on every card."""
+    if not MULTI_PROJECT or not key or key == "all":
+        return ""
+    return f'<span class="chip">{html.escape(PROJECT_LABEL.get(key, key))}</span>'
+
+
+def project_filter() -> str:
+    """One button per strand, plus everything.
+
+    The whole compartmentalization story ends here: records are stored in one place under one
+    owner each, and the separation the owner actually needs is a filter at the point he reads.
+    Splitting `decisions/` per project would have traded the one-owner rule for this."""
+    if not MULTI_PROJECT:
+        return ""
+    buttons = ['<button class="pf on" data-pf="*">everything</button>']
+    buttons += [f'<button class="pf" data-pf="{html.escape(k)}">'
+                f'{html.escape(PROJECT_LABEL[k])}</button>' for k in PROJECT_KEYS]
+    return ('<div class="filter"><span class="flabel">project</span>'
+            + "".join(buttons) + '</div>')
+
+
+def bar_conditions() -> list[dict]:
+    """One entry per project that is inside a stage: its label, the stage, and that stage's
+    exit conditions, read from the decision that owns them so they cannot drift from it.
+
+    Two strands of one engagement are rarely at the same stage, so plan.md carries a `## `
+    section per project with `### Stage n` inside it. A single-project plan written the old
+    way — `## Stage n` at the top level — still parses, and reports one unnamed bar."""
+    plan = (BRAIN / "plan.md").read_text()
+    status = bar_status()
+    sections = []
+    if re.search(r"^### Stage \d", plan, re.M):
+        for m in re.finditer(r"^## (?!What this plan)(.+?)\s*$(.*?)(?=^## |\Z)", plan,
+                             re.M | re.S):
+            sections.append((m.group(1).strip(), m.group(2)))
+    else:
+        sections.append((None, plan))
+
+    label_to_key = {v.lower(): k for k, v in PROJECT_LABEL.items()}
+    label_to_key.update({k.lower(): k for k in PROJECT_KEYS})
+    out = []
+    for label, body in sections:
+        sm = re.search(r"^#{2,3} (Stage \d+ · [^\n]*?) — \*\*current\*\*", body, re.M)
+        if not sm:
+            continue
+        key = label_to_key.get((label or "").lower())
+        ref = re.search(r"\*\*Bar: \[\[([^\]]+)\]\]", body)
+        conds = []
+        path = decision_path(ref.group(1)) if ref else None
+        if path:
+            dec = path.read_text().split("## Decision", 1)[-1].split("\n## ", 1)[0]
+            for cm in re.finditer(r"^(\d)\.\s+\*\*(.+?)\*\*(.*?)(?=^\d\.\s+\*\*|\Z)",
+                                  dec, re.M | re.S):
+                n = cm.group(1)
+                st, ev = status.get((key, n)) or status.get((None, n)) or ("unknown", "")
+                conds.append({"n": n, "claim": " ".join(cm.group(2).split()),
+                              "detail": " ".join(cm.group(3).split())[:400],
+                              "status": st, "evidence": ev})
+        if conds:
+            out.append({"project": key, "label": label, "stage": sm.group(1), "conds": conds})
+    return out
 
 
 def drafts() -> list[dict]:
@@ -655,7 +726,7 @@ def graph_svg(nodes: list, edges: list, g: dict) -> str:
     """Inline SVG. Node anchors carry the same `data-*` attributes as a prose reference, so the
     page's existing tooltip and click-to-open handlers work on the graph for free."""
     if not nodes:
-        return ('<p style="font-size:13.5px;color:var(--dim);margin:0">Nothing to draw yet — '
+        return ('<p style="font-size:13.5px;color:var(--ink-3);margin:0">Nothing to draw yet — '
                 'the graph fills in as decisions, insights and tags accumulate.</p>')
     # Scale to fill the width, then let the viewBox height follow the content's own aspect.
     # A force layout settles into a roughly circular blob; fitting it into a fixed rectangle
@@ -798,6 +869,7 @@ def write_canvas(nodes: list, edges: list) -> int:
 # ---------------------------------------------------------------------------------------------
 
 CSS = """
+
 *,*::before,*::after{box-sizing:border-box}
 
 /* One deliberate look: white paper, black ink. There is no dark-mode block, and that is a
@@ -872,6 +944,26 @@ button{font:inherit;font-family:var(--sans);cursor:pointer}
   border-radius:50%;margin-right:6px;vertical-align:.14em}
 .pill.warn::before{background:var(--ochre)}
 .pill.ok::before{background:var(--green)}
+
+/* ── projects: one rail per strand, one chip per card, one filter ─────
+   Monochrome by design. Colour on this page carries intent — committing, discarding, a
+   reference — and which strand of work a card belongs to is metadata, not intent. */
+.rail{margin:0 0 4px}
+.rail .stages{margin-bottom:22px}
+.raillabel{font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 8px}
+.filter{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:10px 0 44px;
+  padding:0 0 15px;border-bottom:1px solid var(--rule)}
+.flabel{font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-4);margin-right:3px}
+.pf{font-family:var(--sans);font-size:12.5px;font-weight:500;color:var(--ink-3);
+  background:none;border:1px solid var(--rule);border-radius:2px;padding:5px 11px;
+  cursor:pointer}
+.pf:hover{color:var(--ink);border-color:var(--ink-4)}
+.pf.on{color:var(--paper);background:var(--ink);border-color:var(--ink)}
+.chip{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);border:1px solid var(--rule);border-radius:2px;padding:3px 7px}
+[hidden]{display:none!important}
 
 /* ── stage strip ─────────────────────────────────────────────────────── */
 .stages{display:flex;gap:0;margin:0 0 52px;flex-wrap:wrap;
@@ -1196,13 +1288,28 @@ document.addEventListener('click',e=>{
 });
 """
 
-JS = JS + TIP_JS
+FILTER_JS = """
+// One strand at a time, or everything. A card or panel marked `all` belongs to the
+// engagement rather than to one project, so it survives every filter.
+document.querySelectorAll('.pf').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var want = b.dataset.pf;
+    document.querySelectorAll('.pf').forEach(function (o) { o.classList.toggle('on', o === b); });
+    document.querySelectorAll('[data-project]').forEach(function (el) {
+      var p = el.dataset.project;
+      el.hidden = !(want === '*' || p === want || p === 'all');
+    });
+  });
+});
+"""
+
+JS = JS + TIP_JS + FILTER_JS
 
 
 def build() -> str:
     g = glossary()
     items = feed_items()
-    stage, conds = bar_conditions()
+    bars = bar_conditions()
     thread = drafts()
     now_md = (BRAIN / "now.md").read_text()
     now_md = re.sub(r"^# Now\s*\n", "", now_md)
@@ -1211,14 +1318,34 @@ def build() -> str:
     waiting = [i for i in items if i["status"] == "awaiting-you"]
     stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+    # The stage rail. Each project runs its own arc, so each gets its own row — an engagement
+    # with one strand renders exactly one and looks unchanged.
     plan_text = (BRAIN / "plan.md").read_text()
-    stages = []
-    for m in re.finditer(r"^## (Stage (\d+) · [^—\n]+?) — \*?\*?(.+?)\*?\*?\s*$", plan_text, re.M):
-        label, num, state = m.group(1), m.group(2), m.group(3)
-        cls = "here" if "current" in state else ("done" if "exited" in state else "")
-        short = label.split("·", 1)[1].strip() if "·" in label else label
-        stages.append(f'<div class="stage {cls}" title="{html.escape(state)}">'
-                      f'<b>{num}</b>{html.escape(short)}</div>')
+    rails = []
+    if re.search(r"^### Stage \d", plan_text, re.M):
+        chunks = [(m.group(1).strip(), m.group(2)) for m in
+                  re.finditer(r"^## (?!What this plan)(.+?)\s*$(.*?)(?=^## |\Z)", plan_text,
+                              re.M | re.S)]
+    else:
+        chunks = [(None, plan_text)]
+    rail_key = {v.lower(): k for k, v in PROJECT_LABEL.items()}
+    rail_key.update({k.lower(): k for k in PROJECT_KEYS})
+    for label, body in chunks:
+        steps = []
+        for m in re.finditer(r"^#{2,3} (Stage (\d+) · [^—\n]+?) — \*?\*?(.+?)\*?\*?\s*$",
+                             body, re.M):
+            name, num, state = m.group(1), m.group(2), m.group(3)
+            cls = "here" if "current" in state else ("done" if "exited" in state else "")
+            short = name.split("·", 1)[1].strip() if "·" in name else name
+            steps.append(f'<div class="stage {cls}" title="{html.escape(state)}">'
+                         f'<b>{num}</b>{html.escape(short)}</div>')
+        if not steps:
+            continue
+        head = (f'<div class="raillabel">{html.escape(label)}</div>'
+                if label and len(chunks) > 1 else "")
+        key = rail_key.get((label or "").lower(), "all")
+        rails.append(f'<div class="rail" data-project="{html.escape(key)}">{head}'
+                     f'<div class="stages">{"".join(steps)}</div></div>')
 
     out = [f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -1234,7 +1361,8 @@ def build() -> str:
     <code>python3 brain/feed.py</code></div>
 </div>
 
-<div class="stages">{''.join(stages)}</div>
+{''.join(rails)}
+{project_filter()}
 """]
 
     # ── now ──────────────────────────────────────────────────────────────────────────────────
@@ -1242,7 +1370,8 @@ def build() -> str:
                f'<div class="nowbody">{render_md(now_md, g)}</div></div>')
 
     # ── the bar ──────────────────────────────────────────────────────────────────────────────
-    if conds:
+    for bar in bars:
+        conds, stage = bar["conds"], bar["stage"]
         met = sum(1 for c in conds if c["status"] == "met")
         rows = []
         words = {"met": "met", "partly": "partly", "unknown": "not met"}
@@ -1257,11 +1386,14 @@ def build() -> str:
                 f'<div class="ev">{ev}</div>'
                 f'<div class="more">{_inline(c["detail"], g)}</div></div></div>')
         out.append(
-            '<div class="panel"><div class="kicker">what has to be true to leave '
+            f'<div class="panel" data-project="{html.escape(bar["project"] or "all")}">'
+            '<div class="kicker">'
+            + (f'{html.escape(bar["label"])} · ' if bar["label"] and len(bars) > 1 else "")
+            + 'what has to be true to leave '
             f'{html.escape(stage.split("·")[0].strip())} '
             f'<span class="pill {"ok" if met == len(conds) else "warn"}">{met} of {len(conds)}'
             '</span></div>'
-            '<p style="font-size:13.5px;color:var(--dim);margin:-2px 0 10px">'
+            '<p style="font-size:13.5px;color:var(--ink-3);margin:-2px 0 10px">'
             'Tap a condition for the full wording from the decision that owns it.</p>'
             + "".join(rows) + '</div>')
 
@@ -1271,7 +1403,7 @@ def build() -> str:
     write_canvas(gnodes, gedges)
     out.append('<div class="panel"><div class="kicker">the brain · '
                f'{len(gnodes)} note(s) and tag(s), how they connect</div>'
-               '<p style="font-size:13.5px;color:var(--dim);margin:-2px 0 10px">'
+               '<p style="font-size:13.5px;color:var(--ink-3);margin:-2px 0 10px">'
                'Solid lines are links between notes; dashed lines are a shared tag. '
                'Hover a node for what it says, click to open the file.</p>'
                + graph_svg(gnodes, gedges, g) + '</div>')
@@ -1310,8 +1442,9 @@ def build() -> str:
             fold_label = (f"you said: {given}" if given
                           else f"{item['status']} · open it")
         out.append(f"""<div class="card{'' if live else ' answered'}"
-  data-id="{item['id']}" data-title="{html.escape(item['title'])}">
-  <div class="cardhead"><span class="idtag">{item['id']}</span>{answered_pill}</div>
+  data-id="{item['id']}" data-project="{html.escape(item['project'])}"
+  data-title="{html.escape(item['title'])}">
+  <div class="cardhead"><span class="idtag">{item['id']}</span>{chip(item['project'])}{answered_pill}</div>
   <h3>{_inline(item['title'], g)}</h3>
   <details class="fold"{' open' if live else ''}>
   <summary>{_inline(fold_label, g)}</summary>

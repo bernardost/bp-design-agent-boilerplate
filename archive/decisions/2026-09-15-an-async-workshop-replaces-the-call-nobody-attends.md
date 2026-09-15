@@ -1,7 +1,7 @@
 ---
 tags: [process, brief, research]
 ---
-# 0019 — An async workshop replaces the call nobody attends
+# [[an-async-workshop-replaces-the-call-nobody-attends]] — An async workshop replaces the call nobody attends
 Date: 2026-09-15 · Status: accepted
 
 ## Context

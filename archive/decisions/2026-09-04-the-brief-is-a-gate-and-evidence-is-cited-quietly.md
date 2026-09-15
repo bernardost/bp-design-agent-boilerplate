@@ -1,7 +1,7 @@
 ---
 tags: [brief, process, craft]
 ---
-# 0014 — The brief is a gate, and evidence is cited quietly
+# [[the-brief-is-a-gate-and-evidence-is-cited-quietly]] — The brief is a gate, and evidence is cited quietly
 Date: 2026-09-04 · Status: accepted
 
 ## Context

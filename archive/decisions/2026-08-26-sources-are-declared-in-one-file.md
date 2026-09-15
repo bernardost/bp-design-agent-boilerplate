@@ -1,7 +1,7 @@
 ---
 tags: [integrations, onboarding, brain-structure]
 ---
-# 0010 — External sources are declared in one file and land as dated briefings
+# [[sources-are-declared-in-one-file]] — External sources are declared in one file and land as dated briefings
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -28,7 +28,7 @@ existing rule governs: *label evidence, never launder it.*
 - **Every pulled line carries who said it, where, and when**, with a link where one exists.
   A summary with no attribution is laundering and is not written.
 - `brain/briefings/` holds third-party words, so it falls under the confidentiality rule in
-  [[0006-a-private-remote-and-push-as-you-go]]: if the project's material is confidential
+  [[a-private-remote-and-push-as-you-go]]: if the project's material is confidential
   and the remote is not private, briefings are gitignored.
 
 ## Consequences

@@ -61,7 +61,9 @@ Write `brain/briefings/YYYY-MM-DD.md`: the window, the sources actually searched
 items, and the gaps. Frontmatter tags from `brain/tags.md`.
 
 Then route out, exactly as `/braindump` does — the briefing is a **dated record and owns
-nothing**:
+nothing**. A briefing legitimately spans the engagement, so the file itself carries no project
+key and **every item routed out of it names its strand**. Where the source does not say which,
+ask; collect the ambiguous ones into one question rather than asking per item:
 
 - a decision someone else made that we must live with → `brain/decisions/`
 - something needing the owner's answer → `brain/feed-items.md`, stating what it blocks

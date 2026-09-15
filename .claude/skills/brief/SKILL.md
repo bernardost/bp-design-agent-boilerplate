@@ -63,7 +63,7 @@ them properly:
   soften this list. An early brief with two unknowns has not been checked.
 - **`brain/plan.md`** — the stage arc. Stage 1 is current; later stages get a name and an
   entry event, never a bar.
-- **The current stage's exit bar** — a numbered decision, written now if it does not exist.
+- **The current stage's exit bar**, per project — a decision each, written now if missing.
   Without it the page prints "this stage has no exit bar", which is accurate and is the thing
   to fix, not to hide.
 - **`brain/tasks.md`** — the immediate next steps as real task lines, with `bar` on the ones
@@ -102,10 +102,10 @@ on a yes is a brief waiting.
 
 ## 6 · On approval
 
-1. A numbered decision in `brain/decisions/`: what was approved, what the owner changed on the
+1. A decision in `brain/decisions/`: what was approved, what the owner changed on the
    way through, and what it commits the project to. This is the record of the yes.
 2. Change the brief's status line to name it:
-   `Status: approved 2026-09-04 · [[0004-the-brief-is-approved]]`
+   `Status: approved 2026-09-04 · [[the-brief-is-approved]]`
 3. Re-render, `python3 brain/doctor.py`, commit and push.
 
 Corrections the owner makes are the valuable part of this whole exercise. Each one goes into

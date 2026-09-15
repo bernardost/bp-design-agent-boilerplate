@@ -1,7 +1,7 @@
 ---
 tags: [review, craft, concept, process]
 ---
-# 0012 — Lenses, two critics, and a place to diverge
+# [[lenses-two-critics-and-a-place-to-diverge]] — Lenses, two critics, and a place to diverge
 Date: 2026-09-01 · Status: accepted
 
 ## Context
@@ -60,11 +60,11 @@ Builder, helper and reviewer stay as they are. What was missing was not another 
 
 ## Consequences
 
-- **Supersedes the split in 0005, and keeps its principle.** 0005 said invariant belongs in
+- **Supersedes the split in [[the-reviewers-lens-is-a-project-file]], and keeps its principle.** [[the-reviewers-lens-is-a-project-file]] said invariant belongs in
   the skill and variable in a project file; that was right, and it assumed one variable. The
   line moved: stage discipline and provenance turn out to be *record-lens* content rather than
   skill content, because a craft pass must not read them.
-- The reviewer skill is now identical in every clone *and* extensible per project, which 0005
+- The reviewer skill is now identical in every clone *and* extensible per project, which [[the-reviewers-lens-is-a-project-file]]
   could only half deliver.
 - **New rot to watch, and `doctor.py` reports both:** a `craft.md` never filled in, and an
   exploration whose surviving direction never produced a decision. Neither is a FAIL — an

@@ -1,7 +1,7 @@
 ---
 tags: [terminology]
 ---
-# 0002 — Say "decision", not "ADR"
+# [[say-decision-not-adr]] — Say "decision", not "ADR"
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -24,5 +24,5 @@ not. `0000-adr-template.md` is renamed `0000-decision-template.md`.
 ## Consequences
 
 - Terminology cost is one rename; nothing about the record changes.
-- "decision 0007" is now the citation form. The restate-the-content rule still applies:
+- "decision [[wrap-up-is-the-assistants-call]]" is now the citation form. The restate-the-content rule still applies:
   cite the substance, not the number.

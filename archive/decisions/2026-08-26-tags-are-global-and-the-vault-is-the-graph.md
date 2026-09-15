@@ -1,7 +1,7 @@
 ---
 tags: [brain-structure, interface]
 ---
-# 0004 — Tags are global to the brain, and the vault is the graph
+# [[tags-are-global-and-the-vault-is-the-graph]] — Tags are global to the brain, and the vault is the graph
 Date: 2026-08-26 · Status: accepted
 
 ## Context
@@ -29,7 +29,7 @@ tag is usually legitimate; failing on it would train the owner to ignore the out
 
 Deferred, not rejected: a dependency-free `brain/map.html` (nodes = files, edges = links and
 shared tags, hand-rolled force layout in inline SVG) so the graph is visible without
-Obsidian. It waits on [[0008-the-visual-feed-is-an-experiment-first]] proving the HTML
+Obsidian. It waits on [[the-visual-feed-is-an-experiment-first]] proving the HTML
 surface is worth building on at all.
 
 ## Consequences

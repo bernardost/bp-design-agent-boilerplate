@@ -11,7 +11,7 @@ choices nobody made; filed in `insights/` they would claim a durability they hav
 ## The rules
 
 - **Never edited into a decision.** When a direction is picked, that produces exactly one new
-  numbered file in `brain/decisions/` — *we picked C, here is why, here is what it costs* —
+  `YYYY-MM-DD-slug.md` file in `brain/decisions/` — *we picked C, here is why, here is what it costs* —
   which wiki-links back to this exploration by its filename. That single link is the entire seam
   between diverging and converging, and it is the only one.
 - **Rejected directions stay.** They are the point of keeping the file. A direction that was
@@ -45,6 +45,7 @@ lost, because this file is the record.
 ```markdown
 ---
 tags: [concept, craft]
+project: <key>           # or `all`; omit entirely in a one-project workspace
 ---
 # YYYY-MM-DD · <what was being explored>
 Seed: <the string> · Brief: <one line — what was asked for>

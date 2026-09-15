@@ -1,7 +1,7 @@
 ---
 tags: [review, onboarding]
 ---
-# 0005 — The reviewer's lens is a project file, not skill text
+# [[the-reviewers-lens-is-a-project-file]] — The reviewer's lens is a project file, not skill text
 Date: 2026-08-26 · Status: accepted
 
 ## Context

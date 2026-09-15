@@ -1,7 +1,8 @@
 ---
 tags: []
+project: all
 ---
-# 0000 — Decision template (copy me; do not cite)
+# Decision template (copy me; do not cite)
 Date: YYYY-MM-DD · Status: accepted
 
 ## Context

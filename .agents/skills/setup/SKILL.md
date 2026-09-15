@@ -13,7 +13,7 @@ what "good" means, and where it is going — and should know which commands exis
 
 Run `python3 brain/config.py` and read `brain/decisions/` .
 
-- **A fresh clone** — `project.is_template` is true, or `brain/workspace.toml` still holds
+- **A fresh clone** — `engagement.is_template` is true, or `brain/workspace.toml` still holds
   `{{PLACEHOLDER}}` answers. Full run, including step 3. Set `is_template = false` as part of
   writing the config: that flag is how every later session knows setup has happened.
 - **An already-configured project** — the owner wants to change an answer, add a source, or
@@ -28,10 +28,25 @@ Ask in small groups — two or three questions at a time, not a wall. Take short
 are filling files, not writing a spec. Where the owner shrugs, offer a default and move on.
 Every answer has a named destination, so say where each one landed as you go.
 
-**Identity.** What is the project called? One line: who is building what, for whom, under what
-arrangement? Where does the work actually live — this repo, a Figma file, a site, a deck?
-→ `brain/workspace.toml` (`project.name`, `project.owner`, `project.work_lives`),
-`brain/project-brief.md`, and the identity lines at the top of `AGENTS.md`.
+**Identity.** What is the engagement called — the whole relationship, one client, one owner?
+One line: who is building what, for whom, under what arrangement?
+→ `brain/workspace.toml` (`engagement.name`, `engagement.owner`), `brain/project-brief.md`,
+and the identity lines at the top of `AGENTS.md`.
+
+**Projects.** *"Is this one project, or several strands under one engagement?"* Ask it plainly
+and take the answer at face value; most design engagements carry two or three. For each: what
+it is called, and where its work actually lives — this repo, a Figma file, a site, a deck.
+Give each a short lowercase-kebab key (`portal`, `bioventures`) and say that the key is
+permanent because every record cites it, while the label can change freely.
+→ `brain/workspace.toml` (`projects.keys`, `projects.labels`, `projects.work_lives`), a
+section each in `brain/plan.md`, `brain/now.md` and `brain/tasks.md`, and *The projects* in
+`brain/project-brief.md`.
+
+Explain the consequence in one line, because it changes what every later session does: with
+more than one key, every decision, insight, exploration, workshop, feed item and task names
+its strand, `feed.html` grows a filter, and `doctor.py` fails an untagged record. With one
+key, none of that appears. **A second project can be added later** — write the key, then tag
+what already exists; `doctor.py` lists exactly what is missing.
 
 **People.** Who are the stakeholders — name, role, and what routes to each? Who decides? Who
 has to be kept informed but doesn't decide? → `brain/project-brief.md` (People), **and the
@@ -81,7 +96,7 @@ a capped API key in `.env.agents` — and say plainly that the key is dev-only a
 
 **The arc.** What are the stages, and what is the first one? Offer a design default —
 discovery → concept → design → handoff — and let them rename it. Then the one that matters:
-**what has to be true to leave stage one?** Write the answer as a numbered decision, and point
+**what has to be true to leave stage one?** Write the answer as a decision, one per project, and point
 `brain/plan.md` at it. → `brain/plan.md` plus a new bar decision in `brain/decisions/`.
 
 **Tags.** Seed five or six themes from what they just told you, defined one line each.
@@ -109,8 +124,10 @@ Confirm out loud first, listing what will go. Then:
   is not this project's record.
 - Rewrite `brain/now.md`, `brain/tasks.md`, `brain/open-questions.md`, `brain/feed-items.md`
   from the template shapes, with this project's content.
-- Write the project's own decision 0001: what is being built and why this workspace shape.
-  Then the stage-one bar decision from the interview as 0002.
+- Write the project's own first decision — what is being built and why this workspace shape —
+  then the stage-one bar decision from the interview. Both are
+  `brain/decisions/YYYY-MM-DD-slug.md`, and in a multi-project engagement both name their
+  strand in frontmatter.
 
 The template's decisions are the design rationale for the template. They are not this
 project's decisions, and keeping them would mean the owner's first act is deleting files.

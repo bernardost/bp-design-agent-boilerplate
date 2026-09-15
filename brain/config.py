@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """config.py — read `brain/workspace.toml`, the one place a project constant lives.
 
-    from config import CONFIG, PROJECT_NAME, TRACKER_PREFIX, TASK_LABELS
+    from config import CONFIG, ENGAGEMENT_NAME, PROJECT_KEYS, TRACKER_PREFIX, TASK_LABELS
 
 `doctor.py` and `feed.py` import from here and hold no project constants of their own. That
 is the point: the two used to carry a `TRACKER_PREFIX` each, with nothing checking they
@@ -23,8 +23,12 @@ CONFIG_PATH = BRAIN / "workspace.toml"
 PLACEHOLDER = "{{"  # an unfilled answer from the setup quiz
 
 DEFAULTS: dict = {
-    "project": {"name": "{{PROJECT_NAME}}", "owner": "{{OWNER}}", "work_lives": [],
-                "is_template": False},
+    # The engagement: one client, one owner, one meeting stream. `[project]` is the older
+    # name for this table and is still read — see `load()`.
+    "engagement": {"name": "{{ENGAGEMENT_NAME}}", "owner": "{{OWNER}}", "is_template": False},
+    # The strands of work inside it. One key = a single-project workspace, which pays none
+    # of the tagging or filtering cost. `all` is reserved for engagement-wide records.
+    "projects": {"keys": [], "labels": [], "work_lives": []},
     "tracker": {"name": "{{TRACKER_NAME}}", "prefix": ""},
     "tasks": {"labels": ["design", "research", "content", "handoff", "method",
                          "blocked-on-external", "bar", "deferred"]},
@@ -81,7 +85,33 @@ def load() -> dict:
         data = tomllib.loads(text)
     except ImportError:
         data = _fallback_parse(text)
+    # `[project]` was this table's name before an engagement could hold several strands.
+    # A clone written under the old name keeps working: its keys move to `[engagement]`,
+    # and its singular `name` becomes the workspace's one project key.
+    legacy = data.pop("project", None)
+    if legacy:
+        eng = dict(data.get("engagement") or {})
+        for key in ("name", "owner", "is_template"):
+            if key in legacy and key not in eng:
+                eng[key] = legacy[key]
+        data["engagement"] = eng
+        projects = dict(data.get("projects") or {})
+        if not projects.get("keys"):
+            projects["keys"] = [_slug(legacy.get("name", ""))]
+            projects["labels"] = [legacy.get("name", "")]
+        if legacy.get("work_lives") and not projects.get("work_lives"):
+            projects["work_lives"] = legacy["work_lives"]
+        data["projects"] = projects
     return _merge(DEFAULTS, data)
+
+
+def _slug(name: str) -> str:
+    """A display name reduced to a project key. Only used to migrate an old `[project]`
+    table; keys written by `/setup` are chosen by the owner and never derived."""
+    out = "".join(c.lower() if c.isalnum() else "-" for c in name).strip("-")
+    while "--" in out:
+        out = out.replace("--", "-")
+    return out or "core"
 
 
 def placeholders(cfg: dict | None = None) -> list:
@@ -101,10 +131,25 @@ def placeholders(cfg: dict | None = None) -> list:
 
 CONFIG = load()
 
-PROJECT_NAME = CONFIG["project"]["name"]
-OWNER = CONFIG["project"]["owner"]
-WORK_LIVES = CONFIG["project"].get("work_lives") or []
-IS_TEMPLATE = bool(CONFIG["project"].get("is_template"))
+ENGAGEMENT_NAME = CONFIG["engagement"]["name"]
+OWNER = CONFIG["engagement"]["owner"]
+IS_TEMPLATE = bool(CONFIG["engagement"].get("is_template"))
+
+# The strands. Keys are what records cite; labels are what headings and pages show.
+PROJECT_KEYS = tuple(CONFIG["projects"].get("keys") or [])
+_labels = list(CONFIG["projects"].get("labels") or [])
+# A short `labels` list is not an error — a key with no display name shows as itself.
+PROJECT_LABEL = {k: (_labels[i] if i < len(_labels) and _labels[i] else k)
+                 for i, k in enumerate(PROJECT_KEYS)}
+# `all` is always a valid value on a record: it governs the whole engagement.
+PROJECT_VALUES = PROJECT_KEYS + ("all",)
+# The one switch every check reads. Below two strands there is nothing to mix up, so the
+# tagging and filtering stay invisible; they arrive with the second key and not before.
+MULTI_PROJECT = len(PROJECT_KEYS) > 1
+WORK_LIVES = CONFIG["projects"].get("work_lives") or []
+
+# Page titles and kickers still want one name. The engagement is that name.
+PROJECT_NAME = ENGAGEMENT_NAME
 TRACKER_NAME = CONFIG["tracker"]["name"]
 # "" in the file means no tracker; None is what the scripts test for.
 TRACKER_PREFIX = CONFIG["tracker"]["prefix"] or None
@@ -125,3 +170,6 @@ if __name__ == "__main__":
     print(json.dumps(CONFIG, indent=2))
     miss = placeholders(CONFIG)
     print("\nunfilled: " + (", ".join(miss) if miss else "none — run /setup to change answers"))
+    print("projects: " + (", ".join(f"{k} ({PROJECT_LABEL[k]})" for k in PROJECT_KEYS)
+                          or "none declared — /setup writes them")
+          + ("  [multi-project: records carry `project:`]" if MULTI_PROJECT else ""))

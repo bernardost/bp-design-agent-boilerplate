@@ -9,6 +9,12 @@ Read (do not guess from memory): `brain/now.md`, `brain/plan.md`,
 `brain/open-questions.md`, `brain/tasks.md`, and the three most recent files
 in `brain/decisions/`.
 
+**Group the readout by project** when `[projects]` in `brain/workspace.toml` holds more than
+one key: each strand gets its stage, its open questions and its tasks under its own heading.
+An engagement-wide item (`project: all`) goes in a short section of its own at the end. Never
+merge two strands into one list — the owner reads this to decide where to spend the next hour,
+and a blended list makes that decision for him badly.
+
 Output one screen, no more:
 
 - **Focus** — from now.md, one line, with the current stage and its bar

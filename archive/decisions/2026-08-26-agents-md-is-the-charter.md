@@ -1,7 +1,7 @@
 ---
 tags: [portability, template-shape]
 ---
-# 0009 — AGENTS.md is the charter; CLAUDE.md imports it
+# [[agents-md-is-the-charter]] — AGENTS.md is the charter; CLAUDE.md imports it
 Date: 2026-08-26 · Status: accepted
 
 ## Context

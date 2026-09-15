@@ -1,7 +1,7 @@
 ---
 tags: [process]
 ---
-# 0018 — Focus mode is the default, and the final message carries everything
+# [[focus-mode-is-the-default]] — Focus mode is the default, and the final message carries everything
 Date: 2026-09-15 · Status: accepted
 
 ## Context
@@ -12,7 +12,7 @@ turn. The owner wants it on by default:
 > *"If that could be the standard way of working, I think that would be nice, but the agent
 > should tell the user that /focus can be switched off."* ^[owner · session · 2026-09-15]
 
-It fits what decision 0013 already established. That decision split the reply into a zone of
+It fits what decision [[the-reply-has-two-zones]] already established. That decision split the reply into a zone of
 one-line process notes and a zone of things the owner has to act on, because the two were
 arriving mixed. Focus mode enforces the same split at the harness level: the process zone
 simply is not shown.
@@ -35,7 +35,7 @@ nothing the final message does not.
 
 ## Consequences
 
-- 0013's two-zone rule is now the mechanism behind a harness feature rather than only a style
+- [[the-reply-has-two-zones]]'s two-zone rule is now the mechanism behind a harness feature rather than only a style
   preference, which makes it harder to drift away from.
 - The box at the end of a reply matters more, not less: under focus mode it is the only place
   the owner's half of the session appears.

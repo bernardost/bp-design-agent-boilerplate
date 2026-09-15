@@ -1,7 +1,7 @@
 ---
 tags: [process]
 ---
-# 0020 — The prose rules are embedded, not vendored
+# [[stop-slop-is-embedded-not-vendored]] — The prose rules are embedded, not vendored
 Date: 2026-09-15 · Status: accepted
 
 ## Context

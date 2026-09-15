@@ -1,7 +1,7 @@
 ---
 tags: [process]
 ---
-# 0016 — Close is one command, and a few minutes
+# [[close-is-one-command-and-a-few-minutes]] — Close is one command, and a few minutes
 
 Date: 2026-09-14 · Status: accepted
 

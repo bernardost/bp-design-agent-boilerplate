@@ -1,7 +1,7 @@
 ---
 tags: [process]
 ---
-# 0013 — The reply has two zones, and the owner's half is in a box
+# [[the-reply-has-two-zones]] — The reply has two zones, and the owner's half is in a box
 Date: 2026-09-04 · Status: accepted
 
 ## Context

@@ -16,6 +16,7 @@ costs an afternoon once it is built.
 ```markdown
 ---
 tags: [brief, research]
+project: <key>           # or `all`; omit entirely in a one-project workspace
 ---
 # Async workshop — <topic>
 For: <name, role> · Sent: YYYY-MM-DD · Lives at: <url>
