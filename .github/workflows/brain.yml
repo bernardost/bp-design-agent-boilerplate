@@ -1,0 +1,27 @@
+# The brain's own checks, on every push and pull request.
+#
+# `doctor.py` lints the content of the brain; `test_brain.py` lints the tools that render and
+# migrate it. Both are stdlib-only, so there is nothing to install and the run takes seconds.
+# A clone inherits this file and starts checked from its first commit.
+name: brain
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # `doctor.py` reads git history to date files. A shallow clone dates everything
+          # to the checkout and the freshness report goes quiet.
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: doctor
+        run: python3 brain/doctor.py
+      - name: tests
+        run: python3 brain/test_brain.py

@@ -34,6 +34,7 @@ import hashlib
 import html
 import math
 import json
+import os
 import re
 import subprocess
 import sys
@@ -112,7 +113,11 @@ def cite_list_html() -> str:
     rows = []
     for c in CITES:
         label = html.escape(c["label"])
-        body = (f'<a href="{c["url"]}" target="_blank" rel="noreferrer">{label}</a>'
+        # `url` was escaped once, on the way into `_inline`, so it is already attribute-safe.
+        # Escaping it again here turns a `&` in a timestamped link into `&amp;amp;` and
+        # silently changes the query string — which is how the link stops working.
+        body = (f'<a href="{safe_url(c["url"])}" target="_blank" '
+                f'rel="noreferrer">{label}</a>'
                 if c["url"] else f'{label} <span class="nolink">no link recorded</span>')
         rows.append(f'<li id="src-{c["n"]}"><span class="n">{c["n"]}</span>{body}</li>')
     return f'<ol class="srclist">{"".join(rows)}</ol>'
@@ -157,21 +162,34 @@ def glossary() -> dict:
     g: dict = {}
 
     for path in sorted((BRAIN / "decisions").glob("*.md")):
-        m = re.match(r"^(\d{4})-", path.name)
-        if not m:
+        if path.stem.startswith("0000"):
+            continue
+        # A dated decision is keyed by its slug — the identity the charter tells prose to cite —
+        # and by its full stem. It is NEVER keyed by its leading four digits: those are the
+        # year, and keying on them would turn every mention of "2026" into a link to whichever
+        # decision sorted last that year. A legacy `NNNN-` file keeps its bare-number key,
+        # because a tree mid-migration still cites it that way.
+        dated = re.match(r"^(\d{4}-\d{2}-\d{2})-(.+)$", path.stem)
+        legacy = re.match(r"^(\d{4})-(?!\d{2}-\d{2})(.+)$", path.stem)
+        if not (dated or legacy):
             continue
         text = path.read_text()
-        head = re.search(r"^#\s*(\d{4})\s*[—-]\s*(.+)$", text, re.M)
-        title = head.group(2).strip() if head else path.stem
+        head = re.search(r"^#\s*(?:\d{4}\s*[—-]\s*)?(.+)$", text, re.M)
+        title = head.group(1).strip() if head else path.stem
         status = re.search(r"^Date:.*·\s*Status:\s*(.+)$", text, re.M)
-        g[m.group(1)] = {
-            "kind": "decision " + m.group(1),
+        entry = {
+            "kind": "decision",
             "title": title,
             "gloss": _first_para(text, after="## Decision"),
             "note": (status.group(1).strip() if status else ""),
             "path": path,
         }
-        g[path.stem] = g[m.group(1)]          # the full [[YYYY-MM-DD-slug]] form too
+        if dated:
+            g[dated.group(2)] = entry         # [[the-slug]] — the form prose uses
+        else:
+            entry["kind"] = "decision " + legacy.group(1)
+            g[legacy.group(1)] = entry        # [[0017]] — legacy, mid-migration only
+        g[path.stem] = entry                  # the full [[YYYY-MM-DD-slug]] form too
 
     for path in sorted((BRAIN / "insights").glob("*.md")):
         text = path.read_text()
@@ -231,6 +249,33 @@ def glossary() -> dict:
 # A small markdown renderer — enough for the prose this repo writes, and nothing more
 # ---------------------------------------------------------------------------------------------
 
+SAFE_SCHEME = re.compile(r"^(?:https?:|mailto:)", re.I)
+
+
+def safe_url(url: str) -> str:
+    """An external URL, or `#` if its scheme is not one we are willing to make clickable.
+
+    Source tags are not all written by the owner: `/briefing` routes text in from Slack,
+    mail and meeting recordings, and `feed.html` is opened on a phone. A `javascript:` or
+    `data:` href reaching that page would run as the page. Anything relative is left alone —
+    those are links to files in this repo."""
+    u = url.strip()
+    if not u or u.startswith(("#", "/", ".")):
+        return u
+    if ":" not in u.split("/", 1)[0]:
+        return u                      # no scheme at all: a relative path
+    return u if SAFE_SCHEME.match(u) else "#"
+
+
+def here(path) -> str:
+    """A path written relative to the generated page, never absolute.
+
+    `/Users/<name>/…` in an href breaks the moment the page is opened on any other device —
+    which is the whole reason the workspace has a remote — and prints the owner's directory
+    layout into a file that gets shared."""
+    return os.path.relpath(str(path), str(OUT.parent))
+
+
 def _inline(text: str, g: dict) -> str:
     """Escape → lift every tag out behind a sentinel → emphasise → put the tags back.
 
@@ -250,7 +295,7 @@ def _inline(text: str, g: dict) -> str:
     def ref(key: str, label: str) -> str:
         e = g[key]
         rel = e["path"].relative_to(ROOT)
-        return lift(f'<a class="ref" href="{html.escape(str(e["path"]))}" '
+        return lift(f'<a class="ref" href="{html.escape(here(e["path"]))}" '
                     f'data-title="{html.escape(e["title"])}" '
                     f'data-kind="{html.escape(e["kind"])}" '
                     f'data-note="{html.escape(e.get("note", ""))}" '
@@ -278,7 +323,7 @@ def _inline(text: str, g: dict) -> str:
         inner = m.group(1)
         target = ROOT / inner.rstrip("/")
         if "/" in inner and target.exists():
-            return lift(f'<a class="path" href="{html.escape(str(target))}" '
+            return lift(f'<a class="path" href="{html.escape(here(target))}" '
                         f'title="open {html.escape(inner)}"><code>{inner}</code></a>')
         return lift(f"<code>{inner}</code>")
     out = re.sub(r"`([^`]+)`", code, out)
@@ -293,7 +338,7 @@ def _inline(text: str, g: dict) -> str:
         n = cite_n(label, url)
         # `text` was escaped on entry, so `url` and `label` already are: escaping again here
         # would turn a `&` in a timestamped link into `&amp;amp;`.
-        href = url or f"#src-{n}"
+        href = safe_url(url) if url else f"#src-{n}"
         return lift(f'<a class="ref cite" href="{href}" '
                     + ('target="_blank" rel="noreferrer" ' if url else "")
                     + f'data-kind="source" data-title="{label}" data-note="" '
@@ -615,7 +660,14 @@ def graph_data() -> tuple:
                           "path": path, "tags": _frontmatter_tags(texts[path])})
 
     by_id = {n["id"]: n for n in nodes}
-    numbered = {n["id"][:4]: n["id"] for n in nodes if re.match(r"^\d{4}-", n["id"])}
+    # Bare-number aliases, for a tree still holding legacy `NNNN-` names. The negative
+    # lookahead keeps a dated `2026-09-15-slug` out: its first four digits are the year.
+    numbered = {n["id"][:4]: n["id"] for n in nodes
+                if re.match(r"^\d{4}-(?!\d{2}-\d{2})", n["id"])}
+    # A dated record is aliased by its slug, which is what `[[links]]` in the brain name.
+    slugged = {m.group(1): n["id"] for n in nodes
+               if (m := re.match(r"^\d{4}-\d{2}-\d{2}-(.+)$", n["id"]))}
+    numbered.update(slugged)
 
     for path, text in texts.items():
         src = path.stem

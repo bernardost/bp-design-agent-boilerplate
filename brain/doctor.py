@@ -884,25 +884,29 @@ def _last_touched() -> dict:
 
     mtime alone is wrong in a fresh clone — checkout stamps every file with the clone time,
     so nothing would ever look stale. git alone is wrong for edits you have not committed
-    yet. The later of the two is right in both cases, and degrades to mtime outside a repo."""
+    yet. The later of the two is right in both cases, and degrades to mtime outside a repo.
+
+    Values are full ISO timestamps, not dates. At date granularity a decision written an hour
+    after `now.md` was rewritten reads as *not* newer, which silences the freshness report for
+    the rest of the day — and the rest of the day is exactly when a long session drifts."""
     from datetime import datetime as _dt
     dates: dict = {}
     try:
         out = subprocess.run(
-            ["git", "-C", str(ROOT), "log", "--pretty=format:%ad", "--date=short",
+            ["git", "-C", str(ROOT), "log", "--pretty=format:%ad", "--date=iso-strict",
              "--name-only"], capture_output=True, text=True, timeout=20)
         current = None
         for line in out.stdout.splitlines():
             line = line.strip()
-            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", line):
-                current = line
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}T[\d:]{8}[+-][\d:]+", line):
+                current = line[:19]
             elif line and current:
                 dates.setdefault(line, current)
     except Exception:
         pass
     for p in md_files(SCAN_DIRS):
         r = rel(p)
-        mt = _dt.fromtimestamp(p.stat().st_mtime).strftime("%Y-%m-%d")
+        mt = _dt.fromtimestamp(p.stat().st_mtime).strftime("%Y-%m-%dT%H:%M:%S")
         dates[r] = max(dates.get(r, mt), mt)
     return dates
 
@@ -950,12 +954,12 @@ def report_now_freshness():
     newer = sorted(((d, f) for f, d in dates.items()
                     if f != now_rel and f.startswith("brain/") and d > now_date), reverse=True)
     if not newer:
-        print(f"  now.md     current as of {now_date}")
+        print(f"  now.md     current as of {now_date[:10]}")
         return
-    print(f"  now.md     last written {now_date}; {len(newer)} brain file(s) changed since "
+    print(f"  now.md     last written {now_date[:10]}; {len(newer)} brain file(s) changed since "
           f"— run /close")
     for d, f in newer[:4]:
-        print(f"               {d}  {f}")
+        print(f"               {d[:10]}  {f}")
     if len(newer) > 4:
         print(f"               … and {len(newer) - 4} more")
 

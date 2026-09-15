@@ -51,6 +51,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/feed-items.md` | decisions awaiting the owner, rendered into `feed.html` |
 | `brain/doctor.py` | lints the brain: hard FAILs for rules with no exceptions, reports for the rest |
 | `brain/redate.py` | one-way migration of an older `NNNN-` decision log to dated filenames |
+| `brain/test_brain.py` | what `doctor.py` cannot check about itself: links resolve, migrations keep every citation, pages ship no unsafe or absolute URLs, two projects stay separate |
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
@@ -68,7 +69,8 @@ of work as it goes, so the brain on your phone is never more than one step behin
 - **Files are the truth; outward tools are projections.** The tracker and `feed.html` are
   written outward and never read back as authority.
 - **Enforce with a program, not a README.** The rules that survive are the ones
-  `doctor.py` refuses to let you past.
+  `doctor.py` refuses to let you past — and the tools themselves are held to the same
+  standard by `brain/test_brain.py`, which GitHub Actions runs on every push.
 - **Stages end by a bar written on entry.** Otherwise every next step is genuinely useful and
   nothing ever ends.
 - **Tags are global to the brain.** A decision and an insight share one vocabulary, and

@@ -31,7 +31,9 @@ from pathlib import Path
 BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
 
-NUMBERED = re.compile(r"^(?P<num>\d{4})-(?P<slug>[a-z0-9][a-z0-9-]*)$")
+# `(?!\d{2}-\d{2}-)` keeps an already-migrated `2026-09-15-slug` out. Without it the slug
+# group happily eats `09-15-slug`, and a second run dates every file twice.
+NUMBERED = re.compile(r"^(?P<num>\d{4})-(?!\d{2}-\d{2}-)(?P<slug>[a-z0-9][a-z0-9-]*)$")
 DATE_LINE = re.compile(r"^Date:\s*(\d{4}-\d{2}-\d{2})", re.M)
 # Where citations live. Everything else in the tree is generated, vendored, or not ours.
 SCAN_SUFFIXES = {".md", ".py", ".toml", ".html"}
@@ -69,6 +71,12 @@ def plan(folder: Path) -> tuple[dict, list]:
         while stem in taken:
             stem, n = f"{date.group(1)}-{slug}-{n}", n + 1
         taken.add(stem)
+        # Two files claiming one number is the collision this migration exists to end. Report
+        # it rather than letting the dict drop one silently.
+        if m["num"] in renames:
+            skipped.append((path, f"number {m['num']} is already claimed by "
+                                  f"{renames[m['num']][0].name} — rename one by hand first"))
+            continue
         renames[m["num"]] = (path, stem + ".md", slug)
     return renames, skipped
 
@@ -100,6 +108,42 @@ def strip_heading(text: str, slug: str) -> str:
     return re.sub(r"^#\s+\d{4}\s+—\s+", "# ", text, count=1, flags=re.M)
 
 
+def dirty() -> list:
+    """Paths git reports as modified, staged or untracked. Empty outside a repo."""
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain"],
+                           capture_output=True, text=True, timeout=20)
+        if r.returncode != 0:
+            return []
+        return [ln[3:] for ln in r.stdout.splitlines() if ln.strip()]
+    except Exception:
+        return []
+
+
+def verify(renames: dict) -> list:
+    """Every `[[link]]` in the tree, checked against what is now on disk.
+
+    Run after the rename, because the failure this catches is the one an interrupted run
+    leaves behind: citations rewritten to slugs while the files they name still carry
+    numbers. A link that pointed nowhere before the migration is not this tool's fault, so
+    only the slugs it created are checked."""
+    stems, slugs = set(), set()
+    for d in (ROOT / "brain", ROOT / "archive"):
+        for path in d.rglob("*.md") if d.exists() else []:
+            stems.add(path.stem)
+            m = re.match(r"^\d{4}-\d{2}-\d{2}-(.+)$", path.stem)
+            if m:
+                slugs.add(m.group(1))
+    mine = {slug for _, _, slug in renames.values()}
+    broken = []
+    for path in scan_files():
+        for target in re.findall(r"\[\[([^\]|#]+?)\]\]", path.read_text(encoding="utf-8")):
+            ref = target.strip()
+            if ref in mine and ref not in slugs and ref not in stems:
+                broken.append((path.relative_to(ROOT), ref))
+    return broken
+
+
 def git_mv(src: Path, dst: Path) -> bool:
     try:
         r = subprocess.run(["git", "-C", str(ROOT), "mv", str(src), str(dst)],
@@ -113,9 +157,23 @@ def main() -> int:
     apply = "--apply" in sys.argv
     folder = ROOT / "brain" / "decisions"
     if "--dir" in sys.argv:
-        folder = ROOT / sys.argv[sys.argv.index("--dir") + 1]
+        folder = (ROOT / sys.argv[sys.argv.index("--dir") + 1]).resolve()
     if not folder.exists():
         print(f"redate: {folder} does not exist")
+        return 1
+    # A migration that rewrites every citation in the tree has no business writing outside it.
+    if not str(folder).startswith(str(ROOT.resolve())):
+        print(f"redate: {folder} is outside {ROOT} — refusing")
+        return 1
+    # `git diff` is the review, and `git checkout .` is the undo. Neither works on a tree that
+    # already held changes, and this rewrites citations across every file before it renames a
+    # single one — so an interrupted run on a dirty tree has no way back.
+    if apply and (changes := dirty()) and "--force" not in sys.argv:
+        print(f"redate: the tree has {len(changes)} uncommitted change(s). Commit or stash "
+              f"first,\n        so `git diff` reviews the migration and `git checkout .` "
+              f"undoes it.\n        e.g. {', '.join(changes[:3])}"
+              + (" …" if len(changes) > 3 else "") + "\n        --force overrides, and you own "
+              f"the result.")
         return 1
 
     renames, skipped = plan(folder)
@@ -131,6 +189,14 @@ def main() -> int:
     for path, why in skipped:
         print(f"  skipped  {path.name} — {why}")
 
+    # Strip each decision's own `# NNNN — Title` heading BEFORE the citation sweep runs.
+    # The sweep cannot tell a heading from a citation, so left in place the number becomes
+    # `# [[the-slug]] — Title` and the heading is never cleaned.
+    if apply:
+        for _, (path, _, slug) in sorted(renames.items()):
+            path.write_text(strip_heading(path.read_text(encoding="utf-8"), slug),
+                            encoding="utf-8")
+
     touched = 0
     for path in scan_files():
         text = path.read_text(encoding="utf-8")
@@ -143,12 +209,18 @@ def main() -> int:
 
     if apply:
         for num, (path, new_name, slug) in sorted(renames.items()):
-            body = strip_heading(path.read_text(encoding="utf-8"), slug)
-            path.write_text(body, encoding="utf-8")
             dst = path.with_name(new_name)
             if not git_mv(path, dst):
                 path.rename(dst)
-        print(f"\nmigrated {len(renames)} decision(s), {touched} file(s) rewritten.")
+        broken = verify(renames)
+        if broken:
+            print(f"\nFAIL — {len(broken)} citation(s) point at nothing after the rename:")
+            for src, ref in broken[:10]:
+                print(f"  {src} → [[{ref}]]")
+            print("Undo with `git checkout .` and report this.")
+            return 1
+        print(f"\nmigrated {len(renames)} decision(s), {touched} file(s) rewritten, "
+              f"every rewritten link verified.")
         print("Review with `git diff`, then run `python3 brain/doctor.py`.")
     else:
         print(f"\ndry run — {len(renames)} rename(s), {touched} file(s) would be rewritten.")

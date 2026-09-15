@@ -35,7 +35,7 @@ ROOT = BRAIN.parent
 DIR = BRAIN / "explorations"
 
 sys.path.insert(0, str(BRAIN))
-from config import PROJECT_NAME  # noqa: E402
+from config import PROJECT_NAME, MULTI_PROJECT, PROJECT_LABEL  # noqa: E402
 from feed import CSS, FONT_LINK, glossary, render_md  # noqa: E402
 
 SPECIMEN_H = 208   # px — a specimen is a token card, so a fixed frame keeps the grid even
@@ -44,6 +44,14 @@ SPECIMEN_H = 208   # px — a specimen is a token card, so a fixed frame keeps t
 # ---------------------------------------------------------------------------------------------
 # Reading an exploration
 # ---------------------------------------------------------------------------------------------
+
+def project_kicker(ex: dict) -> str:
+    """` · Client Portal`, or nothing at all in a one-project workspace."""
+    key = ex.get("project", "")
+    if not MULTI_PROJECT or not key or key == "all":
+        return ""
+    return " · " + html.escape(PROJECT_LABEL.get(key, key))
+
 
 def parse(path: Path) -> dict:
     """One exploration file → the shape `brain/explorations/README.md` specifies.
@@ -97,6 +105,11 @@ def parse(path: Path) -> dict:
 
     return {
         "path": path, "title": title, "tags": tags,
+        # Which strand of the engagement these directions belong to. Directions are judged
+        # against one project's brief and one project's lens, so a page that does not say
+        # which is a page whose verdicts cannot be checked later.
+        "project": (m.group(1).strip() if fm and (m := re.search(
+            r"^project:\s*(\S+)\s*$", fm.group(1), re.M)) else ""),
         "seed": seed.group(1).strip() if seed else "",
         "brief": brief.group(1).strip() if brief else "",
         "directions": directions, "went": went_text,
@@ -213,7 +226,7 @@ def build(ex: dict, g: dict) -> str:
 {FONT_LINK}<style>{CSS}{PAGE_CSS}</style></head><body>
 <div class="wrap">
 <div class="top">
-  <div class="kicker">{html.escape(PROJECT_NAME)} · exploration</div>
+  <div class="kicker">{html.escape(PROJECT_NAME)}{project_kicker(ex)} · exploration</div>
   <h1>{html.escape(ex["title"])}</h1>
   {f'<p class="brief">{html.escape(ex["brief"])}</p>' if ex["brief"] else ""}
   <div class="meta">generated {stamp} from
