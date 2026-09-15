@@ -23,6 +23,18 @@ work starts, and evidence is cited quietly, which is how the absolute rule about
 evidence stops destroying the documents it applies to. `0015` — everything for the owner lives
 in the repo, prompted by a drafted email saved to a scratch directory he had no way to find.
 
+**`0016`** is separate: `/close` became one command and a few minutes, with `brain/render.py`
+standing in for the four scripts it used to run by hand.
+
+**`0017`–`0019`** came from the same source a fortnight later: the owner ran the workspace on
+another project and sent back three things. `0017` — parallel sessions take a git worktree
+unprompted, because an agent that stops to ask about the tabs he opened on purpose is a tax on
+the way he actually works. `0018` — focus mode is assumed, so the final message is the only
+message, which is decision `0013` enforced by the harness rather than by style. `0019` — an
+async workshop replaces the call nobody attends, and the rule that makes it safe is recording
+"chose" separately from "let stand", so a guess of ours never hardens into a client
+requirement.
+
 They were originally the live record, on the reasoning that the template should dogfood its
 own rules and `/setup` would blank the brain on clone. The owner changed that on 2026-08-27:
 **the boilerplate ships blank**, so a clone is clean whether or not `/setup` is ever run, and

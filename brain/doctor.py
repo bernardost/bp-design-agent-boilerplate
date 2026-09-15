@@ -50,7 +50,7 @@ TASK_LINE = re.compile(
 
 # Directories whose .md files participate in [[link]] resolution.
 LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps",
-             BRAIN / "explorations"]
+             BRAIN / "explorations", BRAIN / "workshops"]
 
 # Files that describe what is true *now*. Only these may not carry a dead pointer.
 # A dated record (a decision, an insight, a findings file) citing a since-superseded decision was
@@ -388,7 +388,8 @@ def report_tags():
                 vocab[m.group(1)] = m.group(2)
 
     for path in md_files([BRAIN / "decisions", BRAIN / "insights", BRAIN / "braindumps",
-                          BRAIN / "briefings", BRAIN / "explorations"]):
+                          BRAIN / "briefings", BRAIN / "explorations",
+                          BRAIN / "workshops"]):
         if path.name == "README.md" or path.stem.startswith("0000"):
             continue
         text = path.read_text(encoding="utf-8")

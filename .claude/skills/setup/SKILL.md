@@ -103,7 +103,7 @@ Confirm out loud first, listing what will go. Then:
 
 - The boilerplate ships blank, so usually there is nothing to clear. Check anyway:
   `brain/braindumps/`, `brain/decisions/`, `brain/insights/`, `brain/reviews/`,
-  `brain/briefings/`, `brain/explorations/` should hold only `README.md` files and
+  `brain/briefings/`, `brain/explorations/`, `brain/workshops/` should hold only `README.md` files and
   `brain/decisions/0000-decision-template.md`. Empty anything else.
 - `rm -rf archive/` if it is present — it holds the boilerplate's own design rationale, which
   is not this project's record.
@@ -160,7 +160,20 @@ whole charter at them.
   just wrote.
 - `/briefing` — pulls the sources you just declared into a dated, attributed catch-up, then
   files what matters. Use it after time away.
+- `/workshop` — for when a stakeholder will not get on a call. Turns the questions into
+  screens they answer on a phone, in pieces, each one arriving with our assumption already
+  selected so agreeing is the fastest way through. A half-finished run is still data, and
+  anything they let stand is recorded as our guess, never as their words.
 - `/setup` — re-runnable. This, again, to change an answer or add a source.
+
+Mention two working defaults, in a line each, and then stop:
+
+- **Focus mode.** This workspace is written for Claude Code's `/focus` — you see only the
+  final message of each turn, and that message carries everything you need. Suggest turning it
+  on, and say plainly that `/focus` turns it back off if they want to watch the work.
+- **Parallel tabs.** Open as many sessions as they like. One that spots another working in
+  this repo takes a git worktree on its own and says so in one line; it will never stop to ask
+  what to do about it.
 
 Mention two things about the record, briefly: decisions get logged **unprompted** as they are
 reached, and `brain/feed.html` draws the brain as a graph of notes and shared tags, so the

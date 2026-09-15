@@ -81,12 +81,34 @@ is configured, `git pull` before you touch anything — another device may have 
   without being asked and without waiting for the end of the session. The reason is
   concrete: the same workspace opens in Claude Code on the web and on the owner's phone, and
   it is only as current as the last push.
+- **Parallel agents get a worktree, not a conversation about one.** The owner runs several
+  sessions at once, in separate tabs, deliberately — that is the preferred way to parallelize
+  here, not one agent spawning another. When anything says a second session is already in this
+  repo — `git worktree list` showing more than one, a dirty tree you did not dirty, a branch or
+  commit that appeared mid-session, another local agent session, or the owner saying so —
+  **take a worktree and say one line**: *"Another session is working here, so I'm taking a
+  worktree at `<path>` to keep us out of each other's way."* Do not ask, do not present
+  options, do not make the owner explain the situation he set up on purpose. With no sign of a
+  second session, still offer it in one sentence when the task is one he might plausibly run
+  alongside something else — an offer, ignorable, never a question he has to answer.
+  Mechanics: `git worktree add ../<repo>-wt/<slug> -b <slug>`, outside the repo so nothing here
+  scans it, removed with `git worktree remove` once the branch lands. In Claude Code
+  `EnterWorktree` does the same thing; use it.
+  **The brain is where the collision happens.** Two sessions rewriting `now.md` conflict every
+  time, so a worktree session does the work and leaves the current-state files — `now.md`,
+  `tasks.md`, `feed-items.md` — to whichever session merges. Decisions, insights and drafts are
+  new files, they merge clean, and they get written as usual.
 - **Say when it's worth wrapping.** The owner should never have to guess whether the next
   session will know what is happening. One line, the moment it is true: *"worth wrapping
   here — <what is unrecorded>."* It is true when a routed decision or insight has outrun
   `now.md`, when a task changed status and the file doesn't say so, when the work hits a
   natural seam, or when your own summary of the session has become the only place part of it
   lives. Say it once per seam; it is ignorable by design.
+- **When the work is waiting on a person, propose the async version.** A discovery call
+  nobody attends, a document that never arrives, a list of questions that goes unanswered:
+  say once that `/workshop` turns those questions into assumptions the stakeholder confirms
+  on his own phone, in pieces, and that a half-finished run is still data. Say it once. It is
+  an offer, not a campaign.
 - **Contradiction flagging.** New information or instructions that conflict with a logged
   decision or the project record: raise it explicitly before proceeding.
 - **Reviews.** When a file in `brain/reviews/` has findings awaiting you, answer each one in
@@ -113,7 +135,8 @@ is configured, `git pull` before you touch anything — another device may have 
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
   `brain/glossary.md`** · what "good" means here, one file per domain →
   `brain/lenses/` · **directions considered but not chosen → `brain/explorations/`** ·
-  watched external sources → `brain/sources.md` · every project constant →
+  **questions put to a stakeholder as an async workshop, and the answers that come back →
+  `brain/workshops/`** · watched external sources → `brain/sources.md` · every project constant →
   `brain/workspace.toml`.
 - **Tags are global to the brain.** One vocabulary across decisions, insights, braindumps and
   briefings — a decision and an insight sharing a tag is the point. Frontmatter
@@ -160,6 +183,13 @@ if the owner says so.
 In a long session the owner reads one thing: what he has to do. Everything else is what he
 has to get past to find it. So any reply longer than a few lines has two zones with a line
 between them.
+
+**Focus mode is the default here.** Claude Code's `/focus` hides the tool calls and shows the
+owner only the final message of each turn; this workspace assumes it is on. Say so once, early
+in the first session, in one line — *"writing for focus mode; `/focus` turns it off if you want
+to watch the work"* — and never mention it again. What it changes: the mid-work lines below are
+invisible, so **the final message is the only message.** Everything he needs is in it, nothing
+is ever "as I said above", and a finding that lived only in a tool call did not happen.
 
 **While the work is happening** — one short line per action. No findings, no reasoning, no
 plan for the next tool call. *"Checking the thread."* *"Fixing the two dates."* What you find
@@ -277,7 +307,8 @@ interesting to look at. Ask before departing from this; do not split the differe
 approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
 `/decide <topic>` (capture a decision) · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
-`brain/lenses/`) · `/briefing` (pull the watched sources) · **`/explore` (go wide before
+`brain/lenses/`) · `/briefing` (pull the watched sources) · **`/workshop` (turn questions for
+a stakeholder into something they answer on their phone) · `/explore` (go wide before
 committing to a direction) · `/critique` (score a render against the craft lens until it
 holds up — writes nothing)**.
 

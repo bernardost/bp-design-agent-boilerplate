@@ -44,6 +44,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
 | `brain/lenses/` | what "good" means, one file per domain — `/reviewer` runs one per pass |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
+| `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
 | `brain/references/` | the quality bar as images — measured against, never copied |
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
 | `brain/drafts/` | messages written for you to send — before they go out, and after |
@@ -53,7 +54,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/explore` · `/critique` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -82,6 +83,17 @@ of work as it goes, so the brain on your phone is never more than one step behin
   shows up on the feed with a button that copies it, ready to paste and send. Not a scratch
   directory whose path you would have to be told — that is how a written message becomes an
   unsent one.
+- **When the stakeholder will not show up, move the workshop to his phone.** `/workshop`
+  takes the questions a missed call would have answered and turns them into screens that
+  arrive with our assumption already selected, so the fastest path through is agreeing. A
+  half-finished run is still data, and an answer he let stand is recorded as ours, never
+  quoted as his.
+- **Parallel sessions get worktrees, silently.** Open as many tabs as you like. A session that
+  notices another one working here takes a worktree and says so in one line, instead of
+  stopping to ask you what you would like it to do about the situation you set up on purpose.
+- **Focus mode is assumed.** The charter is written for Claude Code's `/focus`, where you see
+  only the final message of each turn — so that message carries everything, and nothing
+  important lives in a tool call you never opened. `/focus` toggles it off.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
