@@ -67,6 +67,25 @@ route = ""
 # shape of workload that empties an uncapped key.
 env_file = ".env.agents"
 
+[reminders]
+# Where a reminder is actually delivered. **The repo cannot remind anyone.** A session only
+# runs while the owner is at the machine, which is precisely when he does not need reminding,
+# so "I'll remind you" with nothing outside this repo behind it is a promise that silently
+# breaks. A reminder is a projection, like the tracker: `tasks.md` holds the truth and the
+# channel holds the alarm.
+#
+# route: "" (none configured — say so and hand the owner the date, never pretend)
+#        | "calendar"  an event with a notification; fires on the phone (recommended)
+#        | "slack"     a scheduled message; genuinely fires, but 120 days out at most
+#        | "manual"    the assistant never schedules, it only drafts and the owner sets it
+#
+# Gmail is deliberately absent: it can send now and draft, but it cannot send later, so it
+# cannot carry a reminder for a future date. Recording the route here IS the owner's say-so
+# for writing to that channel, so it is not asked every time.
+route = ""
+target = ""                        # calendar id, Slack channel or user id — "" means default
+lead_time = "1 day"                # how far ahead of a deadline the reminder itself fires
+
 [brief]
 # `/brief` renders `brain/brief.html` — the page the owner reads and approves before the work
 # moves. Publishing it as an artifact makes it readable on a phone and shareable with a

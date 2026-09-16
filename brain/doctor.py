@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from config import (  # noqa: E402
     CONFIG, TRACKER_PREFIX, TASK_LABELS, PROJECT_NAME, GIT_REMOTE, IS_TEMPLATE, placeholders,
     MULTI_PROJECT, PROJECT_KEYS, PROJECT_LABEL, PROJECT_VALUES,
+    REMINDER_ROUTE, REMINDER_TARGET, REMINDER_CAN_SCHEDULE,
 )
 
 # chars. "If it would still be true in two weeks, it doesn't belong." A second strand of work
@@ -1071,6 +1072,25 @@ def report_decision_names():
         print(f"               off-format: {stem} — expected YYYY-MM-DD-slug")
 
 
+# ── REPORT ── can anything here actually fire at a future time? ────────────────
+def report_reminders():
+    """Not a failure — a workspace legitimately has no reminder channel. What it must never do
+    is *look* like it has one. An assistant that says "I'll remind you" with nothing outside
+    the repo behind it has made a promise that breaks weeks later, silently, in the one case
+    the owner was relying on it. Printing the route is what keeps that visible."""
+    if not REMINDER_ROUTE:
+        print("  reminders  no route configured — /remind must say so and hand over the date,\n"
+              "             never hold a reminder in a file that fires at nobody")
+        return
+    where = f" → {REMINDER_TARGET}" if REMINDER_TARGET else " → default target"
+    print(f"  reminders  {REMINDER_ROUTE}{where}")
+    if not REMINDER_CAN_SCHEDULE:
+        print(f"             `{REMINDER_ROUTE}` does not fire on its own — /remind drafts, "
+              f"the owner sets it")
+    elif REMINDER_ROUTE == "slack":
+        print("             scheduled messages reach 120 days out; past that, use a calendar")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
@@ -1093,6 +1113,7 @@ def main() -> int:
         report_question_numbers()
         report_tags()
         report_config()
+        report_reminders()
         report_glossary()
         report_lenses()
         report_brief()

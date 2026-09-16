@@ -34,6 +34,9 @@ DEFAULTS: dict = {
                          "blocked-on-external", "bar", "deferred"]},
     "git": {"remote": False, "visibility": "private", "push_each_unit": True},
     "generation": {"route": "", "env_file": ".env.agents"},
+    # Where a reminder is delivered. "" means none is configured, which the assistant has to
+    # say out loud rather than quietly holding the reminder in a file that fires at nobody.
+    "reminders": {"route": "", "target": "", "lead_time": "1 day"},
     "brief": {"publish": False},
     "confidential": {"paths": ["context/"]},
 }
@@ -160,6 +163,13 @@ PUSH_EACH_UNIT = bool(CONFIG["git"]["push_each_unit"])
 CONFIDENTIAL_PATHS = CONFIG["confidential"].get("paths") or []
 # Publishing the brief sends what it quotes to an external service. False until the owner says.
 BRIEF_PUBLISH = bool(CONFIG["brief"].get("publish"))
+# "" means no channel is configured; the scripts and the charter test for None.
+REMINDER_ROUTE = CONFIG["reminders"].get("route") or None
+REMINDER_TARGET = CONFIG["reminders"].get("target") or ""
+REMINDER_LEAD = CONFIG["reminders"].get("lead_time") or "1 day"
+# Only these actually fire at a future time. Gmail can draft and send now, never send later.
+REMINDER_CAN_SCHEDULE = REMINDER_ROUTE in ("calendar", "slack")
+
 # "" means the project generates no assets; the scripts test for None.
 GENERATION_ROUTE = CONFIG["generation"].get("route") or None
 GENERATION_ENV_FILE = CONFIG["generation"].get("env_file") or ".env.agents"

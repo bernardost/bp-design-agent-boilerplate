@@ -53,6 +53,11 @@ outside review found three real bugs in the renderer and the migration that `doc
 structurally unable to see — and two reported bugs that did not exist. Both halves are why the
 decision insists a finding is reproduced before it is fixed.
 
+**`[[a-reminder-leaves-the-repo]]`** answers what happens when the owner says "remind me": the
+repo cannot fire, so the alarm goes to a calendar or a scheduled message and `when.py` resolves
+the date rather than the model. It is the mirror of
+[[everything-for-the-owner-lives-in-the-repo]], and the two together say where the boundary is.
+
 They were originally the live record, on the reasoning that the template should dogfood its
 own rules and `/setup` would blank the brain on clone. The owner changed that on 2026-08-27:
 **the boilerplate ships blank**, so a clone is clean whether or not `/setup` is ever run, and

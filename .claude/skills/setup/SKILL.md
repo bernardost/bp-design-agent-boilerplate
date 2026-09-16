@@ -63,6 +63,15 @@ why each matters — a source with no stated reason produces briefings nobody re
 → `brain/workspace.toml` (`tracker.name`, `tracker.prefix`). Remind them what the tracker is
 here: a projection, written outward at wrap-up and never read back as authority.
 
+**Reminders.** *"When you ask me to remind you of something, where should it actually
+fire?"* Explain the reason in one line, because it is the non-obvious part: this repo cannot
+remind anyone — a session only runs while they are at the machine, which is exactly when they
+do not need reminding. Offer `calendar` (recommended: it reaches the phone and survives the
+laptop being shut), `slack` (genuinely schedules, but 120 days out at most), `manual` (draft
+it, they set it), or none. Say that email is not on the list because Gmail cannot send later.
+→ `brain/workspace.toml` (`reminders.route`, `reminders.target`, `reminders.lead_time`).
+Recording it here IS their say-so for writing to that channel, so it is not asked again.
+
 **Task labels.** Offer the design default — `design` `research` `content` `handoff` `method`
 `blocked-on-external` `bar` `deferred` — and adjust. Keep `bar` and `deferred`: they are what
 makes "is this required before we can move on?" a grep instead of an argument.

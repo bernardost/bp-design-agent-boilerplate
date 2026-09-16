@@ -113,6 +113,26 @@ how a session loses it. Read-only work needs none of this.
   path is unguessable, and a draft email written there is a draft email nobody sends. Messages
   for the owner to send go to `brain/drafts/` (format in its README); a rendered page goes in
   `brain/`. The test is whether they could find it tomorrow without asking you.
+- **A reminder leaves the repo, or it is not a reminder.** *"Remind me to chase Joe on
+  Friday"* is not a note-taking request. This session will not be running on Friday, and a
+  file in `brain/` fires at nobody — so a reminder that lives only here is a promise that
+  breaks quietly, weeks later, in the one case the owner was relying on it. Never answer with
+  *"I'll remind you"* unless something outside this repo now holds the alarm.
+  **Three steps, in order.** Resolve the date with `python3 brain/when.py "<phrase>"` — never
+  in your head, because a model doing date arithmetic at the end of a long session is exactly
+  as reliable as a person doing it, and the failure is silent: it fires on the wrong Friday.
+  **Say the resolved date and its weekday back** — *"Friday 18 Sep, 09:00"* — so a misread
+  dies before it is scheduled. Then deliver it through `reminders.route` in
+  `brain/workspace.toml`, and say which channel now holds it.
+  **With no route configured, say so in one line and hand over the date.** *"Nothing here can
+  fire on Friday — `reminders.route` is unset. It's Friday 18 Sep; want it in your calendar,
+  or shall I set that up?"* An honest refusal costs one sentence; a forgotten commitment costs
+  the thing that was forgotten. The same applies when the owner's phrase cannot be resolved,
+  or when the date is past what the channel can reach — Slack schedules 120 days out and no
+  further.
+  **The task file still owns it.** A reminder is a projection exactly like the tracker:
+  `brain/tasks.md` holds the truth, the channel holds the alarm, and the confirmation the
+  channel returns is written back so the record proves it was really created.
 - **Ears.** A decision stated or reached in conversation → a dated file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -399,7 +419,8 @@ interesting to look at. Ask before departing from this; do not split the differe
 
 `/setup` (first run, and re-runnable) · **`/brief` (state the project back and get it
 approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
-`/decide <topic>` (capture a decision) · `/status` (one-screen readout) · `/close` (wrap up) ·
+`/decide <topic>` (capture a decision) · **`/remind` (put an alarm somewhere that will
+actually fire)** · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
 `brain/lenses/`) · `/briefing` (pull the watched sources) · **`/workshop` (turn questions for
 a stakeholder into something they answer on their phone) · `/explore` (go wide before

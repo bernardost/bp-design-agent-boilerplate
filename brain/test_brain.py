@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 BRAIN = Path(__file__).resolve().parent
@@ -29,9 +30,10 @@ sys.path.insert(0, str(BRAIN))
 
 import feed  # noqa: E402
 import redate  # noqa: E402
+import when  # noqa: E402
 
 SCRIPTS = ("config.py", "doctor.py", "feed.py", "brief.py", "spread.py", "render.py",
-           "redate.py")
+           "redate.py", "when.py")
 CARRIED = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
            "project-brief.md", "tags.md", "glossary.md", "sources.md")
 
@@ -351,6 +353,63 @@ class RewriteUnit(unittest.TestCase):
         self.assertIn("In 2026 we shipped", out)
         self.assertEqual(out.count("[[a-slug]]"), 2)
         self.assertEqual(hits, 2)
+
+
+class When(unittest.TestCase):
+    """A reminder scheduled on the wrong day is worse than none: it replaces the owner's own
+    note and then fails silently. Every case here is a phrase a person actually says."""
+
+    # A Wednesday, deliberately — the weekday bugs hide when "now" is a Monday.
+    NOW = datetime(2026, 9, 16, 18, 0)
+
+    def r(self, phrase):
+        return when.resolve(phrase, self.NOW)
+
+    def test_a_bare_weekday_means_the_next_one(self):
+        got = self.r("friday")
+        self.assertEqual((got.year, got.month, got.day), (2026, 9, 18))
+        self.assertEqual(got.strftime("%A"), "Friday")
+
+    def test_next_weekday_is_the_one_after_that(self):
+        self.assertEqual(self.r("next friday").day, 25)
+
+    def test_the_same_weekday_as_today_never_means_today(self):
+        # Said on a Wednesday, "wednesday" means the coming one — a reminder for a moment
+        # that has already passed today is the bug, not a literal reading.
+        got = self.r("wednesday")
+        self.assertEqual(got.day, 23)
+        self.assertEqual(got.strftime("%A"), "Wednesday")
+
+    def test_clock_times_attach_to_the_day(self):
+        self.assertEqual((self.r("friday 9am").hour, self.r("friday 9am").minute), (9, 0))
+        self.assertEqual(self.r("friday 2pm").hour, 14)
+        self.assertEqual(self.r("friday at 14:30").hour, 14)
+        self.assertEqual(self.r("friday at 14:30").minute, 30)
+        self.assertEqual(self.r("tomorrow 12pm").hour, 12)   # noon, not midnight
+        self.assertEqual(self.r("tomorrow 12am").hour, 0)
+
+    def test_a_bare_day_lands_in_the_morning_not_at_midnight(self):
+        self.assertEqual(self.r("tomorrow").hour, 9)
+
+    def test_relative_spans(self):
+        self.assertEqual(self.r("in 3 days").day, 19)
+        self.assertEqual(self.r("in 2 weeks").day, 30)
+        self.assertEqual(self.r("in 2 hours").hour, 20)
+        self.assertEqual(self.r("in 90 minutes").hour, 19)
+
+    def test_an_explicit_date_wins(self):
+        got = self.r("2026-10-01")
+        self.assertEqual((got.year, got.month, got.day), (2026, 10, 1))
+
+    def test_an_unknown_phrase_refuses_instead_of_guessing(self):
+        for bad in ("the third thursday after the retro", "soon", "before the launch",
+                    "when Joe replies"):
+            with self.assertRaises(when.Unresolved, msg=bad):
+                self.r(bad)
+
+    def test_the_resolved_moment_is_always_in_the_future(self):
+        for phrase in ("friday", "tomorrow", "in 3 days", "wednesday", "next monday"):
+            self.assertGreater(self.r(phrase), self.NOW, phrase)
 
 
 if __name__ == "__main__":

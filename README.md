@@ -56,7 +56,8 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
+| `brain/when.py` | resolves "next friday 9am" to an exact instant, so no reminder is scheduled off arithmetic a model did in its head |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -87,6 +88,12 @@ of work as it goes, so the brain on your phone is never more than one step behin
   attribution, click for the timestamped moment in the recording. Anything the assistant
   worked out rather than heard is marked `^[inferred]` in ochre. The requirement is absolute
   and it costs the reader nothing, which is the only way a requirement like that survives.
+- **A reminder leaves the repo, or it is not a reminder.** "Remind me Friday" is not a
+  note-taking request: the session will not be running on Friday, and a file in `brain/` fires
+  at nobody. `/remind` resolves the date with a program rather than in the model's head, says
+  the weekday back so a misread dies early, and puts the alarm in your calendar or as a
+  scheduled message. With no channel configured it says so in one line and hands you the date,
+  instead of promising something it cannot do.
 - **Nothing for you is left outside the repo.** A drafted email goes to `brain/drafts/` and
   shows up on the feed with a button that copies it, ready to paste and send. Not a scratch
   directory whose path you would have to be told — that is how a written message becomes an
