@@ -64,6 +64,12 @@ own rules and `/setup` would blank the brain on clone. The owner changed that on
 nobody inherits somebody else's project history. The rationale is preserved here rather than
 deleted, because a retired rule is training material.
 
+`design-survey.md` is the second of these surveys: the design skills people use for early-stage
+work, read at source, against what `/explore` and `/critique` already do. Its conclusion is that
+the divergence and critique stages here are already the stronger ones, and the gap is a missing
+middle — no disposable prototype between an exploration specimen and the production build. It
+carries the plan. `ideas.md` is the first survey, on knowledge-management skills.
+
 Read them if you are changing how the workspace itself works. Do not cite them from a live
 file. If you want them gone entirely: `rm -rf archive/` — the git history still has them.
 
