@@ -19,6 +19,20 @@ and the method is the part that carries.
 3. From then on: start sessions by orienting, and let the assistant tell you when it's worth
    wrapping. `/close` does the wrap-up.
 
+## Taking later improvements without losing your work
+
+Step 1 above cuts the git link on purpose, so your project's history starts empty. That leaves
+nothing for an assistant to read when you ask it to check the boilerplate for updates — which
+is why it used to need telling, every time, which files were its own scaffolding.
+
+Now it doesn't. Run **`/update`**. `brain/upstream.py` holds the ownership rules in code:
+`brain/*.py`, the skills and the workflow are the template's and get taken; your decisions,
+insights, tasks, `now.md`, `plan.md`, the craft lens and `workspace.toml` are yours and are
+never even compared. Files that carry both — `AGENTS.md`, `craft.md`, `tags.md` — get listed
+for you to port by hand, never copied over. Anything it does not recognise is treated as
+yours, because a wrong guess in that direction costs a question and a wrong guess in the other
+costs your work.
+
 ## Why a remote is worth setting up
 
 `/setup` will ask, and the reason is not obvious: with a **private** repo, the same workspace
@@ -57,7 +71,8 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
 | `brain/when.py` | resolves "next friday 9am" to an exact instant, so no reminder is scheduled off arithmetic a model did in its head |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
+| `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 

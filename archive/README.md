@@ -58,6 +58,11 @@ repo cannot fire, so the alarm goes to a calendar or a scheduled message and `wh
 the date rather than the model. It is the mirror of
 [[everything-for-the-owner-lives-in-the-repo]], and the two together say where the boundary is.
 
+**`[[ownership-is-code-not-a-briefing]]`** closes the gap a clone has always had: with no git
+link to the boilerplate, which files the template may overwrite lived only in the owner's head
+and got explained to an assistant on every update. `brain/upstream.py` now holds that map in
+code and `/update` is the only sanctioned route.
+
 They were originally the live record, on the reasoning that the template should dogfood its
 own rules and `/setup` would blank the brain on clone. The owner changed that on 2026-08-27:
 **the boilerplate ships blank**, so a clone is clean whether or not `/setup` is ever run, and

@@ -33,6 +33,7 @@ from config import (  # noqa: E402
     CONFIG, TRACKER_PREFIX, TASK_LABELS, PROJECT_NAME, GIT_REMOTE, IS_TEMPLATE, placeholders,
     MULTI_PROJECT, PROJECT_KEYS, PROJECT_LABEL, PROJECT_VALUES,
     REMINDER_ROUTE, REMINDER_TARGET, REMINDER_CAN_SCHEDULE,
+    TEMPLATE_REPO, TEMPLATE_VERSION,
 )
 
 # chars. "If it would still be true in two weeks, it doesn't belong." A second strand of work
@@ -1091,6 +1092,23 @@ def report_reminders():
         print("             scheduled messages reach 120 days out; past that, use a calendar")
 
 
+# ── REPORT ── what this clone last took from the boilerplate ───────────────────
+def report_template():
+    """Where this workspace came from, printed so a session never has to ask — and never has
+    to guess which files it may overwrite. The answer to that lives in `brain/upstream.py`."""
+    if IS_TEMPLATE:
+        print("  template   this IS the boilerplate — /update is for clones of it")
+        return
+    if not TEMPLATE_REPO:
+        print("  template   no upstream recorded — set template.repo in workspace.toml to\n"
+              "             make /update possible")
+        return
+    where = TEMPLATE_VERSION or "never taken an update"
+    print(f"  template   {TEMPLATE_REPO.rsplit('/', 1)[-1]} @ {where}")
+    print("             /update takes template-owned files only; brain/upstream.py owns\n"
+          "             the list, so nobody has to be told it twice")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
@@ -1114,6 +1132,7 @@ def main() -> int:
         report_tags()
         report_config()
         report_reminders()
+        report_template()
         report_glossary()
         report_lenses()
         report_brief()

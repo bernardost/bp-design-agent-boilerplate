@@ -94,6 +94,21 @@ lead_time = "1 day"                # how far ahead of a deadline the reminder it
 # so it is not asked every time.
 publish = false                    # true = also publish the page as an artifact and hand over the link
 
+[template]
+# Where this workspace came from, and what it last took from there. `/update` reads both.
+#
+# A clone has no git link to the boilerplate — `rm -rf .git && git init` is step one, on
+# purpose, so the project's history starts empty. That leaves nothing for a session to read
+# when asked to "check for updates", which is why ownership lives in `brain/upstream.py` and
+# the version lives here. Without them the answer is whatever the assistant assumes, and the
+# assumption that costs you is the one that writes a template placeholder over `now.md`.
+repo = "https://github.com/bernardost/agent-workspace-boilerplate.git"
+version = ""                       # the boilerplate commit last taken; `/update` writes it
+# Paths this project owns that the template does not know about. Added to the never-touch
+# list. There is deliberately no way to widen what *is* overwritten — that direction is the
+# dangerous one and belongs upstream, where everybody gets it.
+extra_project_paths = []
+
 [confidential]
 # Directories holding client or third-party material. Kept out of git from day one, and
 # read-only to the assistant when they are source material from outside.

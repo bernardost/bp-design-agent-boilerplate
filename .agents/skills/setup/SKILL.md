@@ -63,6 +63,14 @@ why each matters — a source with no stated reason produces briefings nobody re
 → `brain/workspace.toml` (`tracker.name`, `tracker.prefix`). Remind them what the tracker is
 here: a projection, written outward at wrap-up and never read back as authority.
 
+**Where this came from.** No question to ask — just record it, because a clone otherwise has
+no link to the boilerplate at all and every later "check for updates" becomes a conversation.
+Run `python3 brain/upstream.py` once: it records the boilerplate commit this clone started
+from in `template.version`, which is the floor the next `/update` measures against. Mention
+`/update` in the tour and say the one thing that matters about it — it takes the template's
+machinery and never touches the project's own work, so nobody has to explain that again.
+→ `brain/workspace.toml` (`template.repo`, `template.version`).
+
 **Reminders.** *"When you ask me to remind you of something, where should it actually
 fire?"* Explain the reason in one line, because it is the non-obvious part: this repo cannot
 remind anyone — a session only runs while they are at the machine, which is exactly when they

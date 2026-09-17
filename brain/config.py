@@ -38,6 +38,9 @@ DEFAULTS: dict = {
     # say out loud rather than quietly holding the reminder in a file that fires at nobody.
     "reminders": {"route": "", "target": "", "lead_time": "1 day"},
     "brief": {"publish": False},
+    # Where this workspace came from and what it last took. `brain/upstream.py` owns the
+    # question of which files the template may overwrite; this owns where and when.
+    "template": {"repo": "", "version": "", "extra_project_paths": []},
     "confidential": {"paths": ["context/"]},
 }
 
@@ -161,6 +164,9 @@ GIT_REMOTE = bool(CONFIG["git"]["remote"])
 GIT_VISIBILITY = CONFIG["git"]["visibility"]
 PUSH_EACH_UNIT = bool(CONFIG["git"]["push_each_unit"])
 CONFIDENTIAL_PATHS = CONFIG["confidential"].get("paths") or []
+TEMPLATE_REPO = CONFIG["template"].get("repo") or ""
+# "" means this clone has never recorded which boilerplate commit it took.
+TEMPLATE_VERSION = CONFIG["template"].get("version") or ""
 # Publishing the brief sends what it quotes to an external service. False until the owner says.
 BRIEF_PUBLISH = bool(CONFIG["brief"].get("publish"))
 # "" means no channel is configured; the scripts and the charter test for None.

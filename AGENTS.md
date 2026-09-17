@@ -61,6 +61,12 @@ how a session loses it. Read-only work needs none of this.
 
 ## Gotchas
 
+- **This workspace was cloned from a boilerplate, and most of it is not the boilerplate's to
+  change.** Asked to check for updates, take one from upstream, or "sync the scaffolding":
+  **run `/update`, and never copy files in by hand.** `brain/upstream.py` holds in code which
+  paths the template owns and which the project does, because the alternative is the owner
+  explaining it every time — and the one time nobody explains it, a template placeholder lands
+  on top of `now.md`. The project's work is never read from upstream at all.
 - `context/`, if the project has one, is source material from outside — read-only, never edit.
 - **Client or third-party materials are confidential.** The remote and its visibility are
   settled once, at `/setup`, and recorded in `brain/workspace.toml`; the paths under
@@ -420,7 +426,8 @@ interesting to look at. Ask before departing from this; do not split the differe
 `/setup` (first run, and re-runnable) · **`/brief` (state the project back and get it
 approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
 `/decide <topic>` (capture a decision) · **`/remind` (put an alarm somewhere that will
-actually fire)** · `/status` (one-screen readout) · `/close` (wrap up) ·
+actually fire)** · **`/update` (take the boilerplate's improvements without losing this
+project's work)** · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
 `brain/lenses/`) · `/briefing` (pull the watched sources) · **`/workshop` (turn questions for
 a stakeholder into something they answer on their phone) · `/explore` (go wide before

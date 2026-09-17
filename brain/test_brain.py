@@ -30,6 +30,7 @@ sys.path.insert(0, str(BRAIN))
 
 import feed  # noqa: E402
 import redate  # noqa: E402
+import upstream  # noqa: E402
 import when  # noqa: E402
 
 SCRIPTS = ("config.py", "doctor.py", "feed.py", "brief.py", "spread.py", "render.py",
@@ -404,6 +405,59 @@ Verdict: rejected — no
             # as on the design being judged.
             self.assertIn("aspect-ratio", html)
             self.assertNotIn("min-height:calc(5 *", html)
+
+
+class Ownership(unittest.TestCase):
+    """The classification `/update` acts on. Getting one of these wrong writes a template
+    placeholder over somebody's real work, which is the failure the whole mechanism exists to
+    prevent — so every path the owner would care about is pinned here by name."""
+
+    def check(self, want, paths):
+        for rel in paths:
+            self.assertEqual(upstream.classify(rel), want, rel)
+
+    def test_the_owners_work_is_never_read_from_upstream(self):
+        self.check("project", [
+            "brain/now.md", "brain/tasks.md", "brain/plan.md", "brain/project-brief.md",
+            "brain/feed-items.md", "brain/open-questions.md", "brain/glossary.md",
+            "brain/sources.md", "brain/workspace.toml",
+            "brain/decisions/2026-09-01-a-real-decision.md",
+            "brain/insights/nested/deep/note.md", "brain/explorations/2026-09-01-x.md",
+            "brain/workshops/w.md", "brain/braindumps/d.md", "brain/briefings/b.md",
+            "brain/drafts/mail.md", "brain/reviews/r.md", "brain/references/bar.png",
+            "context/client/deck.pdf", "brain/feed.html", "archive/notes.md",
+        ])
+
+    def test_the_templates_machinery_is_takeable(self):
+        self.check("owned", [
+            "brain/doctor.py", "brain/feed.py", "brain/upstream.py",
+            ".claude/skills/close/SKILL.md", ".agents/skills/update/SKILL.md",
+            ".github/workflows/brain.yml", "brain/lenses/record.md",
+            # These two live inside a project-owned folder and are still the template's.
+            "brain/decisions/README.md", "brain/decisions/0000-decision-template.md",
+            "brain/insights/README.md",
+        ])
+
+    def test_shared_files_need_a_human(self):
+        self.check("merge", [
+            "AGENTS.md", "CLAUDE.md", "README.md", "brain/lenses/craft.md", "brain/tags.md",
+        ])
+
+    def test_an_unknown_file_is_a_question_not_a_guess(self):
+        # The bias that makes this safe: never OWNED by default, because the cost of a wrong
+        # "owned" is destroyed work and the cost of a wrong "merge" is one question.
+        self.check("merge", ["some/new/thing.md", "scripts/deploy.sh", "brain/newfile.py.bak"])
+
+    def test_compare_never_even_looks_at_project_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            theirs = Path(tmp) / "up"
+            (theirs / "brain").mkdir(parents=True)
+            (theirs / "brain" / "now.md").write_text("# Now\n\ntemplate placeholder\n")
+            (theirs / "brain" / "doctor.py").write_text("# upstream version\n")
+            groups = upstream.compare(theirs)
+            flat = [rel for g in groups.values() for rel, _ in g]
+            self.assertNotIn("brain/now.md", flat)
+            self.assertIn("brain/doctor.py", [rel for rel, _ in groups["owned"]])
 
 
 class RewriteUnit(unittest.TestCase):
