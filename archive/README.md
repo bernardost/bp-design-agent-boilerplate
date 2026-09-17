@@ -63,6 +63,12 @@ link to the boilerplate, which files the template may overwrite lived only in th
 and got explained to an assistant on every update. `brain/upstream.py` now holds that map in
 code and `/update` is the only sanctioned route.
 
+**`[[a-brand-asset-is-obtained-never-reconstructed]]`** comes from the worst incident the
+workspace has produced: an assistant redrew a client's logotype from their own style guide and
+it shipped. The structure was right and only the letterforms were invented, which is why it
+survived review. Extraction, a text-only fallback, a declared source on every brand file, and
+the routing rule for the deferral that let it sit there for eight days.
+
 They were originally the live record, on the reasoning that the template should dogfood its
 own rules and `/setup` would blank the brain on clone. The owner changed that on 2026-08-27:
 **the boilerplate ships blank**, so a clone is clean whether or not `/setup` is ever run, and

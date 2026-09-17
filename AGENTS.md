@@ -68,6 +68,9 @@ how a session loses it. Read-only work needs none of this.
   explaining it every time — and the one time nobody explains it, a template placeholder lands
   on top of `now.md`. The project's work is never read from upstream at all.
 - `context/`, if the project has one, is source material from outside — read-only, never edit.
+- **Brand assets are extracted, never drawn** — the always-on rule below is absolute, and
+  `brain/brand/README.md` plus `python3 brain/extract.py` are how you comply without slowing
+  down.
 - **Client or third-party materials are confidential.** The remote and its visibility are
   settled once, at `/setup`, and recorded in `brain/workspace.toml`; the paths under
   `[confidential]` stay out of git regardless. Never paste their contents into an external
@@ -81,6 +84,33 @@ how a session loses it. Read-only work needs none of this.
 
 ## Always-on behaviors
 
+- **A brand asset is obtained, never reconstructed. This one has no exceptions.** Given a
+  client's brand guidelines, you do not redraw their logotype, wordmark, monogram, icon set or
+  typeface — not in SVG, not in CSS, not in code, not "close enough until the real file
+  arrives", and not because the extraction looked awkward. You also do not eyeball their
+  colours off a rendered page: the values are written in the guidelines, so read them.
+  **It happened, and it is the reason this rule is absolute.** A redrawn mark is wrong in ways
+  review does not catch — the curve is off, the counters are not theirs, the spacing is a
+  guess — and it is wrong while looking plausible enough to ship. It is also somebody's
+  trademark.
+  **The order is: extract, ask, placeholder.** `python3 brain/extract.py <pdf>` inventories a
+  guideline and `--page N --svg` brings the mark out as real vector paths; `--spec` writes out
+  the colours, the fonts and the clearspace and misuse rules that otherwise get skimmed. If it
+  will not come out clean, **ask the owner for the asset pack** — every brand guideline ships
+  with one, and waiting for a file is a delay where shipping a fake mark is an incident.
+  **The fallback is text, and only text.** The client's name set in the working typeface, at
+  the right size and position. Not a traced outline, not a simplified version, not a "monoline
+  interpretation", not the right structure with invented letterforms. **That last one is the
+  worst case, not the honest middle** — getting the lockup right and the letterforms wrong is
+  what makes a fake survive review, because everything a reviewer checks at a glance is
+  correct. Text is obviously provisional, which is the property you want.
+  **"Swap in the real one later" is not a plan unless it is a task today.** A deferred asset
+  with no task, no owner and no line in `now.md` is a permanent one; that is exactly how a
+  drawn wordmark sat in a live portal for eight days. Write the task in the same breath as the
+  decision, with the name of the person who can send the file.
+  Real assets live in `brain/brand/`, each declaring `source: extracted | supplied | own-work`.
+  **`own-work` is the one case where drawing is right** — a mark this engagement is itself
+  designing. Reproducing an existing mark is never own-work, whatever the tooling.
 - **Say which project, and never guess which one.** In an engagement with one project this
   costs nothing and you say nothing. With more than one it is the first thing every reply
   settles, because the owner is carrying several strands at once and reads yours against

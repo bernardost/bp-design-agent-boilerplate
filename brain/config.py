@@ -41,7 +41,7 @@ DEFAULTS: dict = {
     # Where this workspace came from and what it last took. `brain/upstream.py` owns the
     # question of which files the template may overwrite; this owns where and when.
     "template": {"repo": "", "version": "", "extra_project_paths": []},
-    "confidential": {"paths": ["context/"]},
+    "confidential": {"paths": ["context/", "brain/brand/"]},
 }
 
 

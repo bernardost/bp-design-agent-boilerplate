@@ -112,4 +112,4 @@ extra_project_paths = []
 [confidential]
 # Directories holding client or third-party material. Kept out of git from day one, and
 # read-only to the assistant when they are source material from outside.
-paths = ["context/"]
+paths = ["context/", "brain/brand/"]

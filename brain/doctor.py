@@ -123,6 +123,50 @@ def is_template_file(p: Path) -> bool:
     return p.name == "README.md" or p.stem.startswith("0000")
 
 
+# ── FAIL ── a brand mark says where it came from ───────────────────────────────
+# Anything whose filename or markup calls itself a logo. The check cannot tell a traced mark
+# from a real one by looking, so it asks the only question that can be answered honestly:
+# where did this come from.
+BRAND_WORDS = re.compile(r"logo|logotype|wordmark|brandmark|monogram|lockup", re.I)
+DRAWN = re.compile(r"<path\b|<polygon\b|<polyline\b|\bd=\"M", re.I)
+SOURCE_LINE = re.compile(r"source:\s*(extracted|supplied|own-work)\b", re.I)
+
+
+def check_brand_provenance():
+    """A client's logotype was once rebuilt by hand rather than taken from their PDF. A redrawn
+    mark is wrong in ways review does not catch and looks plausible enough to ship, and it is
+    the client's trademark besides.
+
+    Nothing can detect a trace by inspection, so this enforces the declaration instead: any
+    file that presents itself as a brand mark states whether it was `extracted`, `supplied`, or
+    `own-work` — the last being a mark this engagement is designing, which is the one case
+    where drawing it is the job. `brain/brand/README.md` carries the format."""
+    d = BRAIN / "brand"
+    if not d.exists():
+        return
+    missing = []
+    for path in sorted(d.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in (".svg", ".html", ".htm"):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")[:4000]
+        looks_like_a_mark = BRAND_WORDS.search(path.name) or (
+            BRAND_WORDS.search(text) and DRAWN.search(text))
+        if looks_like_a_mark and not SOURCE_LINE.search(text):
+            missing.append(rel(path))
+    if missing:
+        fails.append(
+            f"{len(missing)} brand mark(s) do not say where they came from.\n"
+            "      → " + "\n      → ".join(missing[:6])
+            + (f"\n      … and {len(missing) - 6} more" if len(missing) > 6 else "") + "\n"
+            "      Add one line: `<!-- source: extracted · file.pdf p.N · YYYY-MM-DD -->`,\n"
+            "      or `supplied`, or `own-work` for a mark this engagement is designing.\n"
+            "      A client's existing mark is obtained, never reconstructed — see\n"
+            "      brain/brand/README.md and `python3 brain/extract.py`."
+        )
+    else:
+        notes.append("brand marks all declare a source")
+
+
 # ── FAIL 0 ── every record names the strand of work it belongs to ──────────────
 def check_record_projects():
     """One engagement can carry several projects, and the records must not blend.
@@ -1109,12 +1153,66 @@ def report_template():
           "             the list, so nobody has to be told it twice")
 
 
+# ── REPORT ── promises inside decisions that never became anything ─────────────
+# The language a deferral actually gets written in. Deliberately narrow: a report that fires
+# on every decision is a report nobody reads.
+DEFERRAL = re.compile(
+    r"\b(for now|until (?:they|we|it|the)|once (?:they|we|the)|when (?:they|we|the)\s+\w+ (?:send|sends|provide|provides|deliver|delivers|reply|replies)"
+    r"|pending\b|revisit(?: this)? (?:after|later|post)|to be (?:replaced|swapped)|swap(?:ped)? (?:in|out|later)|placeholder until)\b",
+    re.I)
+
+
+def report_unrouted_promises():
+    """A decision that defers something has promised it, and a promise with no task is a
+    permanent state of affairs.
+
+    This is the shape of a real incident: a decision recorded that a client's wordmark was
+    *drawn, not set*, with "one swap when they send a vector". Two of that decision's three
+    future-tense clauses were routed the same day. The third was not, and the drawn wordmark
+    stayed on a live site for eight days.
+
+    A REPORT rather than a FAIL because detecting a promise by its wording is a guess, and a
+    guess that blocks the run teaches people to ignore the run. What it can honestly do is put
+    the sentence in front of somebody."""
+    d = BRAIN / "decisions"
+    if not d.exists():
+        return
+    tasks = (BRAIN / "tasks.md").read_text(encoding="utf-8") if (BRAIN / "tasks.md").exists() else ""
+    questions = ((BRAIN / "open-questions.md").read_text(encoding="utf-8")
+                 if (BRAIN / "open-questions.md").exists() else "")
+    routed = tasks + questions
+    found = []
+    for path in md_files([d]):
+        if is_template_file(path):
+            continue
+        slug = slug_of(path.stem)
+        # A decision whose slug is cited from tasks or open-questions has been routed; this
+        # cannot tell which clause, and does not pretend to.
+        if slug in routed or path.stem in routed:
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            m = DEFERRAL.search(line)
+            if m:
+                found.append((rel(path), " ".join(line.strip().split())[:88]))
+                break
+    if not found:
+        print("  promises   no unrouted deferrals in the decision log")
+        return
+    print(f"  promises   {len(found)} decision(s) defer something and are cited by no task or")
+    print("             question — a promise with no owner is a permanent state of affairs:")
+    for path, line in found[:5]:
+        print(f"               {path}\n                 “{line}”")
+    if len(found) > 5:
+        print(f"               … and {len(found) - 5} more")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
 
     check_now_size()
     check_record_projects()
+    check_brand_provenance()
     check_slug_collisions()
     check_feed_item_projects()
     check_tombstones()
@@ -1138,6 +1236,7 @@ def main() -> int:
         report_brief()
         report_drafts()
         report_explorations()
+        report_unrouted_promises()
         report_orphans()
         report_archive_candidates()
         report_now_freshness()

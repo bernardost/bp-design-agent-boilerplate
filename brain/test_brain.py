@@ -460,6 +460,78 @@ class Ownership(unittest.TestCase):
             self.assertIn("brain/doctor.py", [rel for rel, _ in groups["owned"]])
 
 
+class Brand(unittest.TestCase):
+    """A client's logotype was rebuilt by hand instead of taken from their PDF. Nothing can
+    detect a trace by inspection, so the enforceable thing is the declaration."""
+
+    MARK = '<svg viewBox="0 0 100 40"><path d="M 10 10 L 20 20 Z"/></svg>\n'
+
+    def brand_dir(self, tmp):
+        ws = workspace(Path(tmp))
+        (ws / "brain" / "brand").mkdir()
+        return ws
+
+    def test_a_mark_with_no_source_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.brand_dir(tmp)
+            (ws / "brain" / "brand" / "acme-logo.svg").write_text(self.MARK)
+            out = run(ws, "doctor.py", "--quiet")
+            self.assertEqual(out.returncode, 1)
+            self.assertIn("where they came from", out.stdout)
+
+    def test_each_declared_source_clears_it(self):
+        for src in ("extracted · acme.pdf p.1 · 2026-09-17",
+                    "supplied · asset pack · 2026-09-17",
+                    "own-work · designed in this engagement · 2026-09-17"):
+            with tempfile.TemporaryDirectory() as tmp:
+                ws = self.brand_dir(tmp)
+                (ws / "brain" / "brand" / "acme-logo.svg").write_text(
+                    f"<!-- source: {src} -->\n" + self.MARK)
+                out = run(ws, "doctor.py", "--quiet")
+                self.assertEqual(out.returncode, 0, f"{src}\n{out.stdout}")
+
+    def test_a_drawn_file_that_calls_itself_a_wordmark_is_caught_by_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.brand_dir(tmp)
+            # Filename says nothing; the markup does.
+            (ws / "brain" / "brand" / "mark.svg").write_text(
+                '<svg><title>Acme wordmark</title><path d="M 1 1 L 2 2 Z"/></svg>')
+            out = run(ws, "doctor.py", "--quiet")
+            self.assertEqual(out.returncode, 1)
+
+    def test_a_plain_asset_is_not_treated_as_a_mark(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.brand_dir(tmp)
+            (ws / "brain" / "brand" / "grid.svg").write_text('<svg><rect width="4"/></svg>')
+            self.assertEqual(run(ws, "doctor.py", "--quiet").returncode, 0)
+
+
+class Promises(unittest.TestCase):
+    def test_a_deferral_with_no_task_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            decision(ws / "brain" / "decisions", "2026-09-09-the-wordmark-is-drawn",
+                     "The wordmark is drawn", "2026-09-09",
+                     body="The wordmark is drawn, not set. One swap when the client sends "
+                          "a vector.")
+            out = run(ws, "doctor.py")
+            self.assertIn("promises", out.stdout)
+            self.assertIn("One swap when the client sends", out.stdout)
+
+    def test_a_deferral_cited_by_a_task_is_not_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            decision(ws / "brain" / "decisions", "2026-09-09-the-wordmark-is-drawn",
+                     "The wordmark is drawn", "2026-09-09",
+                     body="One swap when the client sends a vector.")
+            tasks = ws / "brain" / "tasks.md"
+            tasks.write_text(tasks.read_text()
+                             + "\n- `todo` · P1 · `design` · — — **Swap the wordmark**\n"
+                               "      the-wordmark-is-drawn\n")
+            out = run(ws, "doctor.py")
+            self.assertIn("no unrouted deferrals", out.stdout)
+
+
 class RewriteUnit(unittest.TestCase):
     def test_a_year_is_never_mistaken_for_a_decision_number(self):
         renames = {"0007": (Path("x"), "2026-03-04-a-slug.md", "a-slug")}

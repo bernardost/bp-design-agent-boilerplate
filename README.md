@@ -71,11 +71,19 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
 | `brain/when.py` | resolves "next friday 9am" to an exact instant, so no reminder is scheduled off arithmetic a model did in its head |
+| `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
+| `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
 | `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
+- **A brand asset is obtained, never reconstructed.** Given a client's guidelines, the
+  assistant extracts the mark from the PDF as real vector, or asks for the asset pack, or falls
+  back to the name set in plain text — never a redraw, and never the right structure with
+  invented letterforms, which is the version that survives review and ships. Every file in
+  `brain/brand/` declares whether it was extracted, supplied, or designed here, and `doctor.py`
+  fails one that does not.
 - **One engagement, several projects, one brain.** A client relationship usually carries two
   or three strands of work, and a single meeting covers all of them. Every record names its
   strand; `feed.html`, `/status` and the tracker push filter on it. Nothing is stored per

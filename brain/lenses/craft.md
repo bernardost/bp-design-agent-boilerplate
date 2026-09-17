@@ -38,6 +38,11 @@ the two? Be specific and bold — a safe note is worth less than a wrong one.
    "Tactile, clicky, satisfying — not cartoony" beats "clean and modern", which describes
    nothing and rejects nothing.)*
 2. *(The non-negotiables — brand, accessibility floor, platform conventions this must obey.)*
+   **Brand fidelity is checked first and scored hardest.** A reconstructed logotype, a
+   substituted typeface passed off as the brand's, a colour near theirs rather than theirs, a
+   mark stretched, recoloured or set inside its clearspace: each caps the score at 3 whatever
+   else is true, and the finding names it as an incident rather than a note. Getting the mark
+   right is the floor a design studio is hired for, not a refinement.
 3. **Restraint.** What would you delete? Additive drift is the default failure: elements
    accumulate, nothing is ever removed, and the result explains itself instead of working.
    Every pass names at least one thing to cut, or states plainly that the work is already
