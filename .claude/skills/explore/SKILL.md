@@ -33,22 +33,37 @@ per direction; reusing one seed for all of them reproduces the problem.
 feeling but not a brief, that is fine — capture the feeling verbatim, it is worth more than a
 tidied version of it.
 
-**2 · Go broad, not deep.** Generate **six to eight** directions, seeded separately, two or
-three lines each. Name each one. At this stage they are pitches, not designs — resist
-building.
+**2 · Go broad, not deep.** Generate **six to eight** directions, seeded separately. Name
+each one and give it **a one-line thesis** — what this direction believes that the others do
+not. One line, not a paragraph: the page is for looking, and every sentence you add is space
+taken from the thing being looked at.
 
-Each direction also gets a **specimen**: fifteen-odd lines of self-contained HTML and CSS
-showing its palette, its type pairing set in the real faces, and its layout logic as a few
-blocks. `brain/explorations/README.md` has the rule that matters — a specimen shows the
-ingredients, not the screen. Build the screen and the best-executed pitch wins instead of the
-best idea, which is the failure this command exists to prevent.
+**3 · Write a real specimen.** Forty to sixty lines of self-contained HTML and CSS, showing
+the palette in use rather than as swatches, the type pairing set in the real faces at three
+sizes with real words, and the layout logic as an actual composition. Fleshed out enough that
+taste can act on it — a swatch card cannot be judged, and a direction nobody can judge is one
+that gets picked on its prose.
+
+**The control that makes this safe: every specimen renders the same content, in the same
+frame.** Write that content once, in the `Content:` block at the top of the file — a real
+headline, a real paragraph, a real label, a real number, a real action. Then the specimens
+differ by *direction* and not by who got the better sentence, which is what keeps the
+best-executed pitch from beating the best idea. Same words, same frame, different design.
+
+**Fit the frame.** The page renders each specimen at 4:3. Compose for that — a specimen that
+overruns scrolls, and a design judged with its bottom edge off-screen is judged wrong.
+
+Still not a screen. A specimen shows how this direction handles type, colour, space and
+hierarchy on one representative composition — not the product's navigation, not its real
+routes, not eight sections. If you find yourself building the page, you have left this command
+and should be in `/prototype`.
 
 Then check the spread honestly: if four of them differ only in colour, they are one direction
 and you owe the owner three more. Real variance means disagreeing about layout logic,
 density, tone, and what the work is *for*, not about hue. Include at least one that is
 uncomfortable — the safe six are the ones nobody remembers. Say which one that is.
 
-**3 · Write the file, render it, and hand over the page.** The markdown goes to
+**4 · Write the file, render it, and hand over the page.** The markdown goes to
 `brain/explorations/YYYY-MM-DD-<topic>.md` in the shape README specifies, seeds included,
 tagged from `brain/tags.md`. Then `python3 brain/spread.py` and give the owner the path.
 
@@ -58,7 +73,7 @@ the specimens side by side, which is what lets taste act on the work rather than
 about it. Your own spread check gets easier here too: if the eight specimens look alike on
 one screen, they were one direction and no amount of distinct prose changes that.
 
-**4 · Sharpen against the owner's taste, and this is the step that matters.** Ask what they
+**5 · Sharpen against the owner's taste, and this is the step that matters.** Ask what they
 react to, and take the reaction in their own words — *"tactile, clicky, satisfying; I pictured
 cartoony and it felt tacky; needs texture"* is usable, *"more modern"* is not. Push back for
 specifics when what you get is an adjective that rejects nothing.
@@ -67,12 +82,12 @@ Then rewrite the shortlist through what they said. This is the whole point of th
 directions the owner steered are ones only this project could have produced, where directions
 the model picked unaided are ones any project would have.
 
-**5 · Record verdicts and re-render.** Every direction gets `live` or `rejected` and a reason.
+**6 · Record verdicts and re-render.** Every direction gets `live` or `rejected` and a reason.
 Rejected directions stay in the file, and stay on the page — greyed and in place, never
 deleted. See `brain/explorations/README.md` for why. Re-run `spread.py` so the page and the
 file agree.
 
-**6 · Hand over a build prompt.** For each surviving direction, write a concise prompt that
+**7 · Hand over a build prompt.** For each surviving direction, write a concise prompt that
 an agent could build a first pass from: the aesthetic, the layout logic, what it must not do,
 and the one thing that makes it that direction and not another. Then stop. Building is not
 this command's job, and `/critique` is what raises the first pass afterwards.

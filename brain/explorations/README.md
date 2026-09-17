@@ -29,16 +29,32 @@ choices nobody made; filed in `insights/` they would claim a durability they hav
 ## The specimen
 
 A fenced ` ```specimen ` block inside each direction: self-contained HTML and CSS, no scripts,
-no external assets, around fifteen lines. Palette as swatches, the type pairing set in the
-real faces at a real size, the layout logic as a few blocks. `python3 brain/spread.py` renders
-the file to a page next to it, each specimen inside a sandboxed frame — so a direction's own
-colours and type are its own, and cannot be overridden by the page around them or leak into it.
+no external assets, **forty to sixty lines**. The palette *in use* rather than as swatches,
+the type pairing set in the real faces at three sizes with real words, and the layout logic as
+an actual composition. `python3 brain/spread.py` renders the file to a page next to it, each
+specimen inside a sandboxed frame — so a direction's own colours and type are its own, and
+cannot be overridden by the page around them or leak into it.
 
-**A specimen is not a mockup.** It shows the ingredients, not the screen. Building the screen
-at pitch stage is how a well-executed weak idea beats a roughly-sketched strong one, which is
-the exact failure `/explore` exists to prevent — and it makes the command slow enough that
-nobody runs it. The rendered page is a projection like any other: delete it and nothing is
-lost, because this file is the record.
+**Composed for 4:3.** That is the frame `spread.py` renders into. A specimen that overruns it
+scrolls rather than being cropped, but a design whose bottom edge is off-screen gets judged
+wrong, so compose to fit.
+
+**Big enough to judge.** A swatch card cannot be judged, and a direction nobody can judge gets
+picked on its prose instead. The page gives a specimen three to four times the area it gives
+the words about it, and that ratio is the point of the page.
+
+**The same content in every specimen.** The `Content:` line at the top of the file holds the
+real words — a headline, a paragraph, a label, a number, an action — and every direction
+renders those, in the same frame. This is what lets a specimen be fleshed out without the
+best-written pitch winning: hold the content constant and the only variable left is the
+design.
+
+**A specimen is still not a mockup.** It shows how a direction handles type, colour, space and
+hierarchy on one representative composition — never the product's navigation, its real routes,
+or eight sections. Building the screen at pitch stage is how a well-executed weak idea beats a
+roughly-sketched strong one, and it makes the command slow enough that nobody runs it. The
+screen belongs to the stage after this one. The rendered page is a projection like any other:
+delete it and nothing is lost, because this file is the record.
 
 ## The file shape
 
@@ -50,9 +66,13 @@ project: <key>           # or `all`; omit entirely in a one-project workspace
 # YYYY-MM-DD · <what was being explored>
 Seed: <the string> · Brief: <one line — what was asked for>
 
+Content: <the headline · the paragraph · the label · the number · the action — the real words
+every specimen on this page renders, written once so the directions differ by design and not
+by who got the better sentence>
+
 ## Directions
 ### A — <name>
-<two or three lines: the idea, and what makes it different from the others>
+<one line: what this direction believes that the others do not>
 Verdict: live | rejected — <the reason, in the owner's words where there are any>
 
 ```specimen

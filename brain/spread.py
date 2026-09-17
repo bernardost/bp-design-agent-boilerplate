@@ -38,7 +38,12 @@ sys.path.insert(0, str(BRAIN))
 from config import PROJECT_NAME, MULTI_PROJECT, PROJECT_LABEL  # noqa: E402
 from feed import CSS, FONT_LINK, glossary, render_md  # noqa: E402
 
-SPECIMEN_H = 208   # px — a specimen is a token card, so a fixed frame keeps the grid even
+# A specimen's frame scales with its column instead of sitting at a fixed height. The page
+# exists so taste can act on the work rather than on the prose about it, and taste needs the
+# work big enough to read: at the old 208px a card spent as much height on commentary as on
+# the thing being judged. Aspect ratio keeps the grid even without capping the size.
+SPECIMEN_RATIO = "4 / 3"
+SPECIMEN_MIN_H = 300   # px — the floor on a narrow screen, where the ratio would go small
 
 
 # ---------------------------------------------------------------------------------------------
@@ -123,19 +128,29 @@ def parse(path: Path) -> dict:
 PAGE_CSS = f"""
 /* Wider than the feed on purpose: eight directions have to be comparable without scrolling,
    and comparison is the entire job of this page. */
-.wrap{{max-width:1180px}}
+.wrap{{max-width:1480px}}
 
-.spread{{display:grid;gap:34px 26px;margin:0 0 60px;
-  grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}}
+/* Three across on a laptop rather than four or five. Eight directions comparable without
+   scrolling was the old goal; it bought comparability at the price of making each specimen
+   too small to judge, which loses the argument the page exists to win. Scrolling one screen
+   to see eight legible specimens beats seeing eight illegible ones at once. */
+.spread{{display:grid;gap:40px 30px;margin:0 0 60px;
+  grid-template-columns:repeat(auto-fill,minmax(380px,1fr))}}
 
 .dir{{display:flex;flex-direction:column;min-width:0}}
-/* Rejected directions stay — greyed and in place, never hidden. Keeping them is the whole
-   reason the file exists; hiding them would make the page disagree with the record. */
-.dir.rejected{{opacity:.42;filter:saturate(.15);transition:opacity .18s,filter .18s}}
-.dir.rejected:hover{{opacity:1;filter:none}}
+/* Rejected directions stay in place, never hidden — keeping them is the whole reason the file
+   exists. They recede through the prose around them, not by being desaturated: at this size a
+   greyed-out specimen cannot be judged at all, and "why did we reject that one" is a question
+   asked of the colour. So the words dim and the work stays as it was. */
+.dir.rejected .letter,.dir.rejected h3,.dir.rejected .pitch{{opacity:.5}}
+.dir.rejected .frame{{opacity:.78;transition:opacity .18s}}
+.dir.rejected:hover .frame{{opacity:1}}
 
-.dir .frame{{height:{SPECIMEN_H}px;border:1px solid var(--rule);background:var(--paper);
-  overflow:hidden;position:relative}}
+.dir .frame{{aspect-ratio:{SPECIMEN_RATIO};min-height:{SPECIMEN_MIN_H}px;
+  border:1px solid var(--rule);background:var(--paper);overflow:hidden;position:relative}}
+/* A specimen that overruns its frame scrolls rather than being silently cropped. Cropping
+   hides the bottom of a composition and the owner judges a design he cannot see the end of;
+   a scrollbar at least says there is more. The authoring rule is still "fit the frame". */
 .dir .frame iframe{{width:100%;height:100%;border:0;display:block}}
 .dir .frame.empty{{display:flex;align-items:center;justify-content:center;
   background:var(--wash);border-style:dashed}}
@@ -144,15 +159,12 @@ PAGE_CSS = f"""
 
 .dir .letter{{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;
   color:var(--ink-4);margin:14px 0 3px}}
-.dir h3{{font-size:19px;margin:0 0 9px;line-height:1.3}}
-/* The min-height is what makes the verdict rules land on one line across the grid. Bottom-
-   aligning them instead lets a two-line reason shove one card's rule up, and a row of
-   hairlines at four different heights reads as a broken table rather than a spread. Five
-   lines fits the two-or-three-line pitch `/explore` asks for; a longer one grows the card
-   rather than being clipped, because losing a direction's last sentence to make the grid
-   tidy is the wrong trade. */
-.dir .pitch{{font-size:14.5px;line-height:1.62;color:var(--ink-2);margin:0 0 14px;
-  min-height:calc(5 * 1.62 * 14.5px)}}
+.dir h3{{font-size:19px;margin:0 0 7px;line-height:1.3}}
+/* The verdict rules still land on one line across a row, but the alignment now comes from
+   the card stretching to its grid row and the pitch taking the slack — not from reserving
+   five lines of height for prose that is usually one. Reserved space is space the specimen
+   could have had. */
+.dir .pitch{{font-size:14.5px;line-height:1.62;color:var(--ink-2);margin:0 0 14px;flex:1}}
 .dir .pitch p{{margin:0 0 .5em}}
 .dir .pitch p:last-child{{margin-bottom:0}}
 

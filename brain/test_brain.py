@@ -345,6 +345,67 @@ class Slugs(unittest.TestCase):
             self.assertIn("share the slug", out.stdout)
 
 
+class Spread(unittest.TestCase):
+    """The exploration page exists so taste acts on the work rather than on the prose about
+    it, which only holds while the work gets most of the page."""
+
+    FILE = """---
+tags: [concept]
+---
+# 2026-09-17 · A topic
+Seed: abc123 · Brief: something
+
+Content: Headline · A real paragraph. · LABEL · 18:00 · Do the thing
+
+## Directions
+### A — First
+One line of thesis.
+
+```specimen
+<style>body{background:#fff;color:#111}</style>
+<h1>Headline</h1><p>A real paragraph.</p>
+```
+
+Verdict: live — works
+
+### B — Second
+Another line.
+
+```specimen
+<style>body{background:#111;color:#eee}</style>
+<h1>Headline</h1><p>A real paragraph.</p>
+```
+
+Verdict: rejected — no
+"""
+
+    def render(self, tmp):
+        ws = workspace(Path(tmp))
+        (ws / "brain" / "explorations" / "2026-09-17-a-topic.md").write_text(self.FILE)
+        out = run(ws, "spread.py")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        return (ws / "brain" / "explorations" / "2026-09-17-a-topic.html").read_text()
+
+    def test_every_direction_and_its_specimen_reach_the_page(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.render(tmp)
+            self.assertIn("First", html)
+            self.assertIn("Second", html)
+            self.assertEqual(html.count("<iframe"), 2)
+            # A rejected direction stays on the page. Hiding it would make the page disagree
+            # with the record, which is the reason the file keeps rejected directions at all.
+            self.assertIn("rejected", html)
+
+    def test_the_specimen_frame_is_not_a_fixed_thumbnail(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            html = self.render(tmp)
+            # Regression guard for the layout the owner asked to change: a fixed short frame
+            # plus a reserved five-line prose block spent as much of each card on commentary
+            # as on the design being judged.
+            self.assertIn("aspect-ratio", html)
+            self.assertNotIn("min-height:calc(5 *", html)
+
+
 class RewriteUnit(unittest.TestCase):
     def test_a_year_is_never_mistaken_for_a_decision_number(self):
         renames = {"0007": (Path("x"), "2026-03-04-a-slug.md", "a-slug")}
