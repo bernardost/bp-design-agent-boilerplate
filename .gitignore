@@ -8,6 +8,7 @@ venv/
 brain/feed.html
 brain/brief.html
 brain/explorations/*.html
+brain/moodboards/*.html
 
 # If the project acquires confidential source material, keep it out from day one,
 # e.g.:

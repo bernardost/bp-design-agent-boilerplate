@@ -26,7 +26,7 @@ status: draft                  # draft | sent
 sent:                          # YYYY-MM-DD, filled when status becomes sent
 tags: [portal]
 ---
-Hi Joe,
+Hi Dana,
 
 Quick one before Friday. …
 ```
