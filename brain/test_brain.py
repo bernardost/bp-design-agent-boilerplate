@@ -590,7 +590,7 @@ class When(unittest.TestCase):
 
     def test_an_unknown_phrase_refuses_instead_of_guessing(self):
         for bad in ("the third thursday after the retro", "soon", "before the launch",
-                    "when Joe replies"):
+                    "when Dana replies"):
             with self.assertRaises(when.Unresolved, msg=bad):
                 self.r(bad)
 

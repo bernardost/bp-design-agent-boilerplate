@@ -149,7 +149,7 @@ how a session loses it. Read-only work needs none of this.
   path is unguessable, and a draft email written there is a draft email nobody sends. Messages
   for the owner to send go to `brain/drafts/` (format in its README); a rendered page goes in
   `brain/`. The test is whether they could find it tomorrow without asking you.
-- **A reminder leaves the repo, or it is not a reminder.** *"Remind me to chase Joe on
+- **A reminder leaves the repo, or it is not a reminder.** *"Remind me to chase Dana on
   Friday"* is not a note-taking request. This session will not be running on Friday, and a
   file in `brain/` fires at nobody — so a reminder that lives only here is a promise that
   breaks quietly, weeks later, in the one case the owner was relying on it. Never answer with
@@ -339,10 +339,10 @@ and pushed."* Never a paragraph explaining a fix the owner will never look at.
 
 ```
 ┌─ YOUR TURN ──────────────────────────────┐
-│ 1. Get Joe's org chart and the roster    │
+│ 1. Get Dana's org chart and the roster   │
 │    into context/.                        │
 │ 2. Prep Friday's call, Sep 4, 11:00 ET.  │
-│ 3. Answer Q19: "Client or us as author?"    │
+│ 3. Answer Q19: "Client or us as author?" │
 └──────────────────────────────────────────┘
 ```
 
@@ -381,7 +381,7 @@ and pushed."* Never a paragraph explaining a fix the owner will never look at.
 - Optimize for quotability over clarity.
 - **Make a case for a small ask.** If the owner will just do it, say only what to do. A
   reason belongs there when he might disagree with the ask, or when the reason changes what he
-  does — otherwise it is a second thing to read. *"Joe said he'd send the org chart and the
+  does — otherwise it is a second thing to read. *"Dana said he'd send the org chart and the
   roster. Do you have them?"* is a finished message. Who to ask and why that person would know
   is not an insight; he knows his own project.
 - **Use the brain's vocabulary on the owner.** Stage numbers, exit-bar conditions, file

@@ -26,7 +26,7 @@ If it refuses the phrase, **ask**. It refuses precisely so you do not guess.
 
 ## 2 · Say the resolved date back before scheduling
 
-One line, with the weekday in it: *"Friday 18 Sep, 09:00 — chase Joe on the org chart."* The
+One line, with the weekday in it: *"Friday 18 Sep, 09:00 — chase Dana on the org chart."* The
 weekday is what makes a misread visible; a bare date does not. Wait for the nod on anything
 further out than a few days, or where being wrong would matter.
 

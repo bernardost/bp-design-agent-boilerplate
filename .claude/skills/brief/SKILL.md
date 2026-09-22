@@ -92,7 +92,7 @@ is the deliverable, and re-narrating it in the terminal defeats the purpose.
 ┌─ YOUR TURN ──────────────────────────────┐
 │ 1. Read brain/brief.html.                │
 │ 2. Tell me what's wrong, or approve it.  │
-│ 3. Q7 needs Joe: "<the question>"        │
+│ 3. Q7 needs Dana: "<the question>"       │
 └──────────────────────────────────────────┘
 ```
 
