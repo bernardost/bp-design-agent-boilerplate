@@ -740,15 +740,16 @@ def report_explorations():
               f"               → python3 brain/spread.py")
 
 
-# ── REPORT ── moodboards, and whether they are boards or style guides ─────────
+# ── REPORT ── moodboards, and whether they are desks or style guides ──────────
 def report_moodboards():
-    """A moodboard connects research into ideas (AGENTS.md). Three things rot here.
+    """A moodboard has two layers: ideas, and the visions that assemble them (AGENTS.md).
+    What rots is the layer between.
 
-    An idea with no plate is ungrounded — allowed while the idea is newer than the material,
-    a problem once it stays that way. An idea connected to nothing is a list item wearing a
-    board's clothes, and a board where most ideas connect to nothing was sorted rather than
-    thought about. And the failure the command exists to prevent leaves a fingerprint the
-    linter can actually see: a narrative named after the designer's toolbox.
+    An idea in no vision is filler or the start of a vision nobody wrote. A vision with no
+    tension has not been thought about — it is the one that wins on presentation rather than
+    on merit. Ideas that are all in every vision mean there is one vision wearing several
+    hats, which is the illusion of choice. And an idea with no plate is ungrounded: fine
+    while the idea is newer than the material, a problem once it stays that way.
     """
     d = BRAIN / "moodboards"
     if not d.exists():
@@ -758,47 +759,64 @@ def report_moodboards():
         print("  moodboard  none filed yet — /moodboard writes the first one")
         return
 
-    # Colour / Typography / Imagery / Voice as *narrative* names is the style guide showing
-    # through. As an idea's title it is fine — an idea can be about type.
-    TOOLBOX = {"colour", "color", "typography", "type", "imagery", "images", "photography",
-               "voice", "tone of voice", "palette", "logo", "iconography", "motion",
-               "layout", "grid"}
-
     for path in files:
         text = path.read_text(encoding="utf-8")
-        ideas = re.findall(r"^###\s+(.+)$", text, re.M)
-        if not ideas:
-            print(f"  moodboard  no ideas yet: {rel(path)}")
-            continue
-        plates = len(re.findall(r"^(?:Plate|Quote):", text, re.M))
-        blocks = re.split(r"^###\s+", text, flags=re.M)[1:]
-        unplated = [t for t, b in zip(ideas, blocks)
-                    if not re.search(r"^(?:Plate|Quote):", b, re.M)]
-        unlinked = [t for t, b in zip(ideas, blocks)
-                    if not re.search(r"^Connects:", b, re.M)]
-        narratives = [n.strip() for n in re.findall(r"^##\s+(.+)$", text, re.M)]
-        toolbox = [n for n in narratives
-                   if re.sub(r"^Narrative\s*[—–-]\s*", "", n, flags=re.I).strip().lower()
-                   in TOOLBOX]
-        vision = bool(re.search(r"^Vision:\s*\S", text, re.M))
+        parts = {}
+        name = None
+        for line in text.splitlines():
+            m = re.match(r"^##\s+(.+?)\s*$", line)
+            if m:
+                name = m.group(1).lower()
+                parts[name] = []
+            elif name:
+                parts[name].append(line)
+        parts = {k: "\n".join(v) for k, v in parts.items()}
 
-        page = path.with_suffix(".html")
-        stale = not page.exists() or page.stat().st_mtime < path.stat().st_mtime
+        ideas = re.split(r"^###\s+", parts.get("ideas", ""), flags=re.M)[1:]
+        visions = re.split(r"^###\s+", parts.get("visions", ""), flags=re.M)[1:]
+        lenses = [ln for ln in parts.get("lenses", "").splitlines()
+                  if ln.strip().startswith("- ")]
 
-        print(f"  moodboard  {rel(path)} — {len(ideas)} idea(s), {plates} plate(s), "
-              f"{len(narratives)} narrative(s)")
-        if toolbox:
-            print(f"               narratives named after the toolbox: {', '.join(toolbox)}\n"
-                  f"               → that is a style guide's structure; group by the argument")
-        if not vision:
-            print("               no Vision: line — the board never says what it adds up to")
+        print(f"  moodboard  {rel(path)} — {len(ideas)} idea(s), {len(visions)} vision(s), "
+              f"{len(lenses)} lens(es)")
+
+        if not visions:
+            print("               no visions — ideas with nothing assembling them is a list,\n"
+                  "               and the wires are the argument the desk exists to draw")
+        if not lenses:
+            print("               no lenses declared — every idea lands in one unfiled column")
+
+        titles = [c.partition("\n")[0].strip() for c in ideas]
+        orphan = [t for t, c in zip(titles, ideas)
+                  if not re.search(r"^Visions:\s*\S", c, re.M)]
+        unplated = [t for t, c in zip(titles, ideas)
+                    if not re.search(r"^Plate:", c, re.M)]
+        noline = [t for t, c in zip(titles, ideas)
+                  if not re.search(r"^Line:\s*\S", c, re.M)]
+        if orphan:
+            print(f"               {len(orphan)} idea(s) in no vision, e.g. {orphan[0]}")
+        if noline:
+            print(f"               {len(noline)} idea(s) with no Line:, e.g. {noline[0]}\n"
+                  f"               → title and one sentence are what sell it, zoomed out")
         if unplated:
             print(f"               {len(unplated)} idea(s) with no plate, e.g. "
                   f"{unplated[0]} — nothing grounds them")
-        if len(unlinked) > len(ideas) / 2:
-            print(f"               {len(unlinked)} of {len(ideas)} connect to nothing — "
-                  f"a board that does not connect is a list")
-        if stale:
+
+        for chunk in visions:
+            vname = chunk.partition("\n")[0].strip()
+            if not re.search(r"^Tension:\s*\S", chunk, re.M):
+                print(f"               no tension on \"{vname}\" — the vision that carries "
+                      f"none is the one\n               that wins on presentation")
+        # Every idea in every vision is one vision in several hats.
+        if visions and ideas and not orphan:
+            spread = [len([v for v in re.split(r",", re.search(
+                r"^Visions:\s*(.+)$", c, re.M).group(1)) if v.strip()]) for c in ideas]
+            if spread and min(spread) == len(visions):
+                print(f"               every idea is in every vision — that is one vision "
+                      f"in {len(visions)} hats")
+
+        page = path.with_suffix(".html")
+        if not page.exists() or page.stat().st_mtime < path.stat().st_mtime:
             print("               page not rendered or older than the file\n"
                   "               → python3 brain/board.py")
 

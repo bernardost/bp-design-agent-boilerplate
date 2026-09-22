@@ -251,7 +251,7 @@ how a session loses it. Read-only work needs none of this.
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
   `brain/glossary.md`** · what "good" means here, one file per domain →
   `brain/lenses/` · **directions considered but not chosen → `brain/explorations/`** ·
-  **what the research adds up to, as ideas grouped into narratives →
+  **what the research adds up to — ideas, and the visions that assemble them →
   `brain/moodboards/`** ·
   **questions put to a stakeholder as an async workshop, and the answers that come back →
   `brain/workshops/`** · watched external sources → `brain/sources.md` · every project constant →
@@ -262,13 +262,16 @@ how a session loses it. Read-only work needs none of this.
   about two specific notes. A theme with one member should have been a link.
 - **A moodboard is not a style guide, and an exploration is not a decision.** These are
   three stages of the same arc and collapsing any two of them is the standing failure.
-  `brain/moodboards/` holds what the research *means* — ideas somebody could argue with,
-  grouped into narratives. `brain/explorations/` holds *directions* made in response, with
-  specimens. `brain/decisions/` holds the one that was picked. Asked for a moodboard, a model
-  reaches past all of this and writes a brand manual — swatches, a type scale, sections named
-  Colour and Typography — which specifies a design nobody chose from research nobody read.
-  Structure is the tell: **a board grouped by the designer's toolbox has been sorted, not
-  thought about.** Options live in `brain/explorations/` and stay there,
+  `brain/moodboards/` holds what the research *means*, in two layers: **ideas** — one title,
+  one sentence, arguable — and **visions**, whole brands assembled from named sets of them.
+  The layer between is the argument, because the same idea appears in several visions, and
+  one that appears in all of them is the brand whichever way this lands.
+  `brain/explorations/` holds *directions* with specimens; `brain/decisions/` holds the one
+  that was picked. Asked for a moodboard, a model reaches past all of this and writes a brand
+  manual — swatches, a type scale, sections named Colour and Typography — which specifies a
+  design nobody chose from research nobody read. **The lenses a desk files ideas under are
+  its index, never its argument**; a board whose top level is the designer's toolbox has been
+  sorted, not thought about. Options live in `brain/explorations/` and stay there,
   rejected ones included. Picking one produces exactly one decision that links back
   to the exploration — that link is the only seam between diverging and converging, and
   nothing may treat a direction as chosen before it exists.
@@ -470,8 +473,8 @@ actually fire)** · **`/update` (take the boilerplate's improvements without los
 project's work)** · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
 `brain/lenses/`) · `/briefing` (pull the watched sources) · **`/workshop` (turn questions for
-a stakeholder into something they answer on their phone) · `/moodboard` (connect the research
-into ideas and a vision, on a canvas) · `/explore` (go wide before
+a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
+into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) · `/critique` (score a render against the craft lens until it
 holds up — writes nothing)**.
 

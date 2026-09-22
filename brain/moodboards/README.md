@@ -1,70 +1,74 @@
-# `moodboards/` — ideas connected into a vision
+# `moodboards/` — ideas, and the visions they build
 
-`YYYY-MM-DD-<topic>.md`, written by `/moodboard`. This directory owns **the ideas the
-research adds up to**, and nothing else in the brain holds that.
+`YYYY-MM-DD-<topic>.md`, written by `/moodboard`. This directory owns **the ideas the research
+adds up to, and the wholes they assemble into**, and nothing else in the brain holds either.
 
-## What this is, and the thing it keeps turning into
+## The two layers, and the thing between them
 
-A moodboard documents ideas and articulates them into a vision for the brand. Material
-already in the workspace — the client's own words, the references, the briefing, the
-braindumps — gets grouped into ideas, and the ideas get grouped into narratives that say
-how they fit together and why they fit this brand. Layout, imagery, type, tone of voice,
-palette: the board says how they could come together into something new.
+**An idea is an atom.** One title, one sentence, enough to sell it — *"evidence carries a
+date: every figure has an as-of, and a number without one does not appear."* Something a
+reasonable person could disagree with.
+
+**A vision is an assembly.** A whole brand made of a named set of those ideas, with a thesis,
+a story, the tension it has to survive, and what it asks of the client before it can be built.
+
+**The interesting layer is between them: the same idea appears in several visions.** That is
+the argument — which ideas are load-bearing whichever way the work goes, and which ones only
+one vision needs. On a page that relationship is invisible, so `board.py` draws it as wires
+and lets you light them from either end. An idea in every vision is a **constant**: the brand
+however this lands, and the first thing a guidelines document gets built from. It is derived,
+never authored, because a constant claimed by hand is one that a vision quietly dropped.
+
+## What this is not, and what it keeps turning into
 
 **Left unsupervised, an agent asked for a moodboard produces a style guide.** Swatches with
-hex values, a type scale, a rule about the logo's clearspace, three sections named Colour,
-Typography and Imagery. That artifact is competent and worthless here: it specifies a design
-nobody has agreed to, from research nobody has read, at a stage where the question is still
-what the work is *about*. It is also the most probable thing to produce, which is exactly why
-it needs a directory with rules.
+hex values, a type scale, three sections named Colour, Typography and Imagery, a rule about
+the logo. That artifact is competent and worthless here: it specifies a design nobody chose,
+from research nobody read, at the stage where the question is still what the work is *about*.
+It is also the most probable thing to produce, which is why this directory has rules.
 
-The difference in one line: **a style guide says what the design is; a moodboard argues what
-it could mean.** A board whose sections are Colour / Type / Imagery has been organized by the
-designer's toolbox instead of by the argument, and is the failure wearing a nicer layout.
+**A style guide says what the design is. A moodboard argues what it could mean.** The lenses
+below look like a style guide's table of contents and are not: they are the **index** of the
+desk, not its argument. The argument is the visions. An idea is filed under Layout the way a
+book is filed under a shelf mark — you find it there, you do not read the shelf.
 
 ## The rules
 
-- **The unit is an idea, not a category.** An idea is something a reasonable person could
-  disagree with — *"the work should feel like it was made by hand, and slowly"* — carried by
-  one title and one sentence. If nobody could argue with it, it is a description, not an idea,
-  and it fills space the board needed.
-- **One title and one sentence sell it; the detail is underneath.** The board is read at a
-  glance first. Every idea must survive that glance on its title and its line alone, and only
-  then reward someone who reads the paragraphs.
-- **Ideas connect, or they are a list.** `Connects:` names other ideas on the board by title,
-  and a board where nothing connects to anything is research that was sorted rather than
-  thought about. The narratives are where the story lives; the connections are what make it
-  one story and not four.
-- **Nothing is invented.** Every plate is a file that exists in this workspace, every quote is
-  verbatim with its attribution in the inline `^[who · where · when]` form
-  (`brain/sources.md`), and anything you worked out rather than heard is marked `^[inferred]`.
-  A board that describes an image nobody has is a board that cannot be checked.
-- **No specification.** No hex tables, no type scales, no ratios, no rules about the mark. If
-  a passage could be pasted into a brand manual unchanged, cut it. Saying *how* an idea shows
-  up in type or colour is the job; naming the typeface and the value is the next stage's.
-- **It decides nothing.** A board is upstream of `/explore`, which is upstream of a decision.
-  Nothing in the brain may cite an idea as chosen. When a board sends the work somewhere, that
-  is an exploration or a decision, and it links back here.
-- **Rejected ideas stay**, marked `Cut:` with the reason. The same argument as
-  `explorations/`: an idea that was wrong for this project may be right for the next one.
+- **The unit is an idea, and an idea is arguable.** If nobody could disagree with it, it is a
+  description, and it is taking a card the board needed.
+- **One title and one sentence sell it.** The desk is read at a glance first, zoomed out. An
+  idea that needs its paragraph to make sense has failed its own test; the paragraph is for
+  the person who opens it.
+- **Every idea belongs to at least one vision.** An idea in none is either the start of a
+  vision nobody wrote or it is filler — `board.py` marks it on the card and `doctor.py` says
+  so.
+- **Nothing is invented.** Every plate is a file that exists in this workspace. Every quote is
+  verbatim and every claim about what someone said carries `^[who · where · when]`
+  (`brain/sources.md`); anything worked out rather than heard is marked `^[inferred]`.
+- **No specification.** No hex values, no type scales, no ratios, no rules about the mark. A
+  lens line says what an idea *does* to layout or to type — *"tabular numerals, always"* is
+  intention; *"Inter 16/24, 1.25 scale"* is the next stage's work being done early.
+- **Every vision carries its tension.** The thing it needs that may not exist, the way it can
+  be read wrong, the reason it might be the wrong answer. A vision with no tension has not
+  been thought about, and it is the one that quietly wins on presentation.
+- **It decides nothing.** A desk is upstream of `/explore` and of any decision. Nothing in the
+  brain may cite a vision as chosen. Picking one produces exactly one decision file that links
+  back here.
 
 ## Plates
 
-A plate is a piece of material off the desk: **an image already in the workspace, or a
-verbatim quote from the research.** Nothing else. That constraint is what stops the board
-drifting into specification — you cannot invent a plate, so every idea stays tethered to
-something a person actually said or an image somebody actually chose.
+A plate is material off the desk: **an image that already exists in this workspace.** Nothing
+else — you cannot invent one, which is what keeps every idea tethered to something a person
+actually chose or said.
 
-Images come from `brain/references/` or `context/`, referenced by path relative to the repo
-root. `python3 brain/board.py` copies nothing and resolves nothing: a path that does not exist
-renders as a visible gap, because a silently missing plate is a board that lies about its
-evidence.
+Images come from `brain/references/` or `context/`, written as a path from the repo root.
+`python3 brain/board.py` links them relatively so the page works opened straight off disk, and
+renders a path that does not resolve as a visible gap. A silently missing plate is a desk that
+lies about its evidence.
 
 **Caption what to take from it, never what it is.** *"the way the grid breaks on the third
-column"* is a caption; *"Pentagram poster"* is a filename.
-
-An idea with no plate at all is allowed and is reported by `doctor.py` — sometimes the idea
-arrived before the material. An idea that never gets one was never grounded.
+column"* is a caption; *"Pentagram poster"* is a filename. A third field, a URL, makes the
+caption a link back to the source.
 
 ## The file shape
 
@@ -73,28 +77,56 @@ arrived before the material. An idea that never gets one was never grounded.
 tags: [concept, brand]
 project: <key>           # or `all`; omit entirely in a one-project workspace
 ---
-# YYYY-MM-DD · <what this board is a vision for>
-Vision: <one paragraph — what all of it adds up to, in the owner's language where there is any>
+# Ideas, and the visions they build
+Subtitle: <the line under the title in the bar — what this desk is, and its date>
 
-## Narrative — <name>
-<one line: the story this group tells, and why it belongs to this brand>
+## Brief
+<one or two paragraphs: what this surface is and how to read it>
 
-### <Idea title>
-<one sentence — the whole sell, and it has to be enough>
+Fixed: <a constraint nothing on this desk may break> ^[who · where · when]
+Decided: <something already settled, with the decision it came from> ^[[the-slug]]
+Rule: <a thing that must never happen> ^[who · where · when]
 
-Plate: brain/references/density-bloomberg.png — the way the grid breaks on the third column
-Quote: "we're not a bank, we just keep their money" ^[Joe Nadir · kickoff call · 2026-09-04]
-Connects: <Another idea's title>, <A third>
-Size: wide            # optional — wide | full; default is derived from the plates
+## Lenses
+- Layout — how the page is built, and how a reader moves through it.
+- Imagery — what is photographed, and how every photograph is treated.
+- Type — which faces, and how hierarchy is carried.
+- Voice — what the work says about itself, and where it stands.
+- Palette — ground, ink, and the rule for colour.
 
-<The detail. How this idea shows up: what the layout has to do, what the imagery is of, what
-the type is doing, how it sounds when it speaks, where the colour goes. Prose, two or three
-short paragraphs, no specification.>
+## Open
+- The ground — <what is undecided, and by when> — <who closes it>
 
-### <A cut idea>
-<its line>
-Cut: <why — in the owner's words where there are any>
+## Ideas
+### The index is the front door
+Lens: Layout
+Visions: The Record, The Nameplate
+Line: The landing page is a table of contents set large, and nothing else.
+Layout: An index landing, then files. Numbered only if there are more than four.
+Type: The index is the largest type on the site; nothing competes with it.
+Plate: brain/references/density-cravath.png — the homepage leads with a dated deal — https://…
+<the detail: how it works, and why the material supports it. Two or three short paragraphs.>
+
+## Visions
+### The Record
+Mark: R
+Thesis: <one sentence — the whole vision>
+Layout: <what this vision does to that lens>
+Voice: <…one line per lens it answers>
+Tension: <what it needs that may not exist, or the way it can be read wrong>
+Asks: <what the client has to give us before it can be built>
+Plate: brain/references/inspo-cravath.png — Cravath — https://www.cravath.com/
+<the story: two or three paragraphs on what this vision is and where it comes from>
+
+```specimen
+<self-contained HTML and CSS — one representative composition, composed for 16:9>
+```
 ```
 
-`python3 brain/board.py` renders the file to a page beside it. The page is a projection like
-every other one here: delete it and nothing is lost, because this file is the record.
+A vision's specimen is optional here and is what `/explore` adds: the desk argues, and a
+specimen proves the argument can be executed. A desk with no specimens is a finished
+moodboard, not an unfinished one.
+
+`python3 brain/board.py` renders the file to a page beside it. Layout is computed in the
+browser because a card's height is its text's height. The page is a projection like every
+other one here: delete it and nothing is lost, because this file is the record.
