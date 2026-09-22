@@ -44,7 +44,8 @@ NOW_MAX = 2000 + 500 * max(0, len(PROJECT_KEYS) - 1)
 # Which record classes name the strand they belong to. Braindumps and briefings are
 # deliberately absent: both are verbatim captures that legitimately span the engagement, and
 # routing is what assigns a project — to the decision or task that comes out, not to the dump.
-PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "workshops")
+PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "moodboards",
+                       "workshops")
 
 # Decision filenames are `YYYY-MM-DD-slug.md`: the date orders them, the slug identifies them.
 # The old `NNNN-slug.md` claimed a number from a pool shared with every parallel session, so
@@ -69,7 +70,7 @@ TASK_LINE = re.compile(
 
 # Directories whose .md files participate in [[link]] resolution.
 LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps",
-             BRAIN / "explorations", BRAIN / "workshops"]
+             BRAIN / "explorations", BRAIN / "moodboards", BRAIN / "workshops"]
 
 # Files that describe what is true *now*. Only these may not carry a dead pointer.
 # A dated record (a decision, an insight, a findings file) citing a since-superseded decision was
@@ -623,7 +624,7 @@ def report_tags():
 
     for path in md_files([BRAIN / "decisions", BRAIN / "insights", BRAIN / "braindumps",
                           BRAIN / "briefings", BRAIN / "explorations",
-                          BRAIN / "workshops"]):
+                          BRAIN / "moodboards", BRAIN / "workshops"]):
         if path.name == "README.md" or path.stem.startswith("0000"):
             continue
         text = path.read_text(encoding="utf-8")
@@ -737,6 +738,69 @@ def report_explorations():
     for f in stale:
         print(f"               page not rendered or older than the file: {f}\n"
               f"               → python3 brain/spread.py")
+
+
+# ── REPORT ── moodboards, and whether they are boards or style guides ─────────
+def report_moodboards():
+    """A moodboard connects research into ideas (AGENTS.md). Three things rot here.
+
+    An idea with no plate is ungrounded — allowed while the idea is newer than the material,
+    a problem once it stays that way. An idea connected to nothing is a list item wearing a
+    board's clothes, and a board where most ideas connect to nothing was sorted rather than
+    thought about. And the failure the command exists to prevent leaves a fingerprint the
+    linter can actually see: a narrative named after the designer's toolbox.
+    """
+    d = BRAIN / "moodboards"
+    if not d.exists():
+        return
+    files = [p for p in sorted(d.glob("*.md")) if p.name != "README.md"]
+    if not files:
+        print("  moodboard  none filed yet — /moodboard writes the first one")
+        return
+
+    # Colour / Typography / Imagery / Voice as *narrative* names is the style guide showing
+    # through. As an idea's title it is fine — an idea can be about type.
+    TOOLBOX = {"colour", "color", "typography", "type", "imagery", "images", "photography",
+               "voice", "tone of voice", "palette", "logo", "iconography", "motion",
+               "layout", "grid"}
+
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        ideas = re.findall(r"^###\s+(.+)$", text, re.M)
+        if not ideas:
+            print(f"  moodboard  no ideas yet: {rel(path)}")
+            continue
+        plates = len(re.findall(r"^(?:Plate|Quote):", text, re.M))
+        blocks = re.split(r"^###\s+", text, flags=re.M)[1:]
+        unplated = [t for t, b in zip(ideas, blocks)
+                    if not re.search(r"^(?:Plate|Quote):", b, re.M)]
+        unlinked = [t for t, b in zip(ideas, blocks)
+                    if not re.search(r"^Connects:", b, re.M)]
+        narratives = [n.strip() for n in re.findall(r"^##\s+(.+)$", text, re.M)]
+        toolbox = [n for n in narratives
+                   if re.sub(r"^Narrative\s*[—–-]\s*", "", n, flags=re.I).strip().lower()
+                   in TOOLBOX]
+        vision = bool(re.search(r"^Vision:\s*\S", text, re.M))
+
+        page = path.with_suffix(".html")
+        stale = not page.exists() or page.stat().st_mtime < path.stat().st_mtime
+
+        print(f"  moodboard  {rel(path)} — {len(ideas)} idea(s), {plates} plate(s), "
+              f"{len(narratives)} narrative(s)")
+        if toolbox:
+            print(f"               narratives named after the toolbox: {', '.join(toolbox)}\n"
+                  f"               → that is a style guide's structure; group by the argument")
+        if not vision:
+            print("               no Vision: line — the board never says what it adds up to")
+        if unplated:
+            print(f"               {len(unplated)} idea(s) with no plate, e.g. "
+                  f"{unplated[0]} — nothing grounds them")
+        if len(unlinked) > len(ideas) / 2:
+            print(f"               {len(unlinked)} of {len(ideas)} connect to nothing — "
+                  f"a board that does not connect is a list")
+        if stale:
+            print("               page not rendered or older than the file\n"
+                  "               → python3 brain/board.py")
 
 
 # ── REPORT ── is this workspace actually configured? ──────────────────────────
@@ -1236,6 +1300,7 @@ def main() -> int:
         report_brief()
         report_drafts()
         report_explorations()
+        report_moodboards()
         report_unrouted_promises()
         report_orphans()
         report_archive_candidates()

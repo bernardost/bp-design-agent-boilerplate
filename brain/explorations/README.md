@@ -8,6 +8,10 @@ an insight was realized, a task exists. An exploration is the opposite — a spr
 most of which will die. Filed in `decisions/` they would corrupt the decision log with
 choices nobody made; filed in `insights/` they would claim a durability they have not earned.
 
+**Upstream of this is `brain/moodboards/`**, which holds what the research *means* — ideas
+grouped into narratives. A board argues; a spread answers it with directions; a decision picks
+one. Directions generated with no board behind them are guesses with specimens attached.
+
 ## The rules
 
 - **Never edited into a decision.** When a direction is picked, that produces exactly one new

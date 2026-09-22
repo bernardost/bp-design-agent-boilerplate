@@ -29,6 +29,13 @@ per direction; reusing one seed for all of them reproduces the problem.
 
 ## The run
 
+**0 · Know what you are exploring from.** If `brain/moodboards/` holds a board for this
+strand, its surviving narratives are the brief — the directions here are answers to what the
+board argued, and an exploration that ignores one is starting from the model's priors again.
+If there is no board and the research has piled up unread, say in one line that `/moodboard`
+comes first. Options generated before anyone said what the work is about are six ways of
+guessing.
+
 **1 · Take the brief in one line.** What is being designed, and for whom. If the owner has a
 feeling but not a brief, that is fine — capture the feeling verbatim, it is worth more than a
 tidied version of it.
