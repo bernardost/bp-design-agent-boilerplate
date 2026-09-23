@@ -1,4 +1,4 @@
-# agent-workspace-boilerplate
+# bp-design-agent-boilerplate
 
 A blank workspace for running a project with an assistant — Claude Code, Codex, or a model in
 an IDE like Cursor — as a disciplined collaborator. Clone it at the start of a new project,
@@ -9,6 +9,45 @@ Built for design projects: the work being designed often lives elsewhere (a Figm
 site, a deck) and this repo is the brain that runs it. Extracted from a live engagement where
 every rule here was earned by a failure — the product code and client material were stripped,
 and the method is the part that carries.
+
+## Why this and not a general assistant
+
+Claude Cowork, a chat window with project memory, an IDE assistant — they all work, and for
+plenty of tasks they are less setup than this. Five things they do not give you.
+
+**One agent per project, and its context is the project.** A general assistant accumulates
+everything you have ever discussed with it, and retrieval decides what resurfaces. Here the
+boundary is a directory: one clone, one engagement, one brain. Nothing bleeds between clients,
+which is not a nicety when two of them have you under NDA. It also means the assistant can be
+told to read everything rather than guess at what matters — the whole context fits, because
+you decided what goes in it.
+
+**You own the files, so fixing what it knows is editing a file.** The knowledge is markdown in
+a directory you can grep, diff, edit and delete. When the assistant has the wrong idea about
+your project you correct `now.md` or archive a decision — you do not argue with a memory you
+cannot see and cannot address. Every change is a commit, so you can see what it learned and
+when. `doctor.py` then holds the whole thing to rules a README could only suggest.
+
+**Any model, and more than one.** `AGENTS.md` is the charter: Claude Code reads it through
+`CLAUDE.md`, Codex and Cursor read it directly. The scripts are standard-library Python with
+no dependencies and no API of their own. Switch models between sessions, run two at once in
+separate tabs, or hand the repo to someone using a different tool entirely — the record is
+plain text either way, and nothing about it expires when a product does.
+
+**The commands are design work, not coding work.** `/moodboard` turns research into ideas and
+assembles them into visions. `/explore` puts six to eight genuinely different directions on
+the table with real specimens. `/critique` scores a render against a craft lens you wrote.
+Brand assets are extracted from the client's PDF, never redrawn. A general assistant has no
+opinion about any of that, because it was not built with a designer in the room.
+
+**It follows you to your phone.** Because the brain is a repo you own, a private remote makes
+it portable: the same workspace opens in Claude Code on the web and on your phone, and Codex
+reads the same files. The assistant pushes every completed unit of work as it goes without
+being asked, so what you read on the train is never more than one step behind your desk.
+`/setup` asks about this, and this is the reason it does.
+
+**What it costs:** a few minutes of `/setup`, and a repo you keep. If the work is one
+conversation long, open a chat window instead.
 
 ## How to adopt it
 
@@ -33,12 +72,6 @@ for you to port by hand, never copied over. Anything it does not recognise is tr
 yours, because a wrong guess in that direction costs a question and a wrong guess in the other
 costs your work.
 
-## Why a remote is worth setting up
-
-`/setup` will ask, and the reason is not obvious: with a **private** repo, the same workspace
-opens in Claude Code on the web and on your phone. The assistant pushes every completed unit
-of work as it goes, so the brain on your phone is never more than one step behind your desk.
-
 ## What's inside
 
 | Path | What it is |
@@ -57,6 +90,7 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
 | `brain/lenses/` | what "good" means, one file per domain — `/reviewer` runs one per pass |
+| `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
 | `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
 | `brain/references/` | the quality bar as images — measured against, never copied |
@@ -67,14 +101,15 @@ of work as it goes, so the brain on your phone is never more than one step behin
 | `brain/redate.py` | one-way migration of an older `NNNN-` decision log to dated filenames |
 | `brain/test_brain.py` | what `doctor.py` cannot check about itself: links resolve, migrations keep every citation, pages ship no unsafe or absolute URLs, two projects stay separate |
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
+| `brain/board.py` | renders a moodboard as a desk you can pan and zoom — ideas, visions, and the wires between them |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
-| `brain/render.py` | the four above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
+| `brain/render.py` | the renderers above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
 | `brain/when.py` | resolves "next friday 9am" to an exact instant, so no reminder is scheduled off arithmetic a model did in its head |
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/workshop` · `/explore` · `/critique` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -145,6 +180,13 @@ of work as it goes, so the brain on your phone is never more than one step behin
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
   replacement and moves to `archive/`.
+- **A moodboard argues; a style guide specifies.** Asked for a moodboard, a model reliably
+  produces a brand manual — swatches, a type scale, sections named Colour and Typography —
+  which settles a design nobody chose from research nobody read. `/moodboard` builds the other
+  thing: **ideas**, one title and one sentence each and arguable, and **visions** that assemble
+  named sets of them into whole brands. The same idea appears in several visions, and that
+  overlap is the argument — `brain/board.py` draws it as wires you can light from either end,
+  and an idea present in every vision is the brand whichever way the work lands.
 - **Diverge before you converge, and keep the losers.** `/explore` puts six to eight
   genuinely different directions on the table, seeded so they are not one idea four times.
   They live in `brain/explorations/`, and picking one produces exactly one decision that
