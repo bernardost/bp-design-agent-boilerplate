@@ -169,6 +169,22 @@ how a session loses it. Read-only work needs none of this.
   **The task file still owns it.** A reminder is a projection exactly like the tracker:
   `brain/tasks.md` holds the truth, the channel holds the alarm, and the confirmation the
   channel returns is written back so the record proves it was really created.
+- **A transcript is a guess, and it is wrong where it matters.** When a full meeting
+  transcript is pasted or attached — in any session, with or without a command — **it is
+  interrogated before a word of it is trusted.** Speech recognition fails hardest on the
+  vocabulary a project runs on: names, acronyms, numbers, and whoever was speaking. The owner
+  was in the room and reads straight past those errors; you were not, so a mishearing routed
+  into a decision becomes a project fact with a citation attached, which is the label-evidence
+  rule defeated through the one door that looks like a quotation.
+  **Ask once, as a numbered table** — timestamp, the line as transcribed, what you need, and
+  **your own reading of it**, so answering is confirming rather than filling in a blank.
+  Questions come in one pass, never one at a time; an owner answers a transcript in one
+  sitting or not at all. First check `brain/glossary.md` and the decision log, because a table
+  padded with questions the repo already answers is a table that gets skimmed.
+  The six holes, what to leave alone, and what to do with the answers are in
+  `.claude/skills/transcript/SKILL.md`. Two rules carry regardless: **the transcript is never
+  edited** — corrections go in a `## Corrections` section beneath it, machine's version and
+  human's both visible — and anything filed on an unconfirmed reading carries `^[inferred]`.
 - **Ears.** A decision stated or reached in conversation → a dated file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -472,7 +488,8 @@ approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
 actually fire)** · **`/update` (take the boilerplate's improvements without losing this
 project's work)** · `/status` (one-screen readout) · `/close` (wrap up) ·
 `/reviewer <lens> <scope>` (become the independent reviewer, under one lens from
-`brain/lenses/`) · `/briefing` (pull the watched sources) · **`/workshop` (turn questions for
+`brain/lenses/`) · `/briefing` (pull the watched sources) · **`/transcript` (take a pasted meeting
+transcript, and ask what it got wrong before trusting it)** · **`/workshop` (turn questions for
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) · `/critique` (score a render against the craft lens until it

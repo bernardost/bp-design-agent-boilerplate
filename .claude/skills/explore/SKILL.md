@@ -30,7 +30,7 @@ per direction; reusing one seed for all of them reproduces the problem.
 ## The run
 
 **0 · Know what you are exploring from.** If `brain/moodboards/` holds a board for this
-strand, its surviving narratives are the brief — the directions here are answers to what the
+strand, its surviving visions are the brief — the directions here are answers to what the
 board argued, and an exploration that ignores one is starting from the model's priors again.
 If there is no board and the research has piled up unread, say in one line that `/moodboard`
 comes first. Options generated before anyone said what the work is about are six ways of

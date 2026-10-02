@@ -5,6 +5,11 @@
 routes decisions, insights, tasks and questions out to their owning files, and the briefing
 never owns anything itself.
 
+**A pasted meeting transcript lives here too**, as
+`YYYY-MM-DD-<meeting>-transcript.md` — verbatim, never edited, with its `## Questions` table
+and any `## Corrections` beneath the body. `/transcript` writes it, and the rule it exists for
+is that a transcript is a machine's guess: it is interrogated before anything routes out of it.
+
 **Every line carries its source, its author, and its date**, with a link where one exists.
 A line that cannot be attributed does not get written — see the label-evidence rule in the
 charter.

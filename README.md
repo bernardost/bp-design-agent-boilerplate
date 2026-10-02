@@ -109,7 +109,7 @@ costs your work.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -141,6 +141,14 @@ costs your work.
   the project back as a page — what was understood, what is still unknown and who can answer
   it, the stage arc, the next steps — and waits for a yes. The failure it prevents is the
   expensive one: work advancing for weeks on the assistant's private reading of the project.
+- **A transcript is a guess, and it is wrong where it matters.** Speech recognition fails
+  hardest on the words a project runs on — names, acronyms, numbers, who was speaking — and
+  whoever was in the room reads straight past the errors. `/transcript` saves the file
+  verbatim, then asks once, as a numbered table: timestamp, the line as transcribed, what is
+  needed, and the assistant's own reading, so answering is confirming rather than filling in
+  blanks. The commonest hole is a shared screen nobody named — *"this one"*, *"as you can see
+  here"* — which is where the actual content of a review goes missing. The transcript is never
+  edited; corrections sit beneath it, the machine's version and the human's both visible.
 - **Evidence is present and quiet.** A claim that came from outside the repo carries
   `^[who · where · when](link)`, which renders as a faint superscript numeral — hover for the
   attribution, click for the timestamped moment in the recording. Anything the assistant
