@@ -89,7 +89,7 @@ costs your work.
 | `brain/braindumps/` | verbatim dumps; processing routes content out, never rewrites |
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
-| `brain/lenses/` | what "good" means, one file per domain — `/reviewer` runs one per pass |
+| `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`; `/reviewer` runs one per pass |
 | `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
 | `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
@@ -109,7 +109,7 @@ costs your work.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/deck` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -203,7 +203,17 @@ costs your work.
   described best. `brain/spread.py` renders them side by side — each with a specimen of its
   palette, type and layout logic — so taste acts on the work instead of on the writing
   about it.
-- **Two critics, one standard.** `/critique` is the fast loop while building: a fresh-context
+- **A title is a sentence, not a label and never an aphorism.** Asked for a deck, a model
+  writes fragments that scan and say nothing — *"Say what it is. Date it. Stop."* — then
+  explains each slide in a paragraph the presenter will say out loud anyway. `/deck` asks two
+  questions first (presented or standalone; labels or labels plus conversational titles),
+  writes **every title before a single page is built**, and holds them to one test: read the
+  titles alone, in order, and you should have the whole argument. *Brand traits · "Six key
+  concepts describe the brand's personality."* Then it marks which pages are a relationship
+  rather than a list and draws those, and it screenshots every page before calling anything
+  done. `brain/lenses/deck.md` is the standard, and it caps the score at 5 for fragment titles
+  or for a deck nobody looked at.
+- **Three lenses, one bar each.** `/critique` is the fast loop while building: a fresh-context
   critic that sees only the render, scores it, and writes nothing. `/reviewer craft` is the
   slow independent pass that writes findings. Both read `brain/lenses/craft.md`, so there is
   one bar and not two.

@@ -476,6 +476,37 @@ file's taste for the project's, which is exactly the safe average good design ha
   numeral, the full attribution listed at the foot. A page that prints its provenance inline
   is a page nobody finishes, and a page with no provenance at all is one nobody can check.
 
+**How it reads — and this half also governs anything that goes to a client.** The visual rules
+above stop at the owner's pages; these do not. A deck, a document and `feed.html` are written
+the same way, because the failure is the same in all three.
+
+- **A heading is a sentence that says the idea, not a label and never an aphorism.** On a page
+  or a slide the pattern is an **overtitle** — the label, two or three words, no verb — over a
+  **title** that asserts the point: *Brand traits · "Six key concepts describe the brand's
+  personality."* Someone reading only the titles, in order, should finish with the whole
+  argument.
+  **The failure is cleverness, and it is this file's own register leaking out.** *"Say what it
+  is. Date it. Stop."* · *"One route, held by a line"* · *"A wall is a rope: it holds."* Each
+  is a fragment pretending to be a thought: a three-beat rhythm, a colon doing a verb's job, a
+  metaphor standing in for the claim. They scan, so they survive a read-through, and they tell
+  the reader nothing. **This charter is written that way on purpose and nothing else may be.**
+  The test: say the title to a colleague. If they ask what you mean, write the sentence you
+  would have said instead.
+- **No meta-commentary.** *"This section explores…"*, *"The following framework outlines…"*,
+  *"As we can see…"*. The thing is in front of the reader. Delete the sentence; it has no
+  content. The same goes for a paragraph that restates its own heading at greater length.
+- **Plain English, straightforward, the words a competent person says out loud.** Not the
+  consulting register — *leverage, holistic, robust, seamless, unlock, elevate, journey*.
+- **Draw the relationship instead of listing it.** A process, a comparison, a structure or a
+  quantity is a diagram. A model reaches for bullets because text is cheaper than geometry,
+  and the result is a page where nothing is actually shown.
+- **Look at it before calling it done.** Render it, screenshot every page, and read the
+  screenshots. A deliverable nobody looked at is a draft whatever its state.
+
+**For a client deck or document, `brain/lenses/deck.md` is the standard and `/deck` is the
+process** — including the two questions that have to be asked before anything is built:
+presented or standalone, and which title style.
+
 The standard to hold it to: *an architecture magazine, not a generic AI-generated dark-mode
 dashboard.* It is an interface for consuming information with attention, and it should be
 interesting to look at. Ask before departing from this; do not split the difference.
@@ -493,7 +524,8 @@ transcript, and ask what it got wrong before trusting it)** · **`/workshop` (tu
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) · `/critique` (score a render against the craft lens until it
-holds up — writes nothing)**.
+holds up — writes nothing) · **`/deck` (a deck or client document that reads like an agency
+made it)**.
 
 These live in `.claude/skills/<name>/SKILL.md`. Outside Claude Code there is no autocomplete:
 **when the owner types `/name`, read `.claude/skills/name/SKILL.md` and follow it.**
