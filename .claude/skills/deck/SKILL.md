@@ -129,7 +129,7 @@ the way `brain/sources.md` specifies.
   owner reads. A client deck follows the client's brand or the direction this project chose.
   Brand assets are extracted or supplied, never redrawn — the charter's rule is absolute and a
   deck is exactly where a redrawn wordmark gets shipped.
-- **Do not write the deck in the charter's voice.** `AGENTS.md` is tight and aphoristic
-  because it is a rulebook for an agent. That register is the source of the bad titles above.
+- **Do not write the deck in the workspace's own voice.** Where `AGENTS.md` and the lenses
+  still lapse into epigram, that is their bug. It is the source of the bad titles above.
 - **Do not pad to a page count.** If the argument is nine pages, the deck is nine pages.
 - **Ask before departing from the lens**, rather than splitting the difference.
