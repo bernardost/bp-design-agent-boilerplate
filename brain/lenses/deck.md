@@ -125,9 +125,10 @@ of every item, or a shape that decorates without carrying information.
 
 ## 4 · What is explicitly not the standard here
 
-- **The charter's own voice.** `AGENTS.md` is written tight and aphoristic because it is a
-  rulebook read by an agent. That register is wrong here and is the source of the bad titles
-  above. Do not flag a deck for failing to sound like the charter.
+- **Sounding like the workspace's own files.** `AGENTS.md`, the skills and these lenses are
+  written to be read by whoever is deciding what to do next, not to be admired. A deck is not
+  failing because it does not sound like them, and where they still lapse into epigram, that
+  is their bug and not a style to carry into a deliverable.
 - **The workspace house style.** White paper, Inter, hairline rules — that governs `feed.html`
   and the pages made for the owner. A client deck follows the client's brand, or the direction
   chosen for the project, and is judged against that.
