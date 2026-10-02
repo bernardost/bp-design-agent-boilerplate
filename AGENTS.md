@@ -379,6 +379,13 @@ first, then briefs, decisions, and anything drafted for a client. They are the p
 `stop-slop` the lists above do not cover, kept here because Codex and Cursor read this file
 and never load a skill.
 
+- **Write no epigrams or riddles.** This is the default pull and the one to resist hardest.
+  Three forms give it away: a fragment used as a statement (*"One route, held by a line"*),
+  three short clauses in a row (*"Say it. Date it. Stop."*), and a colon doing a verb's work
+  (*"A wall is a rope: it holds"*). Say each heading, title and rule out loud to a colleague —
+  if they would ask what you mean, write the answer you would have given.
+- **Do not put a metaphor in place of the claim.** If the reader has to decode the image to
+  find the instruction, the image replaced the instruction.
 - **Name the actor.** No inanimate thing doing a human verb. A complaint does not become a fix,
   a decision does not emerge, a pattern does not reveal itself. Somebody did something.
 - **Write in the active voice**, for the same reason: a sentence with no subject hides who acted.
