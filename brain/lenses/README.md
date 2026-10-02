@@ -25,6 +25,9 @@ Every lens file answers four questions, and a lens that skips one is not finishe
 - **`record.md`** — is the project's record honest? Provenance, stage discipline,
   decision-trail consistency, claim-versus-page. Reads widely across the brain. **This is the
   default when `/reviewer` is invoked with no lens named.**
+- **`house.md`** — does a page generated for the owner look right? Inter, white paper, hairline
+  rules, colour only where it carries intent. Governs `feed.html` and its siblings, never the
+  project's own work.
 - **`deck.md`** — would an agency hand this over? Titles that carry the argument, plain
   English, a held grid, ideas drawn rather than bulleted. Governs what goes **out** — a deck,
   a proposal, a client document — where `craft.md` governs how anything looks.

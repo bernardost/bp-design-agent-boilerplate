@@ -89,7 +89,7 @@ costs your work.
 | `brain/braindumps/` | verbatim dumps; processing routes content out, never rewrites |
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
-| `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`; `/reviewer` runs one per pass |
+| `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`, `house`; `/reviewer` runs one per pass |
 | `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
 | `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
