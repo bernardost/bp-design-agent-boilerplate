@@ -506,7 +506,8 @@ transcript, and ask what it got wrong before trusting it)** · **`/workshop` (tu
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) ·
-**`/prototype` (the first pass, with the dials exposed)** · `/critique` (score a render
+**`/prototype` (the first pass, with the dials exposed) ·
+`/motion` (pick a vocabulary, measure the references, write it down)** · `/critique` (score a render
 against the craft lens until it holds up — writes nothing) · **`/deck` (a deck or client
 document that reads like an agency made it)**.
 

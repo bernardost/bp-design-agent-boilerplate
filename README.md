@@ -89,7 +89,7 @@ costs your work.
 | `brain/braindumps/` | verbatim dumps; processing routes content out, never rewrites |
 | `brain/briefings/` | dated pulls from the sources in `brain/sources.md` |
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
-| `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`, `house`; `/reviewer` runs one per pass |
+| `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`, `house`, `motion`; `/reviewer` runs one per pass |
 | `brain/decks/` | decks and client documents — deliverables, judged against `brain/lenses/deck.md` |
 | `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
@@ -110,7 +110,7 @@ costs your work.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/prototype` · `/critique` · `/deck` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/prototype` · `/motion` · `/critique` · `/deck` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -200,6 +200,15 @@ costs your work.
   genuinely different directions on the table, seeded so they are not one idea four times.
   They live in `brain/explorations/`, and picking one produces exactly one decision that
   links back — the only seam between the two halves.
+- **Motion is decided once, per project, and measured rather than guessed.** Most motion
+  advice is written for a long scrolling marketing page and silently assumes it; an app UI, a
+  presented deck and a prototype want different answers, and several rules invert between them.
+  `/motion` holds what survives regardless — one vocabulary per page, at most one thing moving
+  on its own clock, a small fixed set of eases, `prefers-reduced-motion` honoured — then has
+  the project derive its own gestures and curves from the brand. When the owner names a
+  reference, it is measured in a real browser rather than described from screenshots, and the
+  measured curve joins the tuning drawer by name so he can try it. `brain/lenses/motion.md`
+  holds the answer; the generic rules are only a floor.
 - **The first pass of a new design ships with its dials exposed.** An owner cannot specify
   taste for something he has not seen move, so what comes back is *"the type feels heavy"* and
   a round goes into converting adjectives into values. `/prototype` builds a tuning drawer in
