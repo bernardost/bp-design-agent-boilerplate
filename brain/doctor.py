@@ -821,6 +821,34 @@ def report_moodboards():
                   "               → python3 brain/board.py")
 
 
+# ── REPORT ── a tuning drawer left in something a client will see ─────────────
+def report_tuning_drawers():
+    """`/prototype` ships a first pass with a tuning drawer, and the drawer is scaffolding for
+    the conversation with the owner. A client finding a panel of sliders on their brand
+    presentation draws exactly the wrong conclusion about what they are being shown.
+
+    Stripping it is one commit and it is the step that gets forgotten, so it is checked rather
+    than remembered. A report and not a FAIL: a deck still being tuned legitimately has one.
+    """
+    d = BRAIN / "decks"
+    if not d.exists():
+        return
+    marks = ("data-tuner", "id=\"tuner\"", "class=\"tuner", "tuning-drawer", "data-motion")
+    hits = []
+    for path in sorted(d.rglob("*.html")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        found = [m for m in marks if m in text]
+        if found:
+            hits.append((rel(path), found[0]))
+    if not hits:
+        return
+    print(f"  drawers    {len(hits)} deck(s) still carry a tuning drawer")
+    for f, mark in hits:
+        print(f"               {f} — found {mark}\n"
+              f"               → strip it before the client sees it; keep the custom properties")
+
+
+
 # ── REPORT ── is this workspace actually configured? ──────────────────────────
 def report_config():
     """A half-configured workspace should announce itself rather than quietly run with a
@@ -1319,6 +1347,7 @@ def main() -> int:
         report_drafts()
         report_explorations()
         report_moodboards()
+        report_tuning_drawers()
         report_unrouted_promises()
         report_orphans()
         report_archive_candidates()

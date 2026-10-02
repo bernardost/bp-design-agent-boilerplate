@@ -110,7 +110,7 @@ costs your work.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/critique` · `/deck` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/prototype` · `/critique` · `/deck` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -200,6 +200,16 @@ costs your work.
   genuinely different directions on the table, seeded so they are not one idea four times.
   They live in `brain/explorations/`, and picking one produces exactly one decision that
   links back — the only seam between the two halves.
+- **The first pass of a new design ships with its dials exposed.** An owner cannot specify
+  taste for something he has not seen move, so what comes back is *"the type feels heavy"* and
+  a round goes into converting adjectives into values. `/prototype` builds a tuning drawer in
+  the same pass as the page: every visual value is a CSS custom property, nothing is
+  hard-coded, and **the variable list is the honest spec of every decision the design is
+  making** — a value you hard-coded is a decision you hid. Motion is a select of three or four
+  genuinely different kinds rather than a slider, because a slider cannot tell you the right
+  answer was a different idea. Copy settings puts the owner's pick on the clipboard as JSON,
+  which gets baked into the defaults and logged as a decision. `doctor.py` reports a drawer
+  left in anything under `brain/decks/`.
 - **Show the spread, don't describe it.** Eight directions in prose get judged on which was
   described best. `brain/spread.py` renders them side by side — each with a specimen of its
   palette, type and layout logic — so taste acts on the work instead of on the writing

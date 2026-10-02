@@ -157,6 +157,19 @@ how a session loses it. Read-only work needs none of this.
   question at a time. **The transcript is never edited**; corrections go in a `## Corrections`
   section beneath it, and anything filed on an unconfirmed reading carries `^[inferred]`.
   **`/transcript` has the six holes to look for and what to do with the answers.**
+- **Ship the first pass of a new design with a tuning drawer, before the owner asks.** Built in
+  the same pass as the page, not added after he reacts. An owner's taste for a design he has
+  not seen cannot be specified in advance, and what comes back is *"the type feels heavy"*
+  rather than a number — so give him the dials instead of a round of converting adjectives
+  into values.
+  **Every visual value is a CSS custom property or a `data-` attribute on `<body>`, and nothing
+  he might want to move is hard-coded.** That constraint matters more than the drawer: the
+  variable list is the honest spec of every decision the design is making, and a value you
+  hard-coded is a decision you hid. Motion is a select of three or four genuinely different
+  kinds rather than a slider, because a slider cannot tell you the right answer was a different
+  idea. **Copy settings turns his pick into a record** — JSON he pastes back, which you bake
+  into the defaults and log as a decision. **Remove the drawer before a client sees anything.**
+  `/prototype` has the four groups, the three actions and the rest.
 - **Log a decision or an insight as soon as it happens.** A decision stated or reached in conversation → a dated file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -492,9 +505,10 @@ project's work)** · `/status` (one-screen readout) · `/close` (wrap up) ·
 transcript, and ask what it got wrong before trusting it)** · **`/workshop` (turn questions for
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
-committing to a direction) · `/critique` (score a render against the craft lens until it
-holds up — writes nothing) · **`/deck` (a deck or client document that reads like an agency
-made it)**.
+committing to a direction) ·
+**`/prototype` (the first pass, with the dials exposed)** · `/critique` (score a render
+against the craft lens until it holds up — writes nothing) · **`/deck` (a deck or client
+document that reads like an agency made it)**.
 
 These live in `.claude/skills/<name>/SKILL.md`. Outside Claude Code there is no autocomplete:
 **when the owner types `/name`, read `.claude/skills/name/SKILL.md` and follow it.**
