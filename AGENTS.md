@@ -464,10 +464,9 @@ So, when editing this file:
   small ask"*, never *"Make a case for a small ask"* — three bullets down from the heading,
   the bolded line is the whole instruction a scanning reader receives, and it said the
   opposite of the rule for as long as it stood.
-- **Keep the density, drop the compression.** These are different. One fact per line, the
-  failure that caused the rule stated concretely, no filler — that is density, and it is why
-  this file is worth reading. Squeezing a rule into an epigram is compression, and it costs
-  comprehension to buy nothing.
+- **Keep one concrete fact per sentence, and stop squeezing rules into slogans.** State the
+  failure that caused the rule, concretely, with no filler. That is what makes this file worth
+  reading, and cutting the slogans does not mean adding hedges or restatement.
 - **Say it once, plainly, then give the reason.** The reason is usually a specific thing that
   went wrong, and naming it is what makes a rule stick.
 

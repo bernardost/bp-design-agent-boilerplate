@@ -126,7 +126,7 @@ of every item, or a shape that decorates without carrying information.
 ## 4 · What is explicitly not the standard here
 
 - **Sounding like the workspace's own files.** `AGENTS.md`, the skills and these lenses are
-  written to be read by whoever is deciding what to do next, not to be admired. A deck is not
+  written so that whoever is deciding what to do next understands them. A deck is not
   failing because it does not sound like them, and where they still lapse into epigram, that
   is their bug and not a style to carry into a deliverable.
 - **The workspace house style.** White paper, Inter, hairline rules — that governs `feed.html`

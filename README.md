@@ -76,7 +76,7 @@ costs your work.
 
 | Path | What it is |
 |---|---|
-| `writing-clearly.md` | a standalone block you can paste into any other project's agent instructions, aimed at the model's pull toward compressed, quotable prose |
+| `writing-clearly.md` | a block you can paste into any other project's agent instructions, aimed at the model's pull toward compressed, quotable prose |
 | `AGENTS.md` | the charter — behaviors, invariants, session ritual. `CLAUDE.md` imports it |
 | `brain/workspace.toml` | every constant, in one file: the engagement, its projects, the tracker |
 | `brain/now.md` | the one-screen current state, a section per project; rewritten, never grown |
