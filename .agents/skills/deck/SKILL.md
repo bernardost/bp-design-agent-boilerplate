@@ -116,6 +116,9 @@ the score at 5 for it.
 
 ## 6 · Hand it over
 
+Decks live in `brain/decks/`, named `YYYY-MM-DD-<topic>.html`. They are deliverables rather
+than projections, so they are committed, not gitignored.
+
 Say where it is, which of the two modes it was built for, and what you would change with more
 time. If any page is carrying a claim that came from outside the repo, it carries its source
 the way `brain/sources.md` specifies.
