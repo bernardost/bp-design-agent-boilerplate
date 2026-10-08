@@ -52,7 +52,11 @@ done. `/explore` filed specimens at 4:3 and stopped.
 
 - Clones made before today take `brain/playground.py`, the canvas, the template and the
   skills through `/update`; the charter and README lines are merge files and get ported by
-  hand.
+  hand. The first clone to take it had to hand-copy `_canvas/` because its older
+  `upstream.py` did not know the folder: `compare()` now classifies with the ownership rules
+  read out of the *fetched* `upstream.py`, since the rules that know a new folder arrive in
+  the same update as the folder. The same clone found the test fixture copying this
+  workspace's real `tasks.md`; it writes blank files now.
 - A piece written for the canvas uses `@container` and does not respond as a page; one
   written as a page uses `@media` and does not respond inside an artboard. The mode is chosen
   before the CSS is written, and the promotion notes translate `@container` back if needed.
