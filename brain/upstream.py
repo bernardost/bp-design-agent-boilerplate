@@ -30,6 +30,7 @@ direction, and it belongs upstream where everyone gets it.
 
 from __future__ import annotations
 
+import ast
 import fnmatch
 import re
 import shutil
@@ -126,24 +127,53 @@ def _match(rel: str, patterns) -> bool:
     return False
 
 
-def classify(rel: str) -> str:
+RULE_NAMES = ("OWNED", "PROJECT", "OWNED_INSIDE_PROJECT", "MERGE")
+
+
+def rules_from(path: Path) -> dict | None:
+    """The four ownership tuples out of another copy of this file, read with `ast` so nothing
+    in it runs. `/update` uses the *upstream* copy's rules to classify an update, because the
+    rules that know about a new template folder arrive in the same update as the folder: a
+    clone classifying with its own, older rules filed `brain/playground/_canvas/` as "needs
+    you" and the owner copied it in by hand, which is the one thing this script exists to make
+    unnecessary."""
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return None
+    out = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 \
+                and isinstance(node.targets[0], ast.Name) and node.targets[0].id in RULE_NAMES:
+            try:
+                out[node.targets[0].id] = tuple(ast.literal_eval(node.value))
+            except ValueError:
+                return None
+    return out if all(k in out for k in RULE_NAMES) else None
+
+
+def classify(rel: str, rules: dict | None = None) -> str:
     """`owned` | `project` | `merge` for a repo-relative path.
 
     Order matters. A project's own `extra_project_paths` win outright. Then the handful of
     template files that sit inside project folders — `brain/decisions/README.md` and the blank
     — because otherwise `brain/decisions/*.md` swallows them. Then PROJECT, so the project's
     actual decisions are never read from upstream. MERGE is the fallback, because an
-    unrecognised file is a question rather than an answer."""
+    unrecognised file is a question rather than an answer.
+
+    `rules` overrides the tuples in this file — see `rules_from`."""
+    r = rules or {"OWNED": OWNED, "PROJECT": PROJECT,
+                  "OWNED_INSIDE_PROJECT": OWNED_INSIDE_PROJECT, "MERGE": MERGE}
     extra = tuple(CONFIG.get("template", {}).get("extra_project_paths") or ())
     if _match(rel, extra):
         return "project"          # the project's own additions always win
-    if _match(rel, OWNED_INSIDE_PROJECT):
+    if _match(rel, r["OWNED_INSIDE_PROJECT"]):
         return "owned"
-    if _match(rel, PROJECT):
+    if _match(rel, r["PROJECT"]):
         return "project"
-    if _match(rel, MERGE):
+    if _match(rel, r["MERGE"]):
         return "merge"
-    if _match(rel, OWNED):
+    if _match(rel, r["OWNED"]):
         return "owned"
     return "merge"
 
@@ -179,8 +209,9 @@ def compare(theirs: Path) -> dict:
     dropped — a report listing what is already correct is a report nobody reads."""
     groups: dict = {"owned": [], "merge": [], "project": []}
     mine = walk(ROOT)
+    rules = rules_from(theirs / "brain" / "upstream.py")
     for rel, src in walk(theirs).items():
-        cls = classify(rel)
+        cls = classify(rel, rules)
         if cls == "project":
             continue          # never even compared: upstream has no opinion here
         dst = mine.get(rel)

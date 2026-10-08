@@ -47,9 +47,14 @@ def workspace(tmp: Path, projects: list[tuple[str, str]] | None = None) -> Path:
     (tmp / "brain").mkdir(parents=True)
     for name in SCRIPTS:
         shutil.copy(BRAIN / name, tmp / "brain" / name)
+    # Blank current-state files, never this workspace's own. In a clone the real `tasks.md`
+    # and `feed-items.md` carry that project's strands, and a two-project fixture built over
+    # them failed on headings that named neither fixture key.
     for name in CARRIED:
-        if (BRAIN / name).exists():
-            shutil.copy(BRAIN / name, tmp / "brain" / name)
+        (tmp / "brain" / name).write_text(f"# {name[:-3]}\n\n*(blank for the tests)*\n")
+    # The feed tests splice their items in over this heading, as the template's own file has it.
+    (tmp / "brain" / "feed-items.md").write_text("# Feed items\n\n## BAR\n\n*(blank)*\n")
+    shutil.copy(BRAIN / "tags.md", tmp / "brain" / "tags.md")
     for d in ("decisions", "insights", "explorations", "workshops", "braindumps",
               "briefings", "drafts", "reviews", "lenses", "references"):
         (tmp / "brain" / d).mkdir()
@@ -451,6 +456,20 @@ class Ownership(unittest.TestCase):
             # `/setup` writes confidential paths into it; a wholesale overwrite un-ignores them.
             ".gitignore", ".claude/settings.json",
         ])
+
+    def test_the_upstream_copys_rules_classify_the_update(self):
+        # The rules that know about a new template folder arrive in the same update as the
+        # folder, so classifying with the local, older rules files the folder as "needs you".
+        with tempfile.TemporaryDirectory() as tmp:
+            theirs = Path(tmp) / "upstream.py"
+            theirs.write_text('OWNED = ("brain/*.py",)\nPROJECT = ("brain/now.md",)\n'
+                              'OWNED_INSIDE_PROJECT = ("brain/newthing/_chrome/**",)\n'
+                              'MERGE = ("AGENTS.md",)\n')
+            rules = upstream.rules_from(theirs)
+            self.assertIsNotNone(rules)
+            self.assertEqual(upstream.classify("brain/newthing/_chrome/x.css", rules), "owned")
+            self.assertEqual(upstream.classify("brain/newthing/_chrome/x.css"), "merge")
+            self.assertIsNone(upstream.rules_from(Path(tmp) / "missing.py"))
 
     def test_an_unknown_file_is_a_question_not_a_guess(self):
         # The bias that makes this safe: never OWNED by default, because the cost of a wrong
