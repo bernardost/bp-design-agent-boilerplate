@@ -11,10 +11,13 @@
     1. <link> to the shared canvas chrome and <script src="versions.js"> (written by
        brain/playground.py — it is fine for it to 404 before the first run).
     2. The design: its CSS in <style>, its markup inside <template id="screen">. Every visual
-       value is a custom property on :root; every breakpoint is `@container screen (…)`.
+       value is a custom property on :root; breakpoints are plain `@media`, as in production.
        Nothing in here uses a `pg-` class — that prefix belongs to the chrome.
-    3. window.PIECE — title, boards, the controls, the states — then canvas.js, last.
+    3. window.PIECE — title, the controls, the states — then canvas.js, last.
 
+  The design is the page: resize the browser for widths, `C` opens the controls. Declaring
+  `boards` in window.PIECE switches to a canvas of artboards side by side instead — then the
+  breakpoints have to be `@container screen (…)`, which is why it is opt-in.
   Open the file directly in a browser. No build, no server.
 -->
 <link rel="stylesheet" href="../_canvas/canvas.css">
@@ -35,8 +38,9 @@
   --margin:24px; --row:18px;
   --dur:480ms; --stagger:70ms; --ease:cubic-bezier(.22,.61,.36,1);
 }
+html,body{margin:0;background:var(--paper)}
 .rl{background:var(--paper);color:var(--ink);font:var(--step-0)/1.55 var(--body);
-  min-height:100%;padding:var(--margin);-webkit-font-smoothing:antialiased}
+  min-height:100vh;padding:var(--margin);-webkit-font-smoothing:antialiased}
 .rl header{display:grid;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
 .rl .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .rl h1{margin:0;font:600 var(--step-3)/1 var(--display);letter-spacing:var(--track-display);text-wrap:balance;max-width:16ch}
@@ -58,11 +62,11 @@
 [data-density="compact"] .rl .by{display:none}
 [data-density="compact"] .rl .t{font-size:var(--step-0)}
 
-/* States the controls switch. */
-.rl [data-when]{display:none}
-.pg-screen[data-empty] .rl [data-when="empty"]{display:block}
-.pg-screen[data-empty] .rl [data-when="list"]{display:none}
-.pg-screen:not([data-empty]) .rl [data-when="list"]{display:block}
+/* States the controls switch. The attribute sits on the design root — <html> here, the
+   artboard in canvas mode — so the selector names no ancestor. */
+.rl [data-when="empty"]{display:none}
+[data-empty] .rl [data-when="empty"]{display:block}
+[data-empty] .rl [data-when="list"]{display:none}
 
 /* Motion: each kind is its own branch. Replay (R) re-mounts the board and runs it again. */
 .rl .in{animation:var(--dur) var(--ease) both;animation-delay:calc(var(--i,0) * var(--stagger))}
@@ -74,8 +78,8 @@
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 
-/* Breakpoints are container queries: the artboard is the viewport, not the browser. */
-@container screen (min-width: 720px){
+/* Breakpoints are plain media queries: the browser is the viewport. */
+@media (min-width: 720px){
   .rl{padding:calc(var(--margin) * 2.5) calc(var(--margin) * 3)}
   .rl header{grid-template-columns:1fr 1fr;align-items:end;gap:24px}
   .rl header .lede{grid-column:2}
@@ -117,10 +121,8 @@
 <script>
 window.PIECE = {
   title: 'Reading list',
-  boards: [
-    { id: 'desktop', label: 'Desktop', width: 1440 },
-    { id: 'mobile',  label: 'Mobile',  width: 390, height: 844, scroll: true },
-  ],
+  // boards: [{ id: 'desktop', label: 'Desktop', width: 1440 },
+  //          { id: 'mobile', label: 'Mobile', width: 390, height: 844, scroll: true }],
   controls: [
     { group: 'Colour', key: 'paper',  label: 'Ground',  kind: 'color', value: '#f6f2ea', css: '--paper' },
     { group: 'Colour', key: 'ink',    label: 'Ink',     kind: 'color', value: '#1b1a17', css: '--ink' },

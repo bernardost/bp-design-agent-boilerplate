@@ -208,8 +208,8 @@ which repo it means.
   `/prototype` has the four groups, the three actions and the rest; the drawer is the
   playground piece's controls panel, and the first pass is a piece.
 - **Design work happens in the playground, and a change starts a new file.** A screen or a
-  component is designed, translated or changed as a piece under `brain/playground/`, desktop
-  and mobile side by side, every value on a control. An existing design arrives as an exact
+  component is designed, translated or changed as a piece under `brain/playground/`: the
+  design as the browser body, every value on a control, mobile a window-resize away. An existing design arrives as an exact
   as-is translation first. **When the owner has seen a version and asks for a change, the
   change is a new numbered file and the old one is never touched again** — say so in one
   line, *"Starting v03: … v02 stays"*, and log it in the piece's record the same turn. The
@@ -553,8 +553,7 @@ transcript, and ask what it got wrong before trusting it)** · **`/workshop` (tu
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) ·
-**`/playground` (the work as HTML pieces, desktop and mobile side by side, every iteration
-kept) · `/promote` (a piece the owner called final: the decision, the implementation notes,
+**`/playground` (the work as HTML pieces with their controls, every iteration kept) · `/promote` (a piece the owner called final: the decision, the implementation notes,
 and the counterpart of what shipped) ·
 `/prototype` (the first pass, with the dials exposed) ·
 `/motion` (pick a vocabulary, measure the references, write it down)** · `/critique` (score a render

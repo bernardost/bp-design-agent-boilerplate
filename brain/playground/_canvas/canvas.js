@@ -1,35 +1,43 @@
-/* canvas.js — turns a piece file into a canvas: artboards, version strip, states, controls.
+/* canvas.js — gives a piece file its controls, its version menu, and optionally a canvas.
 
    A piece declares `window.PIECE` and a `<template id="screen">` holding the design, and
-   includes this file last. Everything else here is derived from that declaration, so a piece
+   includes this file last. Everything else is derived from that declaration, so a piece
    carries its design and the list of what can be tuned, and nothing about how the chrome works.
 
      window.PIECE = {
        title:   'Checkout — summary panel',
-       boards:  [{id:'desktop', width:1440}, {id:'mobile', width:390, height:844, scroll:true}],
        controls:[{group:'Colour', key:'accent', label:'Accent', kind:'color', value:'#1f4fd8', css:'--accent'},
                  {group:'Type',   key:'body',   label:'Body',   kind:'range', value:16, min:14, max:20, unit:'px', css:'--step-0'},
                  {group:'Layout', key:'density',label:'Density',kind:'select',value:'comfortable', options:['comfortable','compact'], attr:'data-density'},
                  {group:'State',  key:'empty',  label:'Empty',  kind:'toggle',value:false, attr:'data-empty'}],
        states:  {'Default':{}, 'Empty cart':{empty:true}},
        mount(root, board, values){},          // optional: wire up interactivity, query inside root only
+       // boards: [{id:'desktop', width:1440}, {id:'mobile', width:390, height:844, scroll:true}],
      };
 
-   How a value reaches the design:
-     css   → a custom property set on <html>, so every artboard inherits it:  var(--accent)
-     attr  → an attribute on each artboard's .pg-screen root:   .pg-screen[data-density="compact"] …
-             a toggle sets the attribute when true and removes it when false
-     apply → apply(value, screens, values) for anything those two cannot express
+   Two modes:
 
-   `kind` is one of: color · range · select · toggle · text. A select renders as a segmented
-   control while its labels are short enough to fit, and as a dropdown otherwise.
+   PAGE (default, no `boards`)  The design is mounted straight into <body>. Resize the window for
+     widths; write `@media` breakpoints like production CSS. The only chrome is a tab in the
+     corner that opens the panel.
+   CANVAS (`boards` declared)  Artboards side by side, each a CSS container named `screen`, with
+     a bar for toggling boards. Breakpoints must then be `@container screen (…)`.
+
+   How a value reaches the design, in both modes:
+     css   → a custom property set on <html>:                      var(--accent)
+     attr  → an attribute on the design root — <html> in page mode, each artboard in canvas
+             mode — so a selector written `[data-density="compact"] …` works in both.
+             A toggle sets the attribute when true and removes it when false.
+     apply → apply(value, roots, values) for anything those two cannot express
+
+   `kind`: color · range · select · toggle · text. A select is segmented while its labels fit
+   and a dropdown otherwise.
 
    Values persist per piece version in localStorage, and the URL carries the non-default ones
-   (`?accent=%231f4fd8&density=compact`) so a link opens on an exact view. `C` toggles the
-   panel, `R` replays — replay re-mounts every artboard, which restarts the design's entrance
-   animations and any script in mount(). Copy settings puts the current values on the clipboard
-   as JSON, for the owner to paste back: that JSON is the handoff, and the agent bakes it into
-   the defaults of the next version. */
+   so a link opens on an exact view. `C` toggles the panel, `R` replays — replay re-mounts the
+   design, which restarts entrance animations and anything in mount(). Copy settings puts the
+   current values on the clipboard as JSON: that JSON is the handoff, and the agent bakes it
+   into the defaults of the next version. */
 
 (function () {
   'use strict';
@@ -39,8 +47,8 @@
   const KEY = 'pg:' + (PG && PG.slug ? PG.slug + '/' : '') + file;
   const controls = PIECE.controls || [];
   const states = PIECE.states || {};
-  const boards = (PIECE.boards && PIECE.boards.length) ? PIECE.boards
-    : [{ id: 'desktop', width: 1440 }, { id: 'mobile', width: 390 }];
+  const boards = PIECE.boards || [];
+  const CANVAS = boards.length > 0;
   const defaults = Object.fromEntries(controls.map(c => [c.key, c.value]));
   const values = Object.assign({}, defaults);
   let shown = Object.fromEntries(boards.map(b => [b.id, b.hidden !== true]));
@@ -58,7 +66,7 @@
     values[c.key] = c.kind === 'toggle' ? raw !== '0' && raw !== 'false'
       : c.kind === 'range' ? Number(raw) : raw;
   }
-  if (q.has('boards')) {
+  if (CANVAS && q.has('boards')) {
     const on = q.get('boards').split(',');
     for (const b of boards) shown[b.id] = on.includes(b.id);
   }
@@ -67,8 +75,7 @@
     try { localStorage.setItem(KEY, JSON.stringify({ values, boards: shown })); } catch (e) { /* ignore */ }
     const p = new URLSearchParams();
     for (const c of controls) if (values[c.key] !== defaults[c.key]) p.set(c.key, String(values[c.key]));
-    const hidden = boards.filter(b => !shown[b.id]);
-    if (hidden.length) p.set('boards', boards.filter(b => shown[b.id]).map(b => b.id).join(','));
+    if (CANVAS && boards.some(b => !shown[b.id])) p.set('boards', boards.filter(b => shown[b.id]).map(b => b.id).join(','));
     const qs = p.toString();
     history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
   }
@@ -84,41 +91,47 @@
     for (const kid of kids) if (kid != null) n.append(kid);
     return n;
   };
-  const screens = () => Array.from(document.querySelectorAll('.pg-screen'));
+  // The design roots: each artboard in canvas mode, <html> in page mode.
+  const roots = () => CANVAS ? Array.from(document.querySelectorAll('.pg-screen')) : [document.documentElement];
 
   // ── apply values to the design ──────────────────────────────────────
   function apply() {
-    const root = document.documentElement.style;
-    const scr = screens();
+    const style = document.documentElement.style;
+    const rs = roots();
     for (const c of controls) {
       const v = values[c.key];
       if (c.css) {
-        if (c.kind === 'toggle') root.setProperty(c.css, v ? (c.on ?? '1') : (c.off ?? '0'));
-        else root.setProperty(c.css, String(v) + (c.unit || ''));
+        if (c.kind === 'toggle') style.setProperty(c.css, v ? (c.on ?? '1') : (c.off ?? '0'));
+        else style.setProperty(c.css, String(v) + (c.unit || ''));
       }
-      if (c.attr) for (const s of scr) {
-        if (c.kind === 'toggle') v ? s.setAttribute(c.attr, '') : s.removeAttribute(c.attr);
-        else s.setAttribute(c.attr, String(v));
+      if (c.attr) for (const r of rs) {
+        if (c.kind === 'toggle') v ? r.setAttribute(c.attr, '') : r.removeAttribute(c.attr);
+        else r.setAttribute(c.attr, String(v));
       }
-      if (typeof c.apply === 'function') c.apply(v, scr, values);
+      if (typeof c.apply === 'function') c.apply(v, rs, values);
     }
     document.querySelectorAll('[data-pg-state]').forEach(b => {
-      const preset = states[b.dataset.pgState] || {};
-      const target = Object.assign({}, defaults, preset);
+      const target = Object.assign({}, defaults, states[b.dataset.pgState] || {});
       b.setAttribute('aria-pressed', String(controls.every(c => values[c.key] === target[c.key])));
     });
     window.dispatchEvent(new CustomEvent('pg:change', { detail: { values } }));
   }
-
   function set(key, v) { values[key] = v; apply(); persist(); syncPanel(); }
 
-  // ── artboards ───────────────────────────────────────────────────────
+  // ── mounting the design ─────────────────────────────────────────────
   const tpl = document.getElementById('screen');
-  function mountScreen(screen, board) {
-    screen.replaceChildren();
-    if (tpl && tpl.content) screen.append(document.importNode(tpl.content, true));
-    if (typeof PIECE.mount === 'function') PIECE.mount(screen, board, values);
+  function mountInto(host, board) {
+    host.replaceChildren();
+    if (tpl && tpl.content) host.append(document.importNode(tpl.content, true));
+    if (typeof PIECE.mount === 'function') PIECE.mount(host, board, values);
   }
+  let pageHost = null;
+  function mountAll() {
+    if (CANVAS) document.querySelectorAll('.pg-screen').forEach(s => mountInto(s, boards.find(b => b.id === s.dataset.board)));
+    else mountInto(pageHost, null);
+  }
+  function replay() { mountAll(); apply(); }
+
   function buildCanvas() {
     const canvas = el('div', { class: 'pg-canvas' });
     for (const b of boards) {
@@ -130,43 +143,45 @@
         screen);
       board.style.setProperty('--pg-w', w + 'px');
       board.hidden = !shown[b.id];
-      mountScreen(screen, b);
       canvas.append(board);
     }
     return canvas;
   }
-  function replay() {
-    document.querySelectorAll('.pg-screen').forEach(s => mountScreen(s, boards.find(b => b.id === s.dataset.board)));
-    apply();
+
+  // ── version menu and state chips (shared by bar and panel) ──────────
+  function versionMenu() {
+    if (!PG || !PG.versions || PG.versions.length < 2) return null;
+    const sel = el('select', { class: 'pg-select', 'aria-label': 'Version', onchange: e => { location.href = e.target.value + location.search; } });
+    for (const v of PG.versions) {
+      const o = el('option', { value: v.file }, v.label + (v.date ? ' · ' + v.date : '') + (v.file === PG.final ? ' · final' : ''));
+      if (v.file === file) o.selected = true;
+      sel.append(o);
+    }
+    return sel;
+  }
+  function stateChips() {
+    const names = Object.keys(states);
+    if (!names.length) return null;
+    const g = el('div', { class: 'pg-group pg-states' });
+    for (const name of names) g.append(el('button', {
+      class: 'pg-chip', 'data-pg-state': name, type: 'button',
+      onclick: () => { Object.assign(values, defaults, states[name]); apply(); persist(); syncPanel(); },
+    }, name));
+    return g;
   }
 
-  // ── bar ─────────────────────────────────────────────────────────────
+  // ── bar (canvas mode only) ──────────────────────────────────────────
   function buildBar() {
     const bar = el('header', { class: 'pg-bar' });
     bar.append(el('a', { class: 'pg-home', href: '../index.html', title: 'Playground index' }, '←'));
     const title = el('div', { class: 'pg-title' }, PIECE.title || (PG && PG.title) || document.title);
     bar.append(title);
-    if (PG && PG.versions && PG.versions.length > 1) {
-      const sel = el('select', { class: 'pg-select', 'aria-label': 'Version', onchange: e => { location.href = e.target.value + location.search; } });
-      for (const v of PG.versions) {
-        const o = el('option', { value: v.file }, v.label + (v.date ? ' · ' + v.date : '') + (v.file === PG.final ? ' · final' : ''));
-        if (v.file === file) o.selected = true;
-        sel.append(o);
-      }
-      bar.append(el('div', { class: 'pg-group' }, sel));
-    } else if (PG && PG.versions && PG.versions.length === 1) {
-      title.append(el('small', null, PG.versions[0].label));
-    }
+    const vm = versionMenu();
+    if (vm) bar.append(el('div', { class: 'pg-group' }, vm));
+    else if (PG && PG.versions && PG.versions.length === 1) title.append(el('small', null, PG.versions[0].label));
     bar.append(el('div', { class: 'pg-spacer' }));
-    const names = Object.keys(states);
-    if (names.length) {
-      const g = el('div', { class: 'pg-group' });
-      for (const name of names) g.append(el('button', {
-        class: 'pg-chip', 'data-pg-state': name, type: 'button',
-        onclick: () => { Object.assign(values, defaults, states[name]); apply(); persist(); syncPanel(); },
-      }, name));
-      bar.append(g);
-    }
+    const sc = stateChips();
+    if (sc) bar.append(sc);
     if (boards.length > 1) {
       const g = el('div', { class: 'pg-group', 'data-pg-boards': '' });
       for (const b of boards) g.append(el('button', {
@@ -180,13 +195,17 @@
       }, b.label || b.id));
       bar.append(g);
     }
-    if (controls.length) {
-      bar.append(el('div', { class: 'pg-group' }, el('button', {
-        class: 'pg-chip', type: 'button', 'data-pg-toggle': '', 'aria-pressed': 'false',
-        onclick: togglePanel,
-      }, 'Controls', el('kbd', null, 'C'))));
-    }
+    bar.append(el('div', { class: 'pg-group' }, el('button', {
+      class: 'pg-chip', type: 'button', 'data-pg-toggle': '', 'aria-pressed': 'false', onclick: togglePanel,
+    }, 'Controls', el('kbd', null, 'C'))));
     return bar;
+  }
+
+  // ── tab (page mode only) ────────────────────────────────────────────
+  function buildTab() {
+    const cur = PG && PG.versions ? PG.versions.find(v => v.file === file) : null;
+    return el('button', { class: 'pg-tab', type: 'button', 'data-pg-toggle': '', 'aria-pressed': 'false',
+      title: 'Controls, versions, states', onclick: togglePanel }, cur ? cur.v : 'Controls', el('kbd', null, 'C'));
   }
 
   // ── panel ───────────────────────────────────────────────────────────
@@ -230,6 +249,15 @@
   }
   function syncPanel() { for (const c of controls) if (inputs[c.key]) inputs[c.key](values[c.key]); }
   function buildPanel() {
+    const head = el('div', { class: 'pg-panel-head' });
+    head.append(el('div', { class: 'pg-title' }, el('span', null, PIECE.title || (PG && PG.title) || document.title),
+      el('a', { href: '../index.html' }, 'index →')));
+    if (!CANVAS) {           // the bar carries these in canvas mode
+      const vm = versionMenu();
+      if (vm) head.append(vm);
+      const sc = stateChips();
+      if (sc) head.append(sc);
+    }
     const body = el('div', { class: 'pg-panel-body' });
     const groups = [];
     for (const c of controls) { const g = c.group || 'Controls'; if (!groups.includes(g)) groups.push(g); }
@@ -242,13 +270,12 @@
       el('button', { type: 'button', onclick: replay }, 'Replay', el('kbd', null, ' R')),
       el('button', { type: 'button', onclick: () => { Object.assign(values, defaults); apply(); persist(); syncPanel(); } }, 'Reset'),
       el('button', { type: 'button', onclick: copySettings }, 'Copy settings'));
-    return el('aside', { class: 'pg-panel', 'aria-label': 'Controls' }, body, actions);
+    return el('aside', { class: 'pg-panel', 'aria-label': 'Controls' }, head, body, actions);
   }
   function togglePanel() {
     const open = document.body.getAttribute('data-pg-panel') !== 'open';
     document.body.setAttribute('data-pg-panel', open ? 'open' : 'closed');
-    const t = document.querySelector('[data-pg-toggle]');
-    if (t) t.setAttribute('aria-pressed', String(open));
+    document.querySelectorAll('[data-pg-toggle]').forEach(t => t.setAttribute('aria-pressed', String(open)));
   }
   let toastTimer;
   function toast(msg) {
@@ -269,18 +296,29 @@
   // ── boot ────────────────────────────────────────────────────────────
   function boot() {
     document.body.classList.add('pg-root');
+    document.body.setAttribute('data-pg-mode', CANVAS ? 'canvas' : 'page');
     document.body.setAttribute('data-pg-panel', 'closed');
-    document.body.append(buildBar(), buildCanvas());
-    if (controls.length) document.body.append(buildPanel());
+    if (CANVAS) {
+      document.body.append(buildBar(), buildCanvas());
+    } else {
+      // The design is the page: a display:contents host as the body's first child, so the
+      // design's own elements lay out as if they were written straight into <body>.
+      pageHost = el('div', { 'data-pg-host': '' });
+      pageHost.style.display = 'contents';
+      document.body.prepend(pageHost);
+      document.body.append(buildTab());
+    }
+    document.body.append(buildPanel());
+    mountAll();
     apply();
     document.addEventListener('keydown', e => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
-      if (e.key === 'c' || e.key === 'C') { if (controls.length) togglePanel(); }
+      if (e.key === 'c' || e.key === 'C') togglePanel();
       if (e.key === 'r' || e.key === 'R') replay();
     });
   }
-  window.pg = { values, set, replay, screens };
+  window.pg = { values, set, replay, roots };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

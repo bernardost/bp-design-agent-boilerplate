@@ -1,6 +1,6 @@
 ---
 name: playground
-description: Do the design work as HTML pieces in brain/playground/ — a faithful translation of an existing design or a page from scratch, desktop and mobile side by side, every visual value on a control, and every iteration kept as its own numbered file. Use for /playground, "put this in the playground", "make a version of this I can tweak", "translate this Figma frame to HTML", "iterate on the header", or whenever a screen or component is about to be designed, changed or tuned.
+description: Do the design work as HTML pieces in brain/playground/ — a faithful translation of an existing design or a page from scratch, the design as the browser body, every visual value on a control, and every iteration kept as its own numbered file. Use for /playground, "put this in the playground", "make a version of this I can tweak", "translate this Figma frame to HTML", "iterate on the header", or whenever a screen or component is about to be designed, changed or tuned.
 ---
 
 # Playground — the work happens in HTML, and nothing is lost
@@ -9,8 +9,7 @@ A round on a Figma file or in product code costs minutes to hours. A round on an
 costs seconds, and the owner moves the values himself instead of describing them. So this is
 where screens and components get designed and changed: as **pieces** under
 `brain/playground/<slug>/`, each a folder of numbered versions that open straight from disk,
-with desktop and mobile artboards side by side and a panel of controls for everything that can
-be tuned. `brain/playground/README.md` is the format; this is the procedure.
+the design as the browser body, and a panel of controls for everything that can be tuned. `brain/playground/README.md` is the format; this is the procedure.
 
 ## 0 · Say which project, and check the stage
 
@@ -39,9 +38,10 @@ builds here; read it before building.
 Either way the file is `_template/piece.html` with the design swapped in, and three things
 hold:
 
-- **Breakpoints are `@container screen (min-width: …)`, never `@media`.** Each artboard is a
-  CSS container, which is what lets the mobile board be 390px wide on a 1440px display.
-  `vw`/`vh` become `cqw`/`cqh`.
+- **The design is the page.** Plain `@media` breakpoints, the body as the root, nothing framed;
+  the owner resizes the window to see mobile. Declare `boards` only when two widths have to be
+  seen at once — that renders artboards as CSS containers, and the breakpoints then have to be
+  `@container screen (…)`, so decide before writing the CSS, not after.
 - **Every visual value is a custom property on `:root`; every switch is a `data-` attribute on
   the artboard root; and the `controls` list in `window.PIECE` names all of them.** A value
   hard-coded in the CSS is a decision hidden from the owner. Four groups by convention —
@@ -52,7 +52,9 @@ hold:
   five-digit number, the error message that will actually be shown.
 
 Then `python3 brain/playground.py`, open the file, and **look at it at both widths before
-handing it over**. Screenshot both boards and read the screenshots. A piece nobody looked at
+handing it over**: screenshot it at 1440 and at 390, in each state, and read the screenshots.
+Every control is a URL parameter, so `?motion=none&empty=true` captures a state with the
+entrance settled — a headless browser otherwise hands back a frame from the middle of it. A piece nobody looked at
 is a draft whatever its state.
 
 ## 2 · Iterate, and keep everything
@@ -83,7 +85,7 @@ When the owner says which version he is working from, `status: current` and say 
 
 The reply names the file path and what to look at, and nothing about how the chrome works
 beyond the first time: *"`C` opens the controls, `R` replays the motion, the version menu in
-the bar goes back."* Say it once per engagement, like focus mode.
+the panel goes back, resize the window for mobile."* Say it once per engagement, like focus mode.
 
 If the piece came out of an exploration, `Exploration:` in `piece.md` points at it, and the
 exploration's *Where it went* names the piece.
@@ -103,7 +105,7 @@ implementation notes and the shipped counterpart are that command's job.
   for the owner to read; the chrome is deliberately styled outside both.
 - **Do not let the controls become the design.** A fifth group, or a control nobody would
   move, is a tool being built instead of a question being answered.
-- **Interactivity queries inside its own artboard.** `PIECE.mount(root, board, values)` runs
-  once per board; a `document.querySelector` in it finds the wrong copy.
+- **Interactivity queries inside its own root.** `PIECE.mount(root, board, values)` runs once
+  per mount; on a canvas a `document.querySelector` in it finds the wrong copy.
 - **A piece is one strand.** Two projects' screens in one piece compare things that were never
   alternatives.

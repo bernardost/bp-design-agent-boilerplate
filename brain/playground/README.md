@@ -1,7 +1,8 @@
 # `playground/` — the work, in HTML, every iteration kept
 
 One folder per **piece** — a screen, a component, a flow — holding every version of it as a
-plain HTML file that opens straight from disk. `/playground` writes here, `/prototype` builds
+plain HTML file that opens straight from disk. The design is the page: resize the browser for
+widths, press `C` for the controls. `/playground` writes here, `/prototype` builds
 its first pass here, and `/promote` is how a piece leaves. `python3 brain/playground.py`
 renders `index.html`, the one page that lists everything, and a `versions.js` per piece that
 gives each file its version strip.
@@ -43,25 +44,30 @@ and `versions.js` are regenerated from them and are not.
   page or a file, `v01` is the faithful translation and nothing in it is changed: same type,
   same values, same spacing, measured, never eyeballed. Iteration starts at `v02`. Without
   that baseline nobody can say what an iteration changed.
-- **Desktop and mobile sit side by side.** Each artboard is a CSS container named `screen`,
-  so the design's breakpoints are `@container screen (min-width: …)`, never `@media`, and
-  `vw`/`vh` are `cqw`/`cqh`. There is no zoom: a 1440px artboard is 1440px wide and the canvas
-  scrolls. Boards can be hidden from the bar, and a piece can declare other widths.
+- **The design is the browser body, by default.** No frame, no zoom, no chrome but a small tab
+  in the corner. Breakpoints are plain `@media`, as in production, and the owner flicks between
+  mobile and desktop by resizing the window. That is the least that can go wrong.
+  **Artboards side by side are opt-in**: declare `boards` in `window.PIECE` and the piece
+  renders a canvas with each board a CSS container named `screen`, at its true width. The cost
+  is that breakpoints must then be `@container screen (min-width: …)` and `vw`/`vh` become
+  `cqw`/`cqh` — a rewrite the piece has to be written for, which is why it is not the default.
+  Reach for it when two widths have to be compared in one glance.
 - **Every piece has controls.** Every visual value is a custom property on `:root` and every
   switch is a `data-` attribute on the artboard root, and the `controls` list in `window.PIECE`
   is the inventory of both — the honest spec of every decision the design makes. Four groups
   by convention: Colour, Type, Layout, Motion; plus Content for states. Motion is a select of
   kinds, never a slider between two numbers. Named **states** are presets of control values
   and sit in the bar as chips: Default, Empty, Error, Long titles, whatever the piece needs.
-- **The panel is hidden until asked for.** `C` opens it; it overlays the canvas rather than
-  taking a strip off every artboard. That is the fix for the last playground's chrome, which
-  took a band of every screen for controls nobody was using at that moment.
+- **The panel is hidden until asked for.** `C` or the corner tab opens it; it overlays the
+  page rather than taking a strip off it. That is the fix for the last playground's chrome,
+  which took a band of every screen for controls nobody was using at that moment. The panel
+  also holds the version menu and the state chips.
 - **Copy settings is the handoff.** The owner tunes, copies, pastes the JSON back. The agent
   bakes those values into the defaults of the next version and logs the pick as a decision
   when it settles something.
-- **Interactivity queries inside its own artboard.** Two boards means two copies of the
-  design in one document; `PIECE.mount(root, board, values)` is called once per board, and a
-  `document.querySelector` inside it finds the wrong one.
+- **Interactivity queries inside its own root.** `PIECE.mount(root, board, values)` is called
+  once per mount — once for the page, once per artboard on a canvas — and a
+  `document.querySelector` inside it finds the wrong copy on a canvas.
 - **Real content.** The longest real name, the five-digit number, the empty list, the error.
   Placeholder text judges a page that will never exist.
 - **Say which project.** `project:` in `piece.md`, like every other record. The index filters

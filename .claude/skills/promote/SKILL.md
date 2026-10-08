@@ -43,8 +43,8 @@ terms:
 - **Tokens.** Every custom property with its final value, mapped onto the destination's
   tokens where they exist and named as new where they do not. A value the destination has no
   token for is a decision the implementer will otherwise make alone.
-- **Breakpoints.** Each `@container screen` rule becomes a `@media` rule at the same width;
-  say which widths and what changes at each.
+- **Breakpoints.** Which widths, and what changes at each. If the piece was built on a canvas,
+  each `@container screen` rule becomes a `@media` rule at the same width.
 - **States.** Each preset, what triggers it, and what the copy says. Empty, error and loading
   are the ones that get built last and wrong.
 - **Motion.** The chosen kind, duration, ease and stagger, and what happens under

@@ -56,8 +56,8 @@ and each of those appears once in `window.PIECE.controls`, which is what builds 
 
 ## The controls
 
-- **Hidden until asked for.** `C` opens the panel; it overlays the canvas instead of taking a
-  band off every artboard. One small word in the bar says it is there.
+- **Hidden until asked for.** `C` or the corner tab opens the panel; it overlays the page
+  instead of taking a band off it. Nothing else of the chrome is on screen.
 - **Styled outside the page's own language.** The chrome is a flat utility grey in a
   monospace face, on purpose: nobody can mistake it for part of the design, and a panel that
   matched the page would be read as a design element and judged as one.
@@ -85,7 +85,7 @@ you looked at and becomes a thing you can try.
 
 ### Three actions, and no more
 
-- **Replay** — re-mounts every artboard, which runs every entrance again without a reload.
+- **Replay** — re-mounts the design, which runs every entrance again without a reload.
   Without this the owner reloads to see a 400ms transition, loses his settings, and stops
   adjusting motion at all.
 - **Reset** — back to the shipped defaults.
@@ -103,8 +103,9 @@ link opens on the exact view the owner was looking at.
   judged on a page that will never exist.
 - **The states that matter**, as presets in `PIECE.states`, not just the happy one: default,
   empty, loading, error, long.
-- **Both boards.** Desktop and mobile side by side from the first version; a design that
-  gets its mobile pass later gets a worse one.
+- **Both widths from the first version.** The design is the page, so mobile is the window
+  resized — look at it there before handing over; a design that gets its mobile pass later
+  gets a worse one. Declare `boards` only when the two have to be compared side by side.
 - **Look at it before handing it over** — render it, screenshot both boards, read the
   screenshots. Then `/critique` against `brain/lenses/craft.md`.
 - **Leave it behind, do not delete it.** When the question is answered, the version has done
