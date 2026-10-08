@@ -40,7 +40,7 @@
 }
 html,body{margin:0;background:var(--paper)}
 .rl{background:var(--paper);color:var(--ink);font:var(--step-0)/1.55 var(--body);
-  min-height:100vh;padding:var(--margin);-webkit-font-smoothing:antialiased}
+  padding:var(--margin);-webkit-font-smoothing:antialiased}
 .rl header{display:grid;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
 .rl .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .rl h1{margin:0;font:600 var(--step-3)/1 var(--display);letter-spacing:var(--track-display);text-wrap:balance;max-width:16ch}
@@ -90,6 +90,9 @@ html,body{margin:0;background:var(--paper)}
 <body>
 
 <template id="screen">
+  <!-- Several cases stacked in one piece. Each `data-case` gets a labelled rule from the chrome
+       and a line in the panel; a case may carry a state attribute itself, like the second. -->
+  <section data-case="Reading list" data-note="default · five titles, one of them long">
   <div class="rl">
     <header>
       <div>
@@ -116,6 +119,23 @@ html,body{margin:0;background:var(--paper)}
       Send a title to the channel and it shows up here, with who suggested it.
     </div>
   </div>
+  </section>
+
+  <section data-case="Empty" data-note="nothing suggested yet" data-empty>
+  <div class="rl">
+    <header>
+      <div>
+        <p class="eyebrow">Autumn · 0 titles</p>
+        <h1>What the studio is reading</h1>
+      </div>
+      <p class="lede">Books that came up in reviews this quarter, in the order they were mentioned.</p>
+    </header>
+    <div data-when="empty" class="empty">
+      <b>Nothing on the list yet.</b>
+      Send a title to the channel and it shows up here, with who suggested it.
+    </div>
+  </div>
+  </section>
 </template>
 
 <script>
@@ -142,7 +162,6 @@ window.PIECE = {
   ],
   states: {
     'Default': {},
-    'Empty': { empty: true },
     'Compact': { density: 'compact' },
     'Still': { motion: 'none' },
   },

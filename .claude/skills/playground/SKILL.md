@@ -47,9 +47,13 @@ hold:
   hard-coded in the CSS is a decision hidden from the owner. Four groups by convention —
   Colour, Type, Layout, Motion — plus Content for states. Motion is a select of kinds, never
   a slider between two numbers.
-- **States are presets** in `PIECE.states`: Default, Empty, Error, Long names, Loading —
-  whatever this piece has to survive. Real content in each: the longest real name, the
-  five-digit number, the error message that will actually be shown.
+- **States are presets** in `PIECE.states`: Default, Compact, Still — whatever the controls
+  can express. **What has to be seen at once is a case, not a state**: several components, or
+  the default next to the empty next to the error, each wrapped in `data-case="Name"` with a
+  `data-note`, stacked down the page with a labelled rule above each and a list in the panel.
+  A case carries its own state attribute (`data-empty`) so it stays in that state whatever the
+  controls say. Real content in each: the longest real name, the five-digit number, the error
+  message that will actually be shown.
 
 Then `python3 brain/playground.py`, open the file, and **look at it at both widths before
 handing it over**: screenshot it at 1440 and at 390, in each state, and read the screenshots.

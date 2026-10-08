@@ -34,7 +34,13 @@ done. `/explore` filed specimens at 4:3 and stopped.
   buggy"* — so the canvas is opt-in by declaring `boards`, and only then are breakpoints
   `@container screen` rules. The panel is hidden until `C`, built from a declarative
   `controls` list, and holds the version menu and the state chips. Copy settings, Reset and
-  Replay are the three actions, as in `/prototype`.
+  Replay are the three actions, as in `/prototype`. The panel is dark and set in the house
+  language, after the owner saw the first grey-utility version and asked for the repo's own
+  design language and a clearer hierarchy; it holds one control per row, name and value on
+  one line, input beneath.
+- **Several components or states stack as cases.** `data-case="Name"` on a wrapper gives it a
+  labelled rule and a line in the panel; a case may carry its own state attribute. The owner
+  asked for stacked, clearly named and marked, over a toggle that shows one at a time.
 - **`/promote` is how a piece leaves**: the decision naming the version and settings, the
   freeze, implementation notes in the implementer's terms, and — after it ships —
   `shipped.html`, the HTML counterpart of what went live, with its deviations listed.

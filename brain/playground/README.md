@@ -58,10 +58,19 @@ and `versions.js` are regenerated from them and are not.
   by convention: Colour, Type, Layout, Motion; plus Content for states. Motion is a select of
   kinds, never a slider between two numbers. Named **states** are presets of control values
   and sit in the bar as chips: Default, Empty, Error, Long titles, whatever the piece needs.
+- **Several components or states in one piece are stacked, named and marked.** Wrap each in
+  an element with `data-case="Name"` and, if useful, `data-note="…"`. The chrome draws a
+  labelled rule above each case — number, name, note — and lists them in the panel, where a
+  click scrolls to one. A case may carry a state attribute itself, `<section data-case="Empty"
+  data-empty>`, so one page shows the default, the empty state and the error together instead
+  of behind a toggle. Use cases for what has to be seen side by side, controls for what the
+  owner wants to move, and states for presets of the controls.
 - **The panel is hidden until asked for.** `C` or the corner tab opens it; it overlays the
   page rather than taking a strip off it. That is the fix for the last playground's chrome,
   which took a band of every screen for controls nobody was using at that moment. The panel
-  also holds the version menu and the state chips.
+  is dark and set in the house language — Inter, hairlines, kickers, a monospace for values
+  — so it reads as this workspace's tooling against any design, and holds the version menu,
+  the state chips and the case list above the controls.
 - **Copy settings is the handoff.** The owner tunes, copies, pastes the JSON back. The agent
   bakes those values into the defaults of the next version and logs the pick as a decision
   when it settles something.

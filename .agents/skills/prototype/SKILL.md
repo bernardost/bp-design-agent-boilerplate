@@ -101,8 +101,9 @@ link opens on the exact view the owner was looking at.
 - **Real content, or no verdict.** The longest realistic name, the empty list, the error
   message, the number with five digits. A composition judged on tidy placeholder text has been
   judged on a page that will never exist.
-- **The states that matter**, as presets in `PIECE.states`, not just the happy one: default,
-  empty, loading, error, long.
+- **The states that matter**, not just the happy one — default, empty, loading, error, long —
+  stacked as `data-case` sections so they are all on the page at once, with presets in
+  `PIECE.states` for what the controls can switch.
 - **Both widths from the first version.** The design is the page, so mobile is the window
   resized — look at it there before handing over; a design that gets its mobile pass later
   gets a worse one. Declare `boards` only when the two have to be compared side by side.

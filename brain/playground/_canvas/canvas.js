@@ -23,6 +23,11 @@
    CANVAS (`boards` declared)  Artboards side by side, each a CSS container named `screen`, with
      a bar for toggling boards. Breakpoints must then be `@container screen (…)`.
 
+   CASES: a piece holding several components or states stacks them. Any element in the
+   template carrying `data-case="Name"` (and optionally `data-note="…"`) gets a labelled rule
+   above it and a line in the panel's case list. A case may carry state attributes itself —
+   `<section data-case="Empty" data-empty>` — so one piece shows several states at once.
+
    How a value reaches the design, in both modes:
      css   → a custom property set on <html>:                      var(--accent)
      attr  → an attribute on the design root — <html> in page mode, each artboard in canvas
@@ -88,7 +93,7 @@
       else if (k.startsWith('on')) n.addEventListener(k.slice(2), attrs[k]);
       else if (attrs[k] != null) n.setAttribute(k, attrs[k]);
     }
-    for (const kid of kids) if (kid != null) n.append(kid);
+    for (const kid of kids) if (kid != null && kid !== '') n.append(kid);
     return n;
   };
   // The design roots: each artboard in canvas mode, <html> in page mode.
@@ -123,7 +128,29 @@
   function mountInto(host, board) {
     host.replaceChildren();
     if (tpl && tpl.content) host.append(document.importNode(tpl.content, true));
+    labelCases(host, board);
     if (typeof PIECE.mount === 'function') PIECE.mount(host, board, values);
+  }
+  // Each `[data-case]` gets a chrome label before it and an id the panel can jump to.
+  function labelCases(host, board) {
+    host.querySelectorAll('[data-case]').forEach((c, i) => {
+      const n = String(i + 1).padStart(2, '0');
+      c.id = c.id || 'case-' + (board ? board.id + '-' : '') + n;
+      const label = el('div', { class: 'pg-case-label', 'data-pg-chrome': '' },
+        el('span', { class: 'pg-n' }, n), el('span', { class: 'pg-name' }, c.dataset.case),
+        c.dataset.note ? el('span', { class: 'pg-note' }, c.dataset.note) : null);
+      c.before(label);
+    });
+  }
+  function caseList() {
+    const host = CANVAS ? document.querySelector('.pg-screen') : pageHost;
+    const cases = host ? Array.from(host.querySelectorAll('[data-case]')) : [];
+    if (cases.length < 2) return null;
+    const ul = el('ul', { class: 'pg-cases' });
+    cases.forEach((c, i) => ul.append(el('li', null, el('a', { href: '#' + c.id,
+      onclick: e => { e.preventDefault(); document.getElementById(c.id).previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' }); } },
+      el('span', { class: 'pg-n' }, String(i + 1).padStart(2, '0')), c.dataset.case))));
+    return ul;
   }
   let pageHost = null;
   function mountAll() {
@@ -205,29 +232,30 @@
   function buildTab() {
     const cur = PG && PG.versions ? PG.versions.find(v => v.file === file) : null;
     return el('button', { class: 'pg-tab', type: 'button', 'data-pg-toggle': '', 'aria-pressed': 'false',
-      title: 'Controls, versions, states', onclick: togglePanel }, cur ? cur.v : 'Controls', el('kbd', null, 'C'));
+      title: 'Controls, versions, states', onclick: togglePanel },
+      cur ? el('b', null, cur.v) : null, cur ? 'Controls' : el('b', null, 'Controls'), el('kbd', null, 'C'));
   }
 
   // ── panel ───────────────────────────────────────────────────────────
   const inputs = {};
   function row(c) {
     const label = el('label', { for: 'pg-' + c.key }, c.label || c.key);
-    let field;
+    let field, val = null;
     if (c.kind === 'range') {
-      const out = el('output', null, String(values[c.key]) + (c.unit || ''));
-      label.append(out);
+      val = el('output', null, String(values[c.key]) + (c.unit || ''));
       field = el('input', { type: 'range', id: 'pg-' + c.key, min: c.min ?? 0, max: c.max ?? 100, step: c.step ?? 1, value: values[c.key],
         oninput: e => { set(c.key, Number(e.target.value)); } });
-      inputs[c.key] = v => { field.value = v; out.textContent = String(v) + (c.unit || ''); };
+      inputs[c.key] = v => { field.value = v; val.textContent = String(v) + (c.unit || ''); };
     } else if (c.kind === 'color') {
       const code = el('code', null, values[c.key]);
       field = el('div', { class: 'pg-color' }, code, el('input', { type: 'color', id: 'pg-' + c.key, value: values[c.key],
         oninput: e => set(c.key, e.target.value) }));
       inputs[c.key] = v => { field.querySelector('input').value = v; code.textContent = v; };
     } else if (c.kind === 'toggle') {
-      field = el('input', { type: 'checkbox', id: 'pg-' + c.key, onchange: e => set(c.key, e.target.checked) });
-      field.checked = !!values[c.key];
-      inputs[c.key] = v => { field.checked = !!v; };
+      const box = el('input', { type: 'checkbox', id: 'pg-' + c.key, onchange: e => set(c.key, e.target.checked) });
+      box.checked = !!values[c.key];
+      field = el('span', { class: 'pg-switch' }, box, el('i'));
+      inputs[c.key] = v => { box.checked = !!v; };
     } else if (c.kind === 'select') {
       const opts = (c.options || []).map(o => typeof o === 'string' ? { value: o, label: o } : o);
       // Segmented while the labels fit the column; a dropdown once they would be clipped.
@@ -237,39 +265,38 @@
           onclick: () => set(c.key, o.value) }, o.label));
         inputs[c.key] = v => field.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-pressed', String(opts[i].value === v)));
       } else {
-        field = el('select', { id: 'pg-' + c.key, onchange: e => set(c.key, e.target.value) });
+        field = el('select', { class: 'pg-select', id: 'pg-' + c.key, onchange: e => set(c.key, e.target.value) });
         for (const o of opts) { const op = el('option', { value: o.value }, o.label); if (o.value === values[c.key]) op.selected = true; field.append(op); }
         inputs[c.key] = v => { field.value = v; };
       }
     } else {
-      field = el('input', { type: 'text', id: 'pg-' + c.key, value: values[c.key] ?? '', oninput: e => set(c.key, e.target.value) });
+      field = el('input', { class: 'pg-input', type: 'text', id: 'pg-' + c.key, value: values[c.key] ?? '', oninput: e => set(c.key, e.target.value) });
       inputs[c.key] = v => { field.value = v; };
     }
-    return el('div', { class: 'pg-row' }, label, field);
+    return el('div', { class: 'pg-row', 'data-kind': c.kind }, label, val, el('div', { class: 'pg-field' }, field));
   }
   function syncPanel() { for (const c of controls) if (inputs[c.key]) inputs[c.key](values[c.key]); }
   function buildPanel() {
     const head = el('div', { class: 'pg-panel-head' });
-    head.append(el('div', { class: 'pg-title' }, el('span', null, PIECE.title || (PG && PG.title) || document.title),
-      el('a', { href: '../index.html' }, 'index →')));
+    head.append(el('div', { class: 'pg-title' }, el('b', null, PIECE.title || (PG && PG.title) || document.title),
+      el('a', { href: '../index.html' }, 'All pieces →')));
+    const field = (kicker, node) => node && el('div', { class: 'pg-field' }, el('span', { class: 'pg-kicker' }, kicker), node);
     if (!CANVAS) {           // the bar carries these in canvas mode
-      const vm = versionMenu();
-      if (vm) head.append(vm);
-      const sc = stateChips();
-      if (sc) head.append(sc);
+      head.append(field('Version', versionMenu()) || '', field('States', stateChips()) || '');
     }
+    head.append(field('Cases', caseList()) || '');
     const body = el('div', { class: 'pg-panel-body' });
     const groups = [];
     for (const c of controls) { const g = c.group || 'Controls'; if (!groups.includes(g)) groups.push(g); }
     for (const g of groups) {
-      const sec = el('section', { class: 'pg-section' }, el('h3', null, g));
+      const sec = el('section', { class: 'pg-section' }, el('h3', null, el('span', null, g)));
       for (const c of controls) if ((c.group || 'Controls') === g) sec.append(row(c));
       body.append(sec);
     }
     const actions = el('div', { class: 'pg-actions' },
-      el('button', { type: 'button', onclick: replay }, 'Replay', el('kbd', null, ' R')),
+      el('button', { type: 'button', onclick: replay }, 'Replay', el('kbd', null, 'R')),
       el('button', { type: 'button', onclick: () => { Object.assign(values, defaults); apply(); persist(); syncPanel(); } }, 'Reset'),
-      el('button', { type: 'button', onclick: copySettings }, 'Copy settings'));
+      el('button', { type: 'button', class: 'pg-primary', onclick: copySettings }, 'Copy settings'));
     return el('aside', { class: 'pg-panel', 'aria-label': 'Controls' }, head, body, actions);
   }
   function togglePanel() {
@@ -308,8 +335,8 @@
       document.body.prepend(pageHost);
       document.body.append(buildTab());
     }
-    document.body.append(buildPanel());
     mountAll();
+    document.body.append(buildPanel());
     apply();
     document.addEventListener('keydown', e => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
