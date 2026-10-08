@@ -105,6 +105,7 @@ own instructions, hooks and skills load natively.
 | `brain/decks/` | decks and client documents — deliverables, judged against `brain/lenses/deck.md` |
 | `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
+| `brain/playground/` | the work as HTML pieces — desktop and mobile side by side, controls for every value, every version kept, and `shipped.html` once it is live |
 | `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
 | `brain/references/` | the quality bar as images — measured against, never copied |
 | `brain/reviews/` | the independent reviewer's findings and the builder's answers |
@@ -122,7 +123,7 @@ own instructions, hooks and skills load natively.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/prototype` · `/motion` · `/critique` · `/deck` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` |
 
 ## The ideas underneath
 
@@ -221,10 +222,19 @@ own instructions, hooks and skills load natively.
   reference, it is measured in a real browser rather than described from screenshots, and the
   measured curve joins the tuning drawer by name so he can try it. `brain/lenses/motion.md`
   holds the answer; the generic rules are only a floor.
+- **The work happens in HTML, and no iteration is ever lost.** A round in Figma or in product
+  code costs minutes to hours; a round on an HTML file costs seconds. So `/playground` does
+  the design work as pieces under `brain/playground/`: an existing design arrives as an
+  exact as-is translation, a new one as a first pass, each with desktop and mobile artboards
+  side by side (no zoom — a 1440px board is 1440px wide) and a hidden panel of controls for
+  every value and state. **Every change the owner might want to walk back is a new numbered
+  file**, announced as it starts, and the version menu in the bar is how he goes back. When
+  he says a piece is final, `/promote` logs the decision, writes what it takes to implement
+  it, and — once it ships — keeps `shipped.html`, the HTML counterpart of what went live.
 - **The first pass of a new design ships with its dials exposed.** An owner cannot specify
   taste for something he has not seen move, so what comes back is *"the type feels heavy"* and
-  a round goes into converting adjectives into values. `/prototype` builds a tuning drawer in
-  the same pass as the page: every visual value is a CSS custom property, nothing is
+  a round goes into converting adjectives into values. `/prototype` builds the controls in
+  the same pass as the page, as a playground piece: every visual value is a CSS custom property, nothing is
   hard-coded, and **the variable list is the honest spec of every decision the design is
   making** — a value you hard-coded is a decision you hid. Motion is a select of three or four
   genuinely different kinds rather than a slider, because a slider cannot tell you the right

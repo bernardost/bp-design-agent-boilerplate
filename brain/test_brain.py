@@ -36,7 +36,7 @@ import upstream  # noqa: E402
 import when  # noqa: E402
 
 SCRIPTS = ("config.py", "doctor.py", "feed.py", "brief.py", "spread.py", "render.py",
-           "redate.py", "when.py")
+           "redate.py", "when.py", "playground.py")
 CARRIED = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
            "project-brief.md", "tags.md", "glossary.md", "sources.md")
 
@@ -429,6 +429,8 @@ class Ownership(unittest.TestCase):
             "brain/drafts/mail.md", "brain/reviews/r.md", "brain/references/bar.png",
             "context/client/deck.pdf", "brain/feed.html", "archive/notes.md",
             "projects/app/src/index.ts", "projects/app/AGENTS.md",
+            "brain/playground/checkout/piece.md", "brain/playground/checkout/v03-tighter.html",
+            "brain/playground/checkout/shipped.html", "brain/decks/2026-10-02-pitch.html",
         ])
 
     def test_the_templates_machinery_is_takeable(self):
@@ -439,6 +441,8 @@ class Ownership(unittest.TestCase):
             # These two live inside a project-owned folder and are still the template's.
             "brain/decisions/README.md", "brain/decisions/0000-decision-template.md",
             "brain/insights/README.md", ".claude/hooks/guard_push.py",
+            "brain/playground.py", "brain/playground/README.md",
+            "brain/playground/_canvas/canvas.js", "brain/playground/_template/piece.html",
         ])
 
     def test_shared_files_need_a_human(self):
@@ -540,6 +544,68 @@ class Repos(unittest.TestCase):
             subprocess.run(["git", "init", "-q", str(ws / "projects" / "app")], check=True)
             self.assertEqual(self.hook(ws, "git push"), "")
             self.assertEqual(self.hook(ws, "git -C projects/app status"), "")
+
+
+class Playground(unittest.TestCase):
+    """The index and the version strip are projections of `piece.md` plus the files beside it.
+    What breaks: a version file the log forgot, a final piece with no decision, a shipped piece
+    with no counterpart — each of which the next session would otherwise trust."""
+
+    def piece(self, ws: Path, slug: str, record: str, files: tuple) -> Path:
+        d = ws / "brain" / "playground" / slug
+        d.mkdir(parents=True)
+        (d / "piece.md").write_text(record)
+        for f in files:
+            (d / f).write_text("<!doctype html><title>x</title>")
+        return d
+
+    def test_versions_come_from_the_files_and_notes_from_the_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            self.piece(ws, "list", "---\nstatus: current\n---\n# Reading list\nBrief: b\n\n"
+                       "## Versions\n- v01 — 2026-10-01 — first\n- v02 — 2026-10-02 — second\n",
+                       ("v01-first.html", "v02-second.html", "notes.html"))
+            out = run(ws, "playground.py")
+            self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+            js = (ws / "brain" / "playground" / "list" / "versions.js").read_text()
+            data = json.loads(js.split("= ", 1)[1].rstrip().rstrip(";"))
+            self.assertEqual([v["file"] for v in data["versions"]], ["v01-first.html", "v02-second.html"])
+            self.assertEqual(data["versions"][1]["note"], "second")
+            index = (ws / "brain" / "playground" / "index.html").read_text()
+            self.assertIn("v02 · second", index)
+            self.assertIn("Reading list", index)
+
+    def test_an_unlogged_version_and_a_final_without_a_decision_are_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            self.piece(ws, "card", "---\nstatus: final\n---\n# Card\nFinal: v01\n\n"
+                       "## Versions\n- v01 — 2026-10-01 — first\n",
+                       ("v01-first.html", "v02-oops.html"))
+            out = run(ws, "doctor.py")
+            self.assertIn("v02 not in the version log", out.stdout)
+            self.assertIn("no `Decision:`", out.stdout)
+            self.assertEqual(out.returncode, 0, "bookkeeping is reported, never failed")
+
+    def test_a_shipped_piece_needs_its_counterpart(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            self.piece(ws, "nav", "---\nstatus: shipped\n---\n# Nav\nFinal: v01\n"
+                       "Decision: [[nav-is-final]]\nShipped: site · 2026-10-05\n\n"
+                       "## Versions\n- v01 — 2026-10-01 — first\n", ("v01-first.html",))
+            out = run(ws, "doctor.py")
+            self.assertIn("no shipped.html", out.stdout)
+            (ws / "brain" / "playground" / "nav" / "shipped.html").write_text("<!doctype html>")
+            out = run(ws, "doctor.py")
+            self.assertNotIn("no shipped.html", out.stdout)
+
+    def test_the_template_folder_is_not_a_piece(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            d = ws / "brain" / "playground" / "_template"
+            d.mkdir(parents=True)
+            (d / "piece.md").write_text((BRAIN / "playground" / "_template" / "piece.md").read_text())
+            out = run(ws, "playground.py")
+            self.assertIn("0 piece(s)", out.stdout)
 
 
 class Brand(unittest.TestCase):

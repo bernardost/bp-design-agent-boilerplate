@@ -1,0 +1,103 @@
+/* canvas.css — the playground's chrome: bar, artboards, controls panel.
+
+   This is NOT the design. It is styled on purpose in a flat utility grey and a monospace face
+   so nobody can mistake the chrome for part of the work, and so the work's own CSS cannot be
+   confused with it. Every selector here is prefixed `pg-`; a piece's CSS never uses that
+   prefix, and this file never styles anything inside `.pg-screen`.
+
+   The one thing a piece needs to know: each artboard is a CSS container named `screen`. Write
+   the design's breakpoints as `@container screen (min-width: 720px)`, never `@media`, and the
+   mobile artboard really is 390px wide on a 1440px display. `vw`/`vh` do not see the artboard
+   either — `cqw`/`cqh` or `%` do. */
+
+.pg-root{--pg-bg:#e9e9e6;--pg-ink:#1a1a1a;--pg-ink-2:#6b6b6b;--pg-ink-3:#9a9a9a;
+  --pg-line:#cfcfcb;--pg-paper:#fafaf8;--pg-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --pg-bar:36px;--pg-panel-w:324px;
+  margin:0;min-height:100vh;background:var(--pg-bg);color:var(--pg-ink);
+  font:12px/1.4 var(--pg-mono);-webkit-font-smoothing:antialiased}
+.pg-root *{box-sizing:border-box}
+
+/* ── bar ──────────────────────────────────────────────────────────── */
+.pg-bar{position:fixed;inset:0 0 auto 0;height:var(--pg-bar);z-index:50;
+  display:flex;align-items:center;gap:14px;padding:0 10px 0 8px;
+  background:var(--pg-paper);border-bottom:1px solid var(--pg-line)}
+.pg-bar a{color:inherit;text-decoration:none}
+.pg-bar .pg-home{color:var(--pg-ink-2);padding:0 4px}
+.pg-bar .pg-home:hover{color:var(--pg-ink)}
+.pg-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-title small{font-weight:400;color:var(--pg-ink-2);margin-left:8px}
+.pg-spacer{flex:1}
+.pg-bar .pg-group{display:flex;align-items:center;gap:4px}
+.pg-bar .pg-group + .pg-group{padding-left:14px;border-left:1px solid var(--pg-line)}
+.pg-root .pg-chip{font:inherit;line-height:1;appearance:none;height:22px;padding:0 8px;
+  border:1px solid transparent;border-radius:3px;background:none;color:var(--pg-ink-2);
+  cursor:pointer;white-space:nowrap}
+.pg-root .pg-chip:hover{color:var(--pg-ink);border-color:var(--pg-line)}
+.pg-root .pg-chip[aria-pressed="true"]{color:var(--pg-ink);background:#fff;border-color:var(--pg-line)}
+.pg-root .pg-chip kbd{font:inherit;color:var(--pg-ink-3);margin-left:6px}
+.pg-root select.pg-select{font:inherit;height:22px;padding:0 20px 0 6px;border:1px solid var(--pg-line);
+  border-radius:3px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%236b6b6b'/%3E%3C/svg%3E") no-repeat right 6px center;
+  color:var(--pg-ink);appearance:none;max-width:260px}
+
+/* ── canvas and artboards ─────────────────────────────────────────── */
+.pg-canvas{padding:calc(var(--pg-bar) + 40px) 48px 96px;overflow:auto;
+  display:flex;align-items:flex-start;gap:56px;min-width:max-content;
+  background-image:radial-gradient(var(--pg-line) .7px,transparent .8px);
+  background-size:16px 16px;background-position:0 var(--pg-bar)}
+.pg-board{flex:none;width:var(--pg-w,1440px)}
+.pg-board[hidden]{display:none}
+.pg-board-label{display:flex;justify-content:space-between;color:var(--pg-ink-2);
+  margin:0 0 8px 1px;font-size:11px}
+.pg-board-label b{font-weight:600;color:var(--pg-ink)}
+/* The artboard. `container-type` is what lets the design's own breakpoints fire inside a
+   390px box on a wide screen, and it also contains `position:fixed` descendants, so a sticky
+   bottom bar in the design stays inside its artboard instead of pinning to the browser. */
+.pg-screen{container:screen / inline-size;position:relative;width:100%;
+  min-height:var(--pg-h,0);background:#fff;overflow:clip;
+  outline:1px solid rgba(0,0,0,.14);outline-offset:0}
+.pg-screen[data-scroll]{height:var(--pg-h);overflow:auto}
+.pg-board[data-pg-note]::after{content:attr(data-pg-note);display:block;margin-top:8px;
+  color:var(--pg-ink-3);font-size:11px;max-width:60ch}
+
+/* ── controls panel ───────────────────────────────────────────────── */
+.pg-panel{position:fixed;top:var(--pg-bar);right:0;bottom:0;width:var(--pg-panel-w);z-index:40;
+  background:var(--pg-paper);border-left:1px solid var(--pg-line);
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .18s ease}
+.pg-root[data-pg-panel="open"] .pg-panel{transform:none}
+.pg-panel-body{flex:1;overflow:auto;padding:6px 0 12px}
+.pg-section{padding:10px 14px 4px}
+.pg-section + .pg-section{border-top:1px solid var(--pg-line)}
+.pg-section h3{margin:0 0 6px;font:inherit;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--pg-ink-3)}
+.pg-row{display:grid;grid-template-columns:1fr 156px;align-items:center;gap:10px;min-height:28px}
+.pg-row label{color:var(--pg-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-row output{color:var(--pg-ink-2);margin-left:6px;font-variant-numeric:tabular-nums}
+.pg-row input,.pg-row select{font:inherit;width:100%;min-width:0;height:24px;margin:0;
+  border:1px solid var(--pg-line);border-radius:3px;background:#fff;color:var(--pg-ink);padding:0 6px}
+.pg-row input[type=range]{border:0;padding:0;height:24px;accent-color:var(--pg-ink)}
+.pg-row input[type=color]{padding:1px 2px;width:40px;justify-self:end}
+.pg-row .pg-color{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.pg-row .pg-color code{color:var(--pg-ink-2);font:inherit}
+.pg-row input[type=checkbox]{width:14px;height:14px;justify-self:end;accent-color:var(--pg-ink)}
+.pg-row .pg-seg{display:flex;border:1px solid var(--pg-line);border-radius:3px;overflow:hidden;background:#fff}
+.pg-row .pg-seg button{flex:1 1 0;min-width:0;font:inherit;border:0;background:none;height:22px;padding:0 4px;
+  color:var(--pg-ink-2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-row .pg-seg button + button{border-left:1px solid var(--pg-line)}
+.pg-row .pg-seg button[aria-pressed="true"]{background:var(--pg-ink);color:#fff}
+.pg-actions{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--pg-line)}
+.pg-actions button{flex:1;font:inherit;height:26px;padding:0 4px;border:1px solid var(--pg-line);border-radius:3px;
+  background:#fff;color:var(--pg-ink);cursor:pointer;white-space:nowrap}
+.pg-actions kbd{font:inherit;color:var(--pg-ink-3)}
+.pg-actions button:hover{border-color:var(--pg-ink-2)}
+.pg-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:60;
+  background:var(--pg-ink);color:#fff;padding:6px 12px;border-radius:3px;opacity:0;
+  transition:opacity .15s}
+.pg-toast[data-on]{opacity:1}
+
+/* ── when the canvas is opened on a phone ─────────────────────────── */
+@media (max-width:720px){
+  .pg-canvas{padding:calc(var(--pg-bar) + 16px) 12px 64px;flex-direction:column;gap:32px;min-width:0}
+  .pg-board{width:min(var(--pg-w,1440px),100%)}
+  .pg-panel{width:min(var(--pg-panel-w),100vw)}
+  .pg-bar .pg-group[data-pg-boards]{display:none}
+}

@@ -97,7 +97,9 @@ file agree.
 **7 · Hand over a build prompt.** For each surviving direction, write a concise prompt that
 an agent could build a first pass from: the aesthetic, the layout logic, what it must not do,
 and the one thing that makes it that direction and not another. Then stop. Building is not
-this command's job, and `/critique` is what raises the first pass afterwards.
+this command's job: a surviving direction becomes a piece in `brain/playground/` through
+`/prototype`, with `Exploration:` in its record pointing back here, and `/critique` is what
+raises that first pass afterwards.
 
 ## Picking, later
 

@@ -45,7 +45,7 @@ NOW_MAX = 2000 + 500 * max(0, len(PROJECT_KEYS) - 1)
 # deliberately absent: both are verbatim captures that legitimately span the engagement, and
 # routing is what assigns a project — to the decision or task that comes out, not to the dump.
 PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "moodboards",
-                       "workshops")
+                       "workshops", "playground")
 
 # Decision filenames are `YYYY-MM-DD-slug.md`: the date orders them, the slug identifies them.
 # The old `NNNN-slug.md` claimed a number from a pool shared with every parallel session, so
@@ -120,8 +120,9 @@ def record_project(text: str) -> str | None:
 
 
 def is_template_file(p: Path) -> bool:
-    """README and the `0000-` decision template describe the format; they are not records."""
-    return p.name == "README.md" or p.stem.startswith("0000")
+    """README, the `0000-` decision template and anything under a `_template/` folder describe
+    the format; they are not records."""
+    return p.name == "README.md" or p.stem.startswith("0000") or "_template" in p.parts
 
 
 # ── FAIL ── a brand mark says where it came from ───────────────────────────────
@@ -609,6 +610,8 @@ def report_links():
     known = set(link_keys())
     unresolved: dict[str, list[str]] = {}
     for p in md_files(SCAN_DIRS):
+        if "_template" in p.parts:
+            continue
         for target in re.findall(r"\[\[([^\]|#]+?)\]\]", p.read_text(encoding="utf-8")):
             t = target.strip()
             if t and t not in known and not t.startswith("0"):
@@ -902,6 +905,56 @@ def report_tuning_drawers():
         print(f"               {f} — found {mark}\n"
               f"               → strip it before the client sees it; keep the custom properties")
 
+
+
+# ── REPORT ── does every playground piece have its record straight? ───────────
+def report_playground():
+    """`brain/playground/` holds the work as HTML, every version kept. What goes wrong there is
+    bookkeeping, not design: a version made in a hurry and never logged in `piece.md`, a piece
+    the owner called final with no decision saying so, a piece marked shipped with no HTML
+    counterpart of what went live. Each one is a file the next session cannot trust. Reported
+    rather than failed: mid-session a version is legitimately ahead of its log."""
+    d = BRAIN / "playground"
+    if not d.exists():
+        return
+    try:
+        sys.path.insert(0, str(BRAIN))
+        import playground as pgm
+        ps = pgm.pieces()
+    except Exception as e:  # noqa: BLE001 — a broken renderer is itself the finding
+        print(f"  playground brain/playground.py failed: {e}")
+        return
+    if not ps:
+        return
+    issues = []
+    for p in ps:
+        where = f"brain/playground/{p['slug']}"
+        if not p["has_record"]:
+            issues.append(f"{where} has no piece.md — copy brain/playground/_template/piece.md")
+        if p["unlogged"]:
+            issues.append(f"{where}: {', '.join(p['unlogged'])} not in the version log of piece.md")
+        if p["status"] not in ("exploring", "current", "final", "shipped"):
+            issues.append(f"{where}: status `{p['status']}` — one of exploring, current, final, shipped")
+        if p["status"] in ("final", "shipped"):
+            if not p["decision"]:
+                issues.append(f"{where} is {p['status']} with no `Decision:` — /promote writes it")
+            if not p["final_file"]:
+                issues.append(f"{where} is {p['status']} but `Final:` names no version file")
+        if p["status"] == "shipped" and not p["shipped"]:
+            issues.append(f"{where} is shipped with no shipped.html — the HTML counterpart of what went live")
+    n = sum(len(p["versions"]) for p in ps)
+    index = d / "index.html"
+    stale = (not index.exists()) or any(
+        f.stat().st_mtime > index.stat().st_mtime
+        for p in ps for f in (d / p["slug"]).glob("*") if f.name != "versions.js")
+    head = f"  playground {len(ps)} piece(s), {n} version(s)"
+    if stale:
+        head += " — index stale, python3 brain/playground.py"
+    print(head)
+    for i in issues[:8]:
+        print(f"               {i}")
+    if len(issues) > 8:
+        print(f"               … and {len(issues) - 8} more")
 
 
 # ── REPORT ── is this workspace actually configured? ──────────────────────────
@@ -1405,6 +1458,7 @@ def main() -> int:
         report_explorations()
         report_moodboards()
         report_tuning_drawers()
+        report_playground()
         report_unrouted_promises()
         report_orphans()
         report_archive_candidates()

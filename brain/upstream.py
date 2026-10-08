@@ -80,6 +80,8 @@ PROJECT = (
     "brain/drafts/**",
     "brain/reviews/**",
     "brain/references/**",
+    "brain/playground/**",
+    "brain/decks/**",
     "context/**",
     # Product repos cloned into the workspace. Each is its own git repo with its own history,
     # and nothing upstream may read or write inside one.
@@ -96,6 +98,8 @@ PROJECT = (
 OWNED_INSIDE_PROJECT = (
     "brain/*/README.md",
     "brain/decisions/0000-decision-template.md",
+    "brain/playground/_canvas/**",
+    "brain/playground/_template/**",
 )
 
 # Template above, project below, in the same file. Only a human can merge these.

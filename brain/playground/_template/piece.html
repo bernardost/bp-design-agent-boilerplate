@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading list — v01 first pass</title>
+<!--
+  A playground piece. Copy this folder's file to brain/playground/<slug>/v01-<name>.html and
+  replace the design; keep the three parts and their order:
+
+    1. <link> to the shared canvas chrome and <script src="versions.js"> (written by
+       brain/playground.py — it is fine for it to 404 before the first run).
+    2. The design: its CSS in <style>, its markup inside <template id="screen">. Every visual
+       value is a custom property on :root; every breakpoint is `@container screen (…)`.
+       Nothing in here uses a `pg-` class — that prefix belongs to the chrome.
+    3. window.PIECE — title, boards, the controls, the states — then canvas.js, last.
+
+  Open the file directly in a browser. No build, no server.
+-->
+<link rel="stylesheet" href="../_canvas/canvas.css">
+<script src="versions.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── the design ──────────────────────────────────────────────────────
+   The variable list is the spec: every decision the design makes, in one place, and every one
+   of them reachable from the controls. A value hard-coded below this block is a decision
+   hidden from the owner. */
+:root{
+  --paper:#f6f2ea; --ink:#1b1a17; --ink-2:#6b665c; --accent:#b4432b; --rule:rgba(27,26,23,.14);
+  --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif;
+  --step-0:16px; --step-1:20px; --step-2:30px; --step-3:52px;
+  --track-display:-0.02em; --measure:58ch;
+  --margin:24px; --row:18px;
+  --dur:480ms; --stagger:70ms; --ease:cubic-bezier(.22,.61,.36,1);
+}
+.rl{background:var(--paper);color:var(--ink);font:var(--step-0)/1.55 var(--body);
+  min-height:100%;padding:var(--margin);-webkit-font-smoothing:antialiased}
+.rl header{display:grid;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--rule)}
+.rl .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.rl h1{margin:0;font:600 var(--step-3)/1 var(--display);letter-spacing:var(--track-display);text-wrap:balance;max-width:16ch}
+.rl .lede{margin:0;color:var(--ink-2);font-size:var(--step-1);line-height:1.4;max-width:var(--measure)}
+.rl ol{list-style:none;margin:0;padding:0}
+.rl li{display:grid;grid-template-columns:3ch 1fr auto;gap:0 16px;align-items:baseline;
+  padding:var(--row) 0;border-bottom:1px solid var(--rule)}
+.rl .n{font:400 var(--step-1)/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+.rl .t{font-size:var(--step-1);font-weight:500;line-height:1.3;text-wrap:pretty}
+.rl .by{color:var(--ink-2);font-size:14px;margin-top:4px}
+.rl .pages{color:var(--ink-2);font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rl .action{justify-self:start;margin-top:28px;font:500 var(--step-0)/1 var(--body);color:var(--paper);
+  background:var(--accent);border:0;border-radius:3px;padding:14px 20px;cursor:pointer}
+.rl .empty{padding:56px 0;color:var(--ink-2);max-width:var(--measure)}
+.rl .empty b{display:block;color:var(--ink);font:600 var(--step-2)/1.15 var(--display);margin-bottom:10px}
+
+/* Density is a kind, not a number: compact changes what is shown, not only how tight. */
+[data-density="compact"] .rl li{padding:calc(var(--row) * .55) 0;grid-template-columns:3ch 1fr auto}
+[data-density="compact"] .rl .by{display:none}
+[data-density="compact"] .rl .t{font-size:var(--step-0)}
+
+/* States the controls switch. */
+.rl [data-when]{display:none}
+.pg-screen[data-empty] .rl [data-when="empty"]{display:block}
+.pg-screen[data-empty] .rl [data-when="list"]{display:none}
+.pg-screen:not([data-empty]) .rl [data-when="list"]{display:block}
+
+/* Motion: each kind is its own branch. Replay (R) re-mounts the board and runs it again. */
+.rl .in{animation:var(--dur) var(--ease) both;animation-delay:calc(var(--i,0) * var(--stagger))}
+[data-motion="rise"] .rl .in{animation-name:rise}
+[data-motion="fade"] .rl .in{animation-name:fade}
+[data-motion="wipe"] .rl .in{animation-name:wipe}
+[data-motion="none"] .rl .in{animation:none}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+
+/* Breakpoints are container queries: the artboard is the viewport, not the browser. */
+@container screen (min-width: 720px){
+  .rl{padding:calc(var(--margin) * 2.5) calc(var(--margin) * 3)}
+  .rl header{grid-template-columns:1fr 1fr;align-items:end;gap:24px}
+  .rl header .lede{grid-column:2}
+  .rl li{grid-template-columns:4ch 1fr 10ch;gap:0 24px}
+}
+</style>
+</head>
+<body>
+
+<template id="screen">
+  <div class="rl">
+    <header>
+      <div>
+        <p class="eyebrow in" style="--i:0">Autumn · 14 titles</p>
+        <h1 class="in" style="--i:1">What the studio is reading</h1>
+      </div>
+      <p class="lede in" style="--i:2">Books that came up in reviews this quarter, in the order
+        they were mentioned. Add one by sending the title to the channel.</p>
+    </header>
+
+    <div data-when="list">
+      <ol>
+        <li class="in" style="--i:3"><span class="n">01</span><div><div class="t">The Timeless Way of Building</div><div class="by">Christopher Alexander</div></div><span class="pages">552 pp</span></li>
+        <li class="in" style="--i:4"><span class="n">02</span><div><div class="t" data-long>Thinking with Type: A Critical Guide for Designers, Writers, Editors, and Students — revised and expanded second edition</div><div class="by">Ellen Lupton</div></div><span class="pages">224 pp</span></li>
+        <li class="in" style="--i:5"><span class="n">03</span><div><div class="t">The Design of Everyday Things</div><div class="by">Don Norman</div></div><span class="pages">368 pp</span></li>
+        <li class="in" style="--i:6"><span class="n">04</span><div><div class="t">Grid Systems in Graphic Design</div><div class="by">Josef Müller-Brockmann</div></div><span class="pages">176 pp</span></li>
+        <li class="in" style="--i:7"><span class="n">05</span><div><div class="t">Interaction of Color</div><div class="by">Josef Albers</div></div><span class="pages">208 pp</span></li>
+      </ol>
+      <button class="action in" style="--i:8" type="button">Suggest a title</button>
+    </div>
+
+    <div data-when="empty" class="empty in" style="--i:3">
+      <b>Nothing on the list yet.</b>
+      Send a title to the channel and it shows up here, with who suggested it.
+    </div>
+  </div>
+</template>
+
+<script>
+window.PIECE = {
+  title: 'Reading list',
+  boards: [
+    { id: 'desktop', label: 'Desktop', width: 1440 },
+    { id: 'mobile',  label: 'Mobile',  width: 390, height: 844, scroll: true },
+  ],
+  controls: [
+    { group: 'Colour', key: 'paper',  label: 'Ground',  kind: 'color', value: '#f6f2ea', css: '--paper' },
+    { group: 'Colour', key: 'ink',    label: 'Ink',     kind: 'color', value: '#1b1a17', css: '--ink' },
+    { group: 'Colour', key: 'accent', label: 'Accent',  kind: 'color', value: '#b4432b', css: '--accent' },
+    { group: 'Type',   key: 'step0',  label: 'Body',    kind: 'range', value: 16, min: 14, max: 19, unit: 'px', css: '--step-0' },
+    { group: 'Type',   key: 'step3',  label: 'Display', kind: 'range', value: 52, min: 36, max: 72, unit: 'px', css: '--step-3' },
+    { group: 'Type',   key: 'track',  label: 'Display tracking', kind: 'range', value: -0.02, min: -0.05, max: 0.02, step: 0.005, unit: 'em', css: '--track-display' },
+    { group: 'Layout', key: 'density', label: 'Density', kind: 'select', value: 'comfortable', options: ['comfortable', 'compact'], attr: 'data-density' },
+    { group: 'Layout', key: 'margin', label: 'Margin',  kind: 'range', value: 24, min: 16, max: 40, unit: 'px', css: '--margin' },
+    { group: 'Motion', key: 'motion', label: 'Entrance', kind: 'select', value: 'rise', options: ['rise', 'fade', 'wipe', 'none'], attr: 'data-motion' },
+    { group: 'Motion', key: 'ease',   label: 'Ease', kind: 'select', value: 'standard',
+      options: [{ value: 'standard', label: 'Standard' }, { value: 'entrance', label: 'Entrance' }, { value: 'spring', label: 'Spring' }],
+      apply: (v) => document.documentElement.style.setProperty('--ease',
+        { standard: 'cubic-bezier(.22,.61,.36,1)', entrance: 'cubic-bezier(0,0,.2,1)', spring: 'cubic-bezier(.34,1.56,.64,1)' }[v]) },
+    { group: 'Motion', key: 'dur',    label: 'Duration', kind: 'range', value: 480, min: 0, max: 1200, step: 20, unit: 'ms', css: '--dur' },
+    { group: 'Content', key: 'empty', label: 'Empty list', kind: 'toggle', value: false, attr: 'data-empty' },
+  ],
+  states: {
+    'Default': {},
+    'Empty': { empty: true },
+    'Compact': { density: 'compact' },
+    'Still': { motion: 'none' },
+  },
+};
+</script>
+<script src="../_canvas/canvas.js"></script>
+</body>
+</html>

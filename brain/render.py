@@ -26,10 +26,11 @@ import board  # noqa: E402
 import brief  # noqa: E402
 import doctor  # noqa: E402
 import feed  # noqa: E402
+import playground  # noqa: E402
 import spread  # noqa: E402
 
 STEPS = [("doctor", doctor), ("feed", feed), ("spread", spread),
-         ("board", board), ("brief", brief)]
+         ("board", board), ("brief", brief), ("playground", playground)]
 
 
 def main() -> int:

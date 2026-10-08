@@ -205,7 +205,16 @@ which repo it means.
   kinds rather than a slider, because a slider cannot tell you the right answer was a different
   idea. **Copy settings turns his pick into a record** — JSON he pastes back, which you bake
   into the defaults and log as a decision. **Remove the drawer before a client sees anything.**
-  `/prototype` has the four groups, the three actions and the rest.
+  `/prototype` has the four groups, the three actions and the rest; the drawer is the
+  playground piece's controls panel, and the first pass is a piece.
+- **Design work happens in the playground, and a change starts a new file.** A screen or a
+  component is designed, translated or changed as a piece under `brain/playground/`, desktop
+  and mobile side by side, every value on a control. An existing design arrives as an exact
+  as-is translation first. **When the owner has seen a version and asks for a change, the
+  change is a new numbered file and the old one is never touched again** — say so in one
+  line, *"Starting v03: … v02 stays"*, and log it in the piece's record the same turn. The
+  only way back is a file that still exists. `/playground` has the procedure, `/promote` is
+  how a piece leaves.
 - **Log a decision or an insight as soon as it happens.** A decision stated or reached in conversation → a dated file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
@@ -288,6 +297,8 @@ which repo it means.
   vocabulary → `brain/tags.md` · **people, nicknames, acronyms and codenames →
   `brain/glossary.md`** · what "good" means here, one file per domain →
   `brain/lenses/` · **directions considered but not chosen → `brain/explorations/`** ·
+  **the work itself as HTML, every version kept, and the counterpart of what shipped →
+  `brain/playground/`** ·
   **what the research adds up to — ideas, and the visions that assemble them →
   `brain/moodboards/`** ·
   **questions put to a stakeholder as an async workshop, and the answers that come back →
@@ -542,7 +553,10 @@ transcript, and ask what it got wrong before trusting it)** · **`/workshop` (tu
 a stakeholder into something they answer on their phone) · `/moodboard` (turn the research
 into ideas, and the ideas into visions, on a desk you can move around on) · `/explore` (go wide before
 committing to a direction) ·
-**`/prototype` (the first pass, with the dials exposed) ·
+**`/playground` (the work as HTML pieces, desktop and mobile side by side, every iteration
+kept) · `/promote` (a piece the owner called final: the decision, the implementation notes,
+and the counterpart of what shipped) ·
+`/prototype` (the first pass, with the dials exposed) ·
 `/motion` (pick a vocabulary, measure the references, write it down)** · `/critique` (score a render
 against the craft lens until it holds up — writes nothing) · **`/deck` (a deck or client
 document that reads like an agency made it)**.
