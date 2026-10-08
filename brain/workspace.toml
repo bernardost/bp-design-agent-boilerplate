@@ -30,8 +30,10 @@ labels = ["{{PRODUCT_NAME}}"]
 # `all` is reserved: a record that governs the whole engagement rather than one strand.
 #
 # Where the work being designed actually lives, one entry per strand, `key: where`.
-# A design project's product is often not in this repo: a Figma file, a live site, a deck.
-work_lives = []                    # e.g. ["portal: figma.com/file/…", "site: staging.example.com"]
+# A design project's product is often not in this repo: a Figma file, a live site, a deck,
+# or a code repo cloned into `projects/` — which keeps its own git, and its own rules
+# (AGENTS.md, "Product repos in projects/").
+work_lives = []                    # e.g. ["portal: figma.com/file/…", "app: projects/app (own git repo)"]
 
 [tracker]
 # The external tracker. `prefix = ""` means the project has no tracker: task pointers are
@@ -102,7 +104,7 @@ publish = false                    # true = also publish the page as an artifact
 # when asked to "check for updates", which is why ownership lives in `brain/upstream.py` and
 # the version lives here. Without them the answer is whatever the assistant assumes, and the
 # assumption that costs you is the one that writes a template placeholder over `now.md`.
-repo = "https://github.com/bernardost/agent-workspace-boilerplate.git"
+repo = "https://github.com/bernardost/bp-design-agent-boilerplate.git"
 version = ""                       # the boilerplate commit last taken; `/update` writes it
 # Paths this project owns that the template does not know about. Added to the never-touch
 # list. There is deliberately no way to widen what *is* overwritten — that direction is the

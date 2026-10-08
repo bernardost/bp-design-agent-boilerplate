@@ -51,7 +51,10 @@ conversation long, open a chat window instead.
 
 ## How to adopt it
 
-1. Clone, then `rm -rf .git && git init` — your project's history starts empty.
+1. Clone, then `rm -rf .git && git init` — your project's history starts empty, and it can
+   no longer push to the boilerplate, which is public. `git remote -v` should print nothing
+   until you add your own private repo. `/setup` checks this too, and `doctor.py` fails a
+   clone that still points at the template.
 2. Open a session in the root and run **`/setup`**. It interviews you, writes the config and
    the current-state files, clears the template's own brain, checks which of your connectors
    are actually reachable, and ends with the tour of the commands.
@@ -71,6 +74,15 @@ never even compared. Files that carry both — `AGENTS.md`, `craft.md`, `tags.md
 for you to port by hand, never copied over. Anything it does not recognise is treated as
 yours, because a wrong guess in that direction costs a question and a wrong guess in the other
 costs your work.
+
+## When the product is a code repo
+
+Clone it into `projects/<name>`. The folder is gitignored, so the product repo keeps its own
+history, remote and rules, and the workspace never records it. The charter's *Product repos*
+section says how a session behaves there: that repo's docs govern its code and git, and a push
+inside it is always a question (`.claude/hooks/guard_push.py` enforces that in Claude Code).
+For long stretches of code work, open a session inside `projects/<name>` so the product repo's
+own instructions, hooks and skills load natively.
 
 ## What's inside
 

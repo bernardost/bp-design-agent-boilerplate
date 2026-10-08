@@ -14,6 +14,7 @@ fallback parser for the small subset of TOML this file uses: `[table]` headers, 
 ever needs more than that, require 3.11 instead of growing this.
 """
 
+import re
 from pathlib import Path
 
 BRAIN = Path(__file__).resolve().parent
@@ -165,6 +166,26 @@ GIT_VISIBILITY = CONFIG["git"]["visibility"]
 PUSH_EACH_UNIT = bool(CONFIG["git"]["push_each_unit"])
 CONFIDENTIAL_PATHS = CONFIG["confidential"].get("paths") or []
 TEMPLATE_REPO = CONFIG["template"].get("repo") or ""
+
+# Where the boilerplate is published. A clone whose `template.repo` names the former home
+# reads from here instead: that one is private, so every clone but the owner's got a 404, and
+# it stopped receiving commits once the public repo took over.
+TEMPLATE_HOME = "https://github.com/bernardost/bp-design-agent-boilerplate.git"
+FORMER_TEMPLATE_HOMES = ("https://github.com/bernardost/agent-workspace-boilerplate.git",)
+
+
+def repo_id(url: str) -> str:
+    """`owner/name` for any spelling of a GitHub URL — https, ssh, with or without `.git` —
+    so two URLs for the same repo compare equal. Anything else comes back lowercased."""
+    u = url.strip().lower().removesuffix("/").removesuffix(".git")
+    m = re.search(r"github\.com[:/]+([^/]+/[^/]+)$", u)
+    return m.group(1) if m else u
+
+
+def template_ids() -> set:
+    """Every repo this workspace counts as the boilerplate. A clone with one of these as a
+    remote pushes the client's brain to a public template — `doctor.py` fails on it."""
+    return {repo_id(u) for u in (TEMPLATE_REPO, TEMPLATE_HOME, *FORMER_TEMPLATE_HOMES) if u}
 # "" means this clone has never recorded which boilerplate commit it took.
 TEMPLATE_VERSION = CONFIG["template"].get("version") or ""
 # Publishing the brief sends what it quotes to an external service. False until the owner says.

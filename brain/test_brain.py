@@ -15,6 +15,7 @@ from `__file__` at import time and faking that would be testing the fake.
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import subprocess
@@ -28,6 +29,7 @@ BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
 sys.path.insert(0, str(BRAIN))
 
+import config  # noqa: E402
 import feed  # noqa: E402
 import redate  # noqa: E402
 import upstream  # noqa: E402
@@ -426,6 +428,7 @@ class Ownership(unittest.TestCase):
             "brain/workshops/w.md", "brain/braindumps/d.md", "brain/briefings/b.md",
             "brain/drafts/mail.md", "brain/reviews/r.md", "brain/references/bar.png",
             "context/client/deck.pdf", "brain/feed.html", "archive/notes.md",
+            "projects/app/src/index.ts", "projects/app/AGENTS.md",
         ])
 
     def test_the_templates_machinery_is_takeable(self):
@@ -435,12 +438,14 @@ class Ownership(unittest.TestCase):
             ".github/workflows/brain.yml", "brain/lenses/record.md",
             # These two live inside a project-owned folder and are still the template's.
             "brain/decisions/README.md", "brain/decisions/0000-decision-template.md",
-            "brain/insights/README.md",
+            "brain/insights/README.md", ".claude/hooks/guard_push.py",
         ])
 
     def test_shared_files_need_a_human(self):
         self.check("merge", [
             "AGENTS.md", "CLAUDE.md", "README.md", "brain/lenses/craft.md", "brain/tags.md",
+            # `/setup` writes confidential paths into it; a wholesale overwrite un-ignores them.
+            ".gitignore", ".claude/settings.json",
         ])
 
     def test_an_unknown_file_is_a_question_not_a_guess(self):
@@ -458,6 +463,83 @@ class Ownership(unittest.TestCase):
             flat = [rel for g in groups.values() for rel, _ in g]
             self.assertNotIn("brain/now.md", flat)
             self.assertIn("brain/doctor.py", [rel for rel, _ in groups["owned"]])
+
+
+class Repos(unittest.TestCase):
+    """The two ways a workspace pushes to the wrong place: a clone still wired to the public
+    boilerplate, and a product repo under `projects/` pushed on the workspace's standing
+    permission."""
+
+    def repo(self, tmp: Path) -> Path:
+        ws = workspace(tmp)
+        subprocess.run(["git", "init", "-q", "."], cwd=str(ws), check=True)
+        return ws
+
+    def test_every_spelling_of_a_github_url_is_the_same_repo(self):
+        want = "bernardost/bp-design-agent-boilerplate"
+        for url in ("https://github.com/bernardost/bp-design-agent-boilerplate.git",
+                    "https://github.com/Bernardost/bp-design-agent-boilerplate",
+                    "git@github.com:bernardost/bp-design-agent-boilerplate.git",
+                    "ssh://git@github.com/bernardost/bp-design-agent-boilerplate/"):
+            self.assertEqual(config.repo_id(url), want, url)
+
+    def test_a_clone_still_pointing_at_the_template_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.repo(Path(tmp))
+            subprocess.run(["git", "remote", "add", "origin",
+                            "git@github.com:bernardost/bp-design-agent-boilerplate.git"],
+                           cwd=str(ws), check=True)
+            out = run(ws, "doctor.py", "--quiet")
+            self.assertEqual(out.returncode, 1)
+            self.assertIn("points at the boilerplate", out.stdout)
+
+    def test_the_projects_own_remote_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.repo(Path(tmp))
+            subprocess.run(["git", "remote", "add", "origin",
+                            "https://github.com/someone/their-client-brain.git"],
+                           cwd=str(ws), check=True)
+            out = run(ws, "doctor.py", "--quiet")
+            self.assertEqual(out.returncode, 0, out.stdout)
+
+    def test_a_product_repo_committed_as_a_bare_pointer_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.repo(Path(tmp))
+            app = ws / "app"
+            subprocess.run(["git", "init", "-q", str(app)], check=True)
+            (app / "x").write_text("x")
+            subprocess.run(["git", "-C", str(app), "add", "x"], check=True)
+            subprocess.run(["git", "-C", str(app), "-c", "user.email=t@t", "-c", "user.name=t",
+                            "commit", "-qm", "x"], check=True, capture_output=True)
+            subprocess.run(["git", "add", "app"], cwd=str(ws), check=True, capture_output=True)
+            out = run(ws, "doctor.py", "--quiet")
+            self.assertEqual(out.returncode, 1)
+            self.assertIn("bare pointer", out.stdout)
+
+    def hook(self, ws: Path, command: str) -> str:
+        hooks = ws / ".claude" / "hooks"
+        hooks.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / ".claude" / "hooks" / "guard_push.py", hooks / "guard_push.py")
+        event = '{"tool_input": {"command": %s}, "cwd": %s}' % (
+            json.dumps(command), json.dumps(str(ws)))
+        r = subprocess.run([sys.executable, str(hooks / "guard_push.py")], input=event,
+                           capture_output=True, text=True, timeout=30)
+        return r.stdout
+
+    def test_a_push_inside_a_product_repo_becomes_a_question(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.repo(Path(tmp))
+            subprocess.run(["git", "init", "-q", str(ws / "projects" / "app")], check=True)
+            for cmd in ("cd projects/app && git push origin main",
+                        "git -C projects/app push"):
+                self.assertIn('"ask"', self.hook(ws, cmd), cmd)
+
+    def test_the_workspaces_own_push_passes_untouched(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.repo(Path(tmp))
+            subprocess.run(["git", "init", "-q", str(ws / "projects" / "app")], check=True)
+            self.assertEqual(self.hook(ws, "git push"), "")
+            self.assertEqual(self.hook(ws, "git -C projects/app status"), "")
 
 
 class Brand(unittest.TestCase):

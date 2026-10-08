@@ -42,9 +42,9 @@ BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
 sys.path.insert(0, str(BRAIN))
 
-from config import CONFIG  # noqa: E402
+from config import CONFIG, TEMPLATE_HOME, FORMER_TEMPLATE_HOMES, repo_id  # noqa: E402
 
-DEFAULT_REPO = "https://github.com/bernardost/agent-workspace-boilerplate.git"
+DEFAULT_REPO = TEMPLATE_HOME
 
 # The template's machinery. Improvements to these are the whole point of checking upstream.
 OWNED = (
@@ -52,10 +52,10 @@ OWNED = (
     ".claude/skills/**",
     ".agents/skills/**",
     ".github/workflows/**",
+    ".claude/hooks/**",
     "brain/*/README.md",
     "brain/lenses/record.md",
     "brain/decisions/0000-decision-template.md",
-    ".gitignore",
 )
 
 # The owner's work and the project's current state. Nothing upstream has an opinion on these,
@@ -81,6 +81,9 @@ PROJECT = (
     "brain/reviews/**",
     "brain/references/**",
     "context/**",
+    # Product repos cloned into the workspace. Each is its own git repo with its own history,
+    # and nothing upstream may read or write inside one.
+    "projects/**",
     ".env.agents",
     "brain/*.html",
     "brain/brain.canvas",
@@ -100,6 +103,10 @@ MERGE = (
     "AGENTS.md",
     "CLAUDE.md",
     "README.md",
+    # `/setup` appends this project's confidential paths. Overwriting the file wholesale on
+    # `/update` would un-ignore client material, and the next push would publish it.
+    ".gitignore",
+    ".claude/settings.json",
     "brain/lenses/craft.md",
     "brain/tags.md",
 )
@@ -155,7 +162,7 @@ def fetch(repo: str, into: Path) -> str | None:
 
 def walk(root: Path) -> dict:
     out = {}
-    skip = {".git", "__pycache__", "node_modules", "context"}
+    skip = {".git", "__pycache__", "node_modules", "context", "projects"}
     for p in sorted(root.rglob("*")):
         if not p.is_file() or skip & set(p.relative_to(root).parts):
             continue
@@ -195,6 +202,8 @@ def stamp(sha: str) -> None:
         text += (f'\n[template]\n# The boilerplate commit this project last took, written by\n'
                  f'# `python3 brain/upstream.py apply`. It is the floor for the next check.\n'
                  f'repo = "{DEFAULT_REPO}"\nversion = "{sha}"\nextra_project_paths = []\n')
+    for former in FORMER_TEMPLATE_HOMES:
+        text = text.replace(f'repo = "{former}"', f'repo = "{DEFAULT_REPO}"')
     p.write_text(text, encoding="utf-8")
 
 
@@ -217,6 +226,10 @@ def main() -> int:
     dry = "--dry-run" in sys.argv
     tmpl = CONFIG.get("template", {})
     repo = tmpl.get("repo") or DEFAULT_REPO
+    if repo_id(repo) in {repo_id(u) for u in FORMER_TEMPLATE_HOMES}:
+        print(f"upstream: template.repo names the boilerplate's former home; reading\n"
+              f"          {DEFAULT_REPO} instead. Update template.repo to match.")
+        repo = DEFAULT_REPO
     known = tmpl.get("version") or ""
 
     if do_apply and not dry and (changes := dirty()):
@@ -255,7 +268,8 @@ def main() -> int:
         print("\n  untouched: every file under brain/decisions, insights, explorations,\n"
               "  moodboards, workshops, braindumps, briefings, drafts, reviews,\n"
               "  references, plus\n"
-              "  now.md, tasks.md, plan.md, project-brief.md, workspace.toml and context/.")
+              "  now.md, tasks.md, plan.md, project-brief.md, workspace.toml, context/\n"
+              "  and projects/.")
 
         if not do_apply:
             print("\n  `python3 brain/upstream.py apply` takes the template-owned ones.")

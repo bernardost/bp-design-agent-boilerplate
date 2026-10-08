@@ -33,7 +33,7 @@ from config import (  # noqa: E402
     CONFIG, TRACKER_PREFIX, TASK_LABELS, PROJECT_NAME, GIT_REMOTE, IS_TEMPLATE, placeholders,
     MULTI_PROJECT, PROJECT_KEYS, PROJECT_LABEL, PROJECT_VALUES,
     REMINDER_ROUTE, REMINDER_TARGET, REMINDER_CAN_SCHEDULE,
-    TEMPLATE_REPO, TEMPLATE_VERSION,
+    TEMPLATE_REPO, TEMPLATE_VERSION, repo_id, template_ids,
 )
 
 # chars. "If it would still be true in two weeks, it doesn't belong." A second strand of work
@@ -546,6 +546,61 @@ def check_slug_collisions():
                 f"      Rename one to say what makes it different. The date orders the log;\n"
                 f"      the slug is the identity, and an identity has to be unique."
             )
+
+
+def _git(*args) -> str | None:
+    """stdout of a git command in this workspace, or None where git is missing or this is not
+    a repo — a lint has no business failing on a machine without git."""
+    try:
+        r = subprocess.run(["git", "-C", str(ROOT), *args],
+                           capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
+
+def check_remote_is_not_the_template():
+    """A clone whose remote still points at the boilerplate pushes the client's brain to a
+    public repo, unprompted, from the first unit of work — push-as-you-go is standing
+    permission. README step 1 cuts that link with `rm -rf .git`, but a step in a README is
+    the step an agent never runs, and `/setup` asking "is there a remote yet?" gets a yes."""
+    if IS_TEMPLATE:
+        return
+    out = _git("remote", "-v")
+    if out is None:
+        return
+    tmpl = template_ids()
+    bad = sorted({(name, url) for name, url, *_ in (ln.split() for ln in out.splitlines()
+                                                     if ln.strip())
+                  if repo_id(url) in tmpl})
+    for name, url in bad:
+        fails.append(
+            f"git remote `{name}` points at the boilerplate ({url}).\n"
+            f"      A push from here publishes this project's brain to the template.\n"
+            f"      → git remote remove {name}, then add this project's own private repo.\n"
+            f"        /update reads the boilerplate without a remote; it needs none."
+        )
+    if not bad:
+        notes.append("no remote points at the boilerplate")
+
+
+def check_no_embedded_repos():
+    """A product repo cloned inside the workspace and then caught by `git add -A` is recorded
+    as a gitlink: a commit hash with no files behind it, which looks tracked and holds nothing.
+    `projects/` is ignored for exactly this; this catches one that landed anywhere else."""
+    out = _git("ls-files", "--stage")
+    if out is None:
+        return
+    links = [ln.split("\t", 1)[1] for ln in out.splitlines() if ln.startswith("160000 ")]
+    declared = _git("config", "-f", ".gitmodules", "--get-regexp", r"\.path$") or ""
+    declared_paths = {ln.split(" ", 1)[1] for ln in declared.splitlines() if " " in ln}
+    stray = [p for p in links if p not in declared_paths]
+    if stray:
+        fails.append(
+            f"{len(stray)} nested git repo(s) committed as a bare pointer: {', '.join(stray)}.\n"
+            "      The files are not in this repo; only a commit hash is.\n"
+            "      → git rm --cached <path>, then move the clone under projects/ (ignored)."
+        )
 
 
 def report_links():
@@ -1320,6 +1375,8 @@ def main() -> int:
     quiet = "--quiet" in sys.argv
     print("brain doctor\n")
 
+    check_remote_is_not_the_template()
+    check_no_embedded_repos()
     check_now_size()
     check_record_projects()
     check_brand_provenance()

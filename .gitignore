@@ -19,5 +19,9 @@ brain/brain.canvas
 # these behind, and they are not the record.
 .playwright-mcp/
 
+# Product repos cloned into the workspace. Each keeps its own git history and its own remote;
+# tracked from here, git would record a broken pointer instead of the files.
+projects/
+
 # Generation keys — dev-only, tightly capped, and they never ship in a deliverable.
 .env.agents

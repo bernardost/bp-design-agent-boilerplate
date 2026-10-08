@@ -35,7 +35,11 @@ and the identity lines at the top of `AGENTS.md`.
 
 **Projects.** *"Is this one project, or several strands under one engagement?"* Ask it plainly
 and take the answer at face value; most design engagements carry two or three. For each: what
-it is called, and where its work actually lives — this repo, a Figma file, a site, a deck.
+it is called, and where its work actually lives — this repo, a Figma file, a site, a deck,
+or a code repo of its own. **A code repo is cloned into `projects/<name>`** (gitignored here,
+so it keeps its own history and remote) and recorded as `"key: projects/<name> (own git
+repo)"`. Say the one consequence: inside that folder the product repo's own rules govern code
+and git, and nothing there is pushed without asking — AGENTS.md, *Product repos*.
 Give each a short lowercase-kebab key (`portal`, `bioventures`) and say that the key is
 permanent because every record cites it, while the label can change freely.
 → `brain/workspace.toml` (`projects.keys`, `projects.labels`, `projects.work_lives`), a
@@ -151,7 +155,22 @@ project's decisions, and keeping them would mean the owner's first act is deleti
 
 ## 4 · The repo, and why it matters
 
-Ask whether there is a remote yet, and **explain the reason rather than just asking**: with a
+**Check where this repo pushes before asking anything about it.** Run `git remote -v` and
+`git log --oneline | tail -1`. README step 1 is `rm -rf .git && git init`, and nothing forces
+anyone to run it, so a clone can arrive still pointing at the boilerplate — which is a
+**public** repo. Answer "is there a remote yet?" with *yes* in that state and every later
+push publishes this project's brain to the template.
+
+- **A remote whose URL names the boilerplate** (`template.repo` in `workspace.toml`, or any
+  other URL the owner did not create for this project): remove it with `git remote remove
+  <name>`, and say so in one line. `/update` reads the boilerplate without a remote.
+- **History that is the template's own** (the first commit is not this project's): offer
+  `rm -rf .git && git init` before the first project commit, so the template's history does
+  not ship with the client's.
+- Then run `python3 brain/doctor.py --quiet`. It fails any remote that points at the
+  boilerplate, so this step cannot pass with one left behind.
+
+Only then ask whether there is a remote yet, and **explain the reason rather than just asking**: with a
 remote, this same workspace opens in Claude Code on the web and on their phone. The brain
 travels only if it is pushed — that is the whole value, and it is not obvious from the outside.
 
