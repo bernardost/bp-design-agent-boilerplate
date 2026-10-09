@@ -54,6 +54,7 @@ OWNED = (
     ".agents/skills/**",
     ".github/workflows/**",
     ".claude/hooks/**",
+    "CREDITS.md",
     "brain/*/README.md",
     "brain/lenses/record.md",
     "brain/decisions/0000-decision-template.md",

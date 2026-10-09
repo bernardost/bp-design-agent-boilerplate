@@ -123,7 +123,7 @@ own instructions, hooks and skills load natively.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` — plus thirteen vendored from [jakubkrehel/skills](https://github.com/jakubkrehel/skills), credited in `CREDITS.md`: `/better-ui` `/better-typography` `/better-colors` `/better-accessibility` `/better-layout` `/better-writing` `/better-interface` `/interface-review` `/explain-interface` `/break` `/state-machine` `/variant` `/build-design` |
 
 ## The ideas underneath
 

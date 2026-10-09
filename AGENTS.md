@@ -560,6 +560,18 @@ and the counterpart of what shipped) ·
 against the craft lens until it holds up — writes nothing) · **`/deck` (a deck or client
 document that reads like an agency made it)**.
 
+**Thirteen more are taken whole from Jakub Krehel's `interfaces` collection** (`CREDITS.md`
+has the author, licence and pinned commit; `python3 brain/vendor.py` refreshes them, and they
+are never edited in place): the `better-*` domain skills — `/better-ui` · `/better-typography`
+· `/better-colors` · `/better-accessibility` · `/better-layout` · `/better-writing` — with
+`/better-interface` and `/interface-review` to run them as a review, and the workbenches
+`/break` · `/state-machine` · `/variant` · `/build-design` · `/explain-interface`. They are
+written for product code, so they apply inside a product repo under `projects/` and to
+playground pieces. Where one of them overlaps a skill of ours, ours sets the stage and theirs
+does the craft: `/explore` picks a direction and `/variant` builds three answers inside it;
+`/critique` scores a render and `/interface-review` reads the diff; `/playground` cases stack
+states as files and `/state-machine` does it inside the product's own components.
+
 These live in `.claude/skills/<name>/SKILL.md`. Outside Claude Code there is no autocomplete:
 **when the owner types `/name`, read `.claude/skills/name/SKILL.md` and follow it.**
 
