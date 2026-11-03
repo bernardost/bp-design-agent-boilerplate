@@ -94,6 +94,38 @@ the panel goes back, resize the window for mobile."* Say it once per engagement,
 If the piece came out of an exploration, `Exploration:` in `piece.md` points at it, and the
 exploration's *Where it went* names the piece.
 
+## 3b · Asking the owner to react to several pieces at once
+
+**A review round across pieces is the review page, never stacked frames with a list of
+questions under them.** That layout made the owner scroll twice for every answer: once inside
+the frame, once down the list. Build it with `python3 brain/review.py <round> <slug>[:<file>] …
+--title "…" --rec "<slug>=<case numbers>=<recommendation>" --open`, e.g. `additions-v04`.
+
+- **The page shows one case at a time.** A strip across the top has a square per case, grouped
+  by piece and filled by the owner's reaction; a stage on the left shows the design at that
+  case; a rail on the right holds the case name and note, four reactions (Pick, Good, Change,
+  No, keys 1 to 4), a note, and your recommendation for the piece. Left and right arrows move
+  between cases. Reactions survive a reload, and **Copy my answers** puts everything on the
+  clipboard as text for the owner to paste into the session.
+- **The cases are read from the pieces, never retyped.** The script reads `data-case` and
+  `data-note` from each piece's `<template id="screen">`, so case 03 on the page is `#case-03`
+  in the piece. If a case needs a better name or note, change it in the piece and rebuild;
+  never edit the generated page.
+- **Give a recommendation for every piece you have an opinion on** (`--rec`, the case numbers
+  and the words). The page tags those cases Recommended. A piece you have no view on gets none,
+  and says so by showing none.
+- **Build the pieces so a case fills the frame.** Size each case to `100svh` and the page shows
+  one case with no scrolling; a case shorter or taller than that still works, but the next case
+  shows beneath it and the owner scrolls. Pieces declared with `boards` (artboards) number
+  their anchors differently and cannot be reviewed here, so review those in the piece.
+- **Name the version under review per piece** (`slug:file`). Without it the page uses the
+  final version, else the latest. Say which one in the reply.
+- **A reply to the owner is the pasted text.** Answer each reaction in order; `Change` with a
+  note is a tune or a new version by the rules in section 2.
+
+The page is a projection, gitignored like `feed.html`, and the owner's reactions are not
+stored in the repo. Log a pick that settles something as a decision the same turn it arrives.
+
 ## 4 · When the owner says it is done
 
 That is `/promote`. Do not change the status to final here; the decision that says so, the

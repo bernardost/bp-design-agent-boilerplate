@@ -20,6 +20,7 @@ brain/playground/
   index.html                   ← generated, gitignored
   _canvas/canvas.css, canvas.js   the chrome every piece shares — template-owned
   _template/piece.html, piece.md  what a new piece is copied from — template-owned
+  _template/review.html           the review-round page `brain/review.py` fills — template-owned
   <slug>/
     piece.md                   ← the record: brief, status, source, the version log
     v01-<name>.html            ← never edited once v02 exists
@@ -81,6 +82,15 @@ and `versions.js` are regenerated from them and are not.
   Placeholder text judges a page that will never exist.
 - **Say which project.** `project:` in `piece.md`, like every other record. The index filters
   on it.
+
+## Reviewing several pieces at once
+
+`python3 brain/review.py <round> <slug>[:<file>] … [--title …] [--rec slug=nums=words] [--open]`
+writes `brain/review-<round>.html`: one case on screen at a time, four reactions, a note, and a
+single paste back into the session. The cases come from each piece's `data-case` and
+`data-note`, never retyped. It is the only layout for asking the owner to react across pieces;
+stacked frames with a list of questions below made the owner scroll twice per answer.
+`/playground` section 3b has the procedure.
 
 ## Status, and what moves it
 

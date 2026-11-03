@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- brain/playground/_template/review.html — the page a review round across playground pieces
+     is built on. Do not edit a copy by hand: `python3 brain/review.py <round> <slug>[:<file>] ...`
+     fills the three placeholders below from the pieces themselves and writes
+     brain/review-<round>.html. One case at a time, one reaction per case, one paste back. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ROUND_TITLE}}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fff;--ink:#111;--muted:#666;--faint:#aaa;--rule:#e4e4e4;--red:#c8102e;--blue:#1a4fd6;--rail:340px;--strip:44px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);overflow:hidden}
+body{font:15px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:grid;grid-template-rows:var(--strip) minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--rail)}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* the strip: every case as a small square, grouped by piece; filled when reacted to */
+.strip{grid-column:1/-1;display:flex;align-items:center;gap:22px;padding:0 16px;border-bottom:1px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+.grp{display:flex;align-items:center;gap:8px;flex:none}
+.grp .t{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer}
+.grp.on .t{color:var(--ink)}
+.dots{display:flex;gap:3px}
+.dot{width:14px;height:14px;border:1px solid var(--faint);background:none;padding:0;cursor:pointer;font:600 8px/12px Inter,sans-serif;color:transparent}
+.dot[data-s="Pick"]{background:var(--blue);border-color:var(--blue)}
+.dot[data-s="Good"]{background:var(--ink);border-color:var(--ink)}
+.dot[data-s="Change"]{background:#fff;border-color:var(--ink);box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 7px var(--ink)}
+.dot[data-s="No"]{background:var(--red);border-color:var(--red)}
+.dot.cur{outline:2px solid var(--ink);outline-offset:2px}
+
+/* the stage: the piece itself, scrolled to the case, one board filling it */
+.stage{position:relative;background:#f4f2ee;min-width:0}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;visibility:hidden}
+.stage iframe.on{visibility:visible}
+
+/* the rail: what the case is, and the reaction */
+.rail{border-left:1px solid var(--rule);display:flex;flex-direction:column;min-height:0}
+.rbody{flex:1;overflow:auto;padding:22px 20px 16px}
+.pos{display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:21px;line-height:1.2;letter-spacing:-.01em;margin:8px 0 10px;font-weight:600}
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--ink);padding:1px 5px;margin-bottom:10px}
+.note{font-size:14px;color:#333;margin:0 0 18px}
+.react{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--rule);background:none;padding:9px 10px;cursor:pointer;color:var(--ink);text-align:left;display:flex;justify-content:space-between}
+.chip kbd{font:inherit;font-size:11px;color:var(--faint)}
+.chip:hover{border-color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+.chip[aria-pressed="true"] kbd{color:rgba(255,255,255,.6)}
+.chip.pick[aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
+.chip.no[aria-pressed="true"]{background:var(--red);border-color:var(--red)}
+textarea{width:100%;font:inherit;font-size:14px;border:1px solid var(--rule);padding:8px 10px;resize:vertical;min-height:64px;background:none;color:var(--ink);margin-top:10px}
+textarea:focus{outline:none;border-color:var(--ink)}
+.whole{margin-top:26px;padding-top:14px;border-top:1px solid var(--rule)}
+.whole .rec{font-size:13px;color:var(--muted);margin:6px 0 0}
+.whole .rec b{color:var(--ink);font-weight:600}
+.nav{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 20px;border-top:1px solid var(--rule)}
+.nav button,.foot button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--rule);background:none;padding:9px;cursor:pointer;color:var(--ink)}
+.nav button:hover{border-color:var(--ink)}
+.foot{padding:12px 20px 16px;border-top:1px solid var(--ink)}
+.foot .count{font-size:13px;color:#333;margin-bottom:8px}
+.foot .row{display:flex;gap:6px;align-items:center}
+.foot #copy{flex:1;background:var(--ink);color:#fff;border-color:var(--ink)}
+.foot #reset{border:0;color:var(--muted);font-weight:500}
+.ok{font-size:13px;color:var(--muted);min-height:1.2em;margin-top:6px}
+.keys{font-size:12px;color:var(--faint);margin-top:14px}
+.open{font-size:13px;color:var(--blue);text-decoration:none}
+
+@media (max-width:860px){
+  html,body{overflow:auto}
+  body{grid-template-columns:1fr;grid-template-rows:var(--strip) 70vh auto}
+  .rail{border-left:0;border-top:1px solid var(--rule)}
+}
+</style>
+</head>
+<body>
+<nav class="strip" id="strip" aria-label="All cases"></nav>
+<main class="stage" id="stage"></main>
+<aside class="rail">
+  <div class="rbody">
+    <div class="pos"><span class="lbl" id="piece"></span><a class="open" id="open" target="_blank">Open in a tab ↗</a></div>
+    <h1 id="name"></h1>
+    <div id="tag"></div>
+    <p class="note" id="note"></p>
+    <div class="react" id="react"></div>
+    <textarea id="cnote" placeholder="Note on this case (optional)"></textarea>
+    <div class="whole"><div class="lbl" id="wlbl"></div><p class="rec" id="rec"></p><textarea id="wnote" placeholder="Anything that applies to the whole piece"></textarea></div>
+    <p class="keys">← → move between cases · 1 Pick · 2 Good · 3 Change · 4 No. After clicking inside a design, click here on the right to get the keys back.</p>
+  </div>
+  <div class="nav"><button id="prev">← Previous</button><button id="next">Next →</button></div>
+  <div class="foot"><div class="count" id="count"></div><div class="row"><button id="copy">Copy my answers</button><button id="reset">Clear</button></div><div class="ok" id="ok"></div></div>
+</aside>
+<script>
+const ROUND = /*ROUND*/{key:'round',title:'Review'};
+const P = /*PIECES*/[];
+let S = {}; try { S = JSON.parse(localStorage.getItem(ROUND.key)||'{}'); } catch(e){}
+const save = () => { try { localStorage.setItem(ROUND.key, JSON.stringify(S)); } catch(e){} };
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const n2 = i => String(i).padStart(2,'0');
+const CH = ['Pick','Good','Change','No'];
+/* every case in order, across the pieces */
+const ALL = P.flatMap((p,pi) => p.cases.map((c,ci) => ({p, pi, c, ci, n:n2(ci+1), k:`${p.slug}:${n2(ci+1)}`})));
+let cur = 0; try { cur = Math.min(ALL.length-1, +(localStorage.getItem(ROUND.key+'-at')||0)); } catch(e){}
+
+/* one frame per piece, loaded once; moving to a case only changes the frame's #case anchor */
+const src = p => `playground/${p.slug}/${p.file}`;
+const frames = P.map(p => { const f = document.createElement('iframe'); f.title = p.title; f.src = src(p) + '?motion=none'; f.dataset.ready = ''; $('stage').append(f);
+  f.addEventListener('load', () => { f.dataset.ready = '1'; if (ALL[cur].p === p) aim(); setTimeout(unfocus, 60); }, { once: true }); return f; });
+/* a piece takes focus when it loads; give the keys back to this page so the arrows and 1–4 keep working */
+function unfocus() { if (document.activeElement && document.activeElement.tagName === 'IFRAME') { document.activeElement.blur(); window.focus(); } }
+function aim() { const a = ALL[cur], f = frames[a.pi]; if (!f.dataset.ready) return; f.src = src(a.p) + '?motion=none#case-' + a.n; setTimeout(unfocus, 60); }
+
+$('strip').innerHTML = P.map((p,pi) => `<div class="grp" data-g="${pi}"><span class="t" data-go="${ALL.findIndex(a=>a.pi===pi)}">${esc(p.title)}</span><span class="dots">${p.cases.map((c,ci)=>{const i=ALL.findIndex(a=>a.pi===pi&&a.ci===ci);return `<button class="dot" data-go="${i}" title="${n2(ci+1)} ${esc(c.name)}"></button>`}).join('')}</span></div>`).join('');
+$('react').innerHTML = CH.map((ch,i) => `<button class="chip ${ch==='Pick'?'pick':ch==='No'?'no':''}" data-v="${ch}">${ch}<kbd>${i+1}</kbd></button>`).join('');
+
+function show(i) {
+  cur = (i + ALL.length) % ALL.length; try { localStorage.setItem(ROUND.key+'-at', cur); } catch(e){}
+  const a = ALL[cur];
+  frames.forEach((f,fi) => f.classList.toggle('on', fi === a.pi)); aim();
+  $('piece').textContent = `${a.p.title} · ${a.n} of ${n2(a.p.cases.length)}`;
+  $('open').href = src(a.p) + '#case-' + a.n;
+  $('name').textContent = a.c.name;
+  $('tag').innerHTML = (a.p.recn||[]).includes(a.ci+1) ? '<span class="tag">Recommended</span>' : '';
+  $('note').textContent = a.c.note;
+  $('cnote').value = S['note-'+a.k] || '';
+  $('wlbl').textContent = `About ${a.p.title} as a whole`;
+  $('rec').innerHTML = a.p.rec ? `Builder's recommendation: <b>${esc(a.p.rec)}</b>` : '';
+  $('wnote').value = S['note-'+a.p.slug+':all'] || '';
+  paint();
+  document.querySelector('.dot.cur')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+function paint() {
+  const a = ALL[cur];
+  document.querySelectorAll('#react [data-v]').forEach(b => b.setAttribute('aria-pressed', S[a.k] === b.dataset.v));
+  document.querySelectorAll('.dot').forEach(d => { const x = ALL[+d.dataset.go]; d.dataset.s = S[x.k] || ''; d.classList.toggle('cur', +d.dataset.go === cur); });
+  document.querySelectorAll('.grp').forEach(g => g.classList.toggle('on', +g.dataset.g === a.pi));
+  $('count').textContent = `${ALL.filter(x=>S[x.k]).length} of ${ALL.length} cases reacted to · ${P.filter(p=>ALL.some(x=>x.p===p&&S[x.k]==='Pick')).length} of ${P.length} pieces with a pick`;
+}
+function react(v) { const k = ALL[cur].k; S[k] = S[k] === v ? undefined : v; save(); paint(); }
+
+document.addEventListener('click', e => {
+  const v = e.target.closest('#react [data-v]'); if (v) { react(v.dataset.v); return; }
+  const g = e.target.closest('[data-go]'); if (g) show(+g.dataset.go);
+});
+$('prev').onclick = () => show(cur - 1);
+$('next').onclick = () => show(cur + 1);
+$('cnote').oninput = e => { S['note-'+ALL[cur].k] = e.target.value; save(); };
+$('wnote').oninput = e => { S['note-'+ALL[cur].p.slug+':all'] = e.target.value; save(); };
+document.addEventListener('keydown', e => {
+  if (e.target.closest('textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); show(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); show(cur - 1); }
+  else if (/^[1-4]$/.test(e.key)) react(CH[+e.key - 1]);
+});
+$('reset').onclick = () => { if (!confirm('Clear every reaction and note?')) return; S = {}; save(); show(cur); };
+$('copy').onclick = async () => {
+  const L = [ROUND.title+' — my reactions'];
+  P.forEach(p => { L.push('', '## '+p.title);
+    ALL.filter(x => x.p === p).forEach(x => { if (S[x.k] || S['note-'+x.k]) L.push(`${x.n} ${x.c.name} → ${S[x.k]||'—'}${S['note-'+x.k]?' — '+S['note-'+x.k]:''}`); });
+    if (S['note-'+p.slug+':all']) L.push('Whole piece: '+S['note-'+p.slug+':all']); });
+  const txt = L.join('\n');
+  try { await navigator.clipboard.writeText(txt); } catch(e) { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  $('ok').textContent = 'Copied. Paste it into the session.'; setTimeout(() => $('ok').textContent = '', 3000);
+};
+show(cur);
+</script>
+</body></html>

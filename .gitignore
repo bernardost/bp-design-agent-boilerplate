@@ -11,6 +11,7 @@ brain/explorations/*.html
 brain/moodboards/*.html
 brain/playground/index.html
 brain/playground/*/versions.js
+brain/review-*.html
 
 # If the project acquires confidential source material, keep it out from day one,
 # e.g.:

@@ -36,7 +36,7 @@ import upstream  # noqa: E402
 import when  # noqa: E402
 
 SCRIPTS = ("config.py", "doctor.py", "feed.py", "brief.py", "spread.py", "render.py",
-           "redate.py", "when.py", "playground.py")
+           "redate.py", "when.py", "playground.py", "review.py")
 CARRIED = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
            "project-brief.md", "tags.md", "glossary.md", "sources.md")
 
@@ -446,8 +446,9 @@ class Ownership(unittest.TestCase):
             # These two live inside a project-owned folder and are still the template's.
             "brain/decisions/README.md", "brain/decisions/0000-decision-template.md",
             "brain/insights/README.md", ".claude/hooks/guard_push.py",
-            "brain/playground.py", "brain/playground/README.md",
+            "brain/playground.py", "brain/review.py", "brain/playground/README.md",
             "brain/playground/_canvas/canvas.js", "brain/playground/_template/piece.html",
+            "brain/playground/_template/review.html",
         ])
 
     def test_shared_files_need_a_human(self):
@@ -764,6 +765,75 @@ class When(unittest.TestCase):
     def test_the_resolved_moment_is_always_in_the_future(self):
         for phrase in ("friday", "tomorrow", "in 3 days", "wednesday", "next monday"):
             self.assertGreater(self.r(phrase), self.NOW, phrase)
+
+
+class ReviewRound(unittest.TestCase):
+    """One page for reacting to the cases of several pieces. What breaks: cases retyped by hand
+    and drifting from the piece, a recommendation naming a case that does not exist, and a
+    piece built on a canvas whose anchors the page cannot reach."""
+
+    PIECE = ("<!doctype html><title>x</title><style>.a{}</style>"
+             "<template id=\"screen\">"
+             "<section data-case=\"Resting\" data-note=\"default, five titles\">a</section>"
+             "<section data-note=\"nothing yet\" data-case=\"Empty\" data-empty>b</section>"
+             "</template>")
+
+    def ws(self, tmp: str) -> Path:
+        ws = workspace(Path(tmp))
+        d = ws / "brain" / "playground"
+        (d / "_template").mkdir(parents=True)
+        shutil.copy(BRAIN / "playground" / "_template" / "review.html", d / "_template" / "review.html")
+        for slug, files in (("list", ("v01-first.html", "v02-second.html")), ("nav", ("v01-a.html",))):
+            (d / slug).mkdir()
+            (d / slug / "piece.md").write_text(f"---\nstatus: current\n---\n# {slug.title()}\nBrief: the {slug}\n\n"
+                                              "## Versions\n- v01 — 2026-10-01 — first\n")
+            for f in files:
+                (d / slug / f).write_text(self.PIECE)
+        (d / "nav" / "v01-a.html").write_text("<!doctype html><title>x</title>")
+        return ws
+
+    def data(self, ws: Path, name: str) -> dict:
+        page = (ws / "brain" / f"review-{name}.html").read_text()
+        pieces = re.search(r"const P = (\[.*?\]);\nlet S", page, re.S).group(1)
+        return json.loads(pieces.replace("<\\/", "</"))
+
+    def test_cases_are_read_from_the_piece_in_order_whatever_the_attribute_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.ws(tmp)
+            out = run(ws, "review.py", "r1", "list", "nav", "--title", "Round one",
+                      "--rec", "list=2=The empty state first")
+            self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+            data = self.data(ws, "r1")
+            self.assertEqual([c["name"] for c in data[0]["cases"]], ["Resting", "Empty"])
+            self.assertEqual(data[0]["cases"][1]["note"], "nothing yet")
+            self.assertEqual((data[0]["recn"], data[0]["rec"]), ([2], "The empty state first"))
+            self.assertEqual(data[0]["file"], "v02-second.html")  # the latest, none being final
+            self.assertEqual(data[0]["brief"], "the list")
+            self.assertEqual([c["name"] for c in data[1]["cases"]], ["The whole piece"])
+            page = (ws / "brain" / "review-r1.html").read_text()
+            self.assertIn("<title>Round one</title>", page)
+            self.assertNotIn("{{ROUND_TITLE}}", page)
+            self.assertIn('"key": "review-r1"', page)
+
+    def test_a_named_file_is_the_one_reviewed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.ws(tmp)
+            self.assertEqual(run(ws, "review.py", "r2", "list:v01-first.html").returncode, 0)
+            self.assertEqual(self.data(ws, "r2")[0]["file"], "v01-first.html")
+
+    def test_a_recommendation_for_a_case_that_is_not_there_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.ws(tmp)
+            out = run(ws, "review.py", "r3", "list", "--rec", "list=3=words")
+            self.assertNotEqual(out.returncode, 0)
+            self.assertIn("has 2", out.stdout + out.stderr)
+            self.assertFalse((ws / "brain" / "review-r3.html").exists())
+
+    def test_an_unknown_piece_and_a_bad_round_name_are_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = self.ws(tmp)
+            self.assertNotEqual(run(ws, "review.py", "r4", "nope").returncode, 0)
+            self.assertNotEqual(run(ws, "review.py", "Bad Name", "list").returncode, 0)
 
 
 if __name__ == "__main__":

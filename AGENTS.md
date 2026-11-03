@@ -172,6 +172,17 @@ which repo it means.
   path is unguessable, and a draft email written there is a draft email nobody sends. Messages
   for the owner to send go to `brain/drafts/` (format in its README); a rendered page goes in
   `brain/`. The test is whether they could find it tomorrow without asking you.
+- **Open every page you build or change in the owner's browser, in the same turn.** That covers
+  playground pieces, `feed.html`, `brief.html`, exploration spreads, moodboards, workshops,
+  decks and any other HTML the owner will read. Run `open <path>` on macOS (`xdg-open` on
+  Linux, `start` on Windows), or the script's own flag where it has one:
+  `python3 brain/feed.py --open`, `brief.py --open`, `playground.py --open`, `spread.py --open`,
+  `board.py --open`. The owner should never have to ask where the page is, or hunt for it in
+  Finder. After a decision is logged, rebuild and open `feed.html`, since that is where
+  decisions are read. **Open once per piece of work, not once per edit**: while you iterate on
+  a page the owner already has open, tell them to refresh instead of opening another tab. Say
+  the path in the reply as well, because a tab can be closed and the file cannot. Skip this
+  only when the owner is not at the machine (a remote or cloud session), and say so.
 - **Put every reminder somewhere outside this repo that will actually fire.** *"Remind me to
   chase Dana on Friday"* is not a note-taking request. This session will not be running on
   Friday and a file in `brain/` fires at nobody, so a reminder that lives only here is a
@@ -215,6 +226,13 @@ which repo it means.
   line, *"Starting v03: … v02 stays"*, and log it in the piece's record the same turn. The
   only way back is a file that still exists. `/playground` has the procedure, `/promote` is
   how a piece leaves.
+- **Ask for reactions to several pieces on the review page, one case at a time.** When the
+  owner is asked to react to the cases of more than one piece, run
+  `python3 brain/review.py <round> <slug>[:<file>] … --rec "<slug>=<case numbers>=<words>"`
+  and open the page it writes. Never stack the pieces' frames with a list of questions under
+  them: that made the owner scroll twice for every answer, once inside the frame and once down
+  the list. The page reads the cases from the pieces, so the numbers match, and it hands the
+  owner's reactions back as one pasted block. `/playground` section 3b has the rest.
 - **Log a decision or an insight as soon as it happens.** A decision stated or reached in conversation → a dated file in
   `brain/decisions/` (format below), unprompted, and say you did. A durable realization →
   note in `brain/insights/`. Both carry frontmatter tags from `brain/tags.md` and link out
