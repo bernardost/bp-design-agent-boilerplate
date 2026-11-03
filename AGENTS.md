@@ -110,6 +110,27 @@ which repo it means.
   keeps its own decision log, technical decisions go there; `brain/decisions/` records the
   design and engagement decision and links to it. If its rules and this file's conflict,
   raise it rather than picking one.
+- **The product repo's writing rules override this file's for anything that lands in it.**
+  Page copy, commit messages, PR titles and bodies, a rewrite you propose in a comment: all
+  of it follows that repo's voice rules, not the *How to talk to the owner* section below.
+  The two will disagree. One site this workspace served banned em dashes and every
+  contrastive pattern — "rather than", "instead of", "X over Y" — while this file keeps em
+  dashes and only bans "not X, it's Y"; a session drafting under the workspace rules would
+  have failed that site's copy tests on every PR. Find the product repo's rules before the
+  first line of text, and treat its tests on wording as the spec.
+- **Find the product repo's own checks and run them before you open a PR.** Its CI workflow
+  (`.github/workflows/`), its test script and its build are the checks it relies on, and a
+  session started from the workspace runs none of them on its own. Name each one you ran in
+  the PR. If the repo pins a runtime version, switch to it first; a build that passes on the
+  wrong Node proves nothing.
+- **Find out what merging deploys before you touch the default branch.** A product repo may
+  deploy straight to production from `main`, with no staging step in between. Read the
+  deploy config and the repo's docs for this, say what you found, and if the answer is
+  production, a PR is the only route and the owner merges it.
+- **Follow the product repo's PR conventions, including any disclosure of AI work.** Read a
+  few recent merged PRs for the shape: the sections it uses, where screenshots go, what the
+  title has to state. If the repo asks PRs to name the human owner and say what a person has
+  and has not reviewed, that section is written truthfully, not as boilerplate.
 - **A skill name can exist in both repos.** If the product repo ships its own `/setup` or
   `/status`, ask which one the owner means before running either.
 - **Isolate parallel code work with a worktree of the product repo**, not of the workspace.
