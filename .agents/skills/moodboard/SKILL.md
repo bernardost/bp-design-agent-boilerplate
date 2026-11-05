@@ -98,7 +98,8 @@ here wearing three hats — say so rather than shipping the illusion of choice.
 
 **6 · Write the file and render it.** `brain/moodboards/YYYY-MM-DD-<topic>.md` in the shape
 `brain/moodboards/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
-`project:` key. Then `python3 brain/board.py`, read the page yourself before handing it over,
+`project:` key. Then `python3 brain/board.py`, read the page yourself, then hand it over with
+`python3 brain/board.py --open`
 and give the owner the path.
 
 **7 · Take the reaction, in their words.** Ask which vision they would build and which ideas

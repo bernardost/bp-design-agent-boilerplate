@@ -193,17 +193,17 @@ which repo it means.
   path is unguessable, and a draft email written there is a draft email nobody sends. Messages
   for the owner to send go to `brain/drafts/` (format in its README); a rendered page goes in
   `brain/`. The test is whether they could find it tomorrow without asking you.
-- **Open every page you build or change in the owner's browser, in the same turn.** That covers
-  playground pieces, `feed.html`, `brief.html`, exploration spreads, moodboards, workshops,
-  decks and any other HTML the owner will read. Run `open <path>` on macOS (`xdg-open` on
-  Linux, `start` on Windows), or the script's own flag where it has one:
-  `python3 brain/feed.py --open`, `brief.py --open`, `playground.py --open`, `spread.py --open`,
-  `board.py --open`. The owner should never have to ask where the page is, or hunt for it in
-  Finder. After a decision is logged, rebuild and open `feed.html`, since that is where
-  decisions are read. **Open once per piece of work, not once per edit**: while you iterate on
-  a page the owner already has open, tell them to refresh instead of opening another tab. Say
-  the path in the reply as well, because a tab can be closed and the file cannot. Skip this
-  only when the owner is not at the machine (a remote or cloud session), and say so.
+- **Put whatever you want the owner to look at in front of him, in the same turn.** A page
+  goes to his default browser: `python3 brain/show.py <path>`, or the render script's own
+  `--open` (`feed.py`, `brief.py`, `playground.py`, `spread.py`, `board.py`, `review.py`).
+  Any other file you want him to read, check, attach or send — a draft, a PDF, an export, an
+  image — is revealed in Finder: `python3 brain/show.py --reveal <path>`. Name the path in
+  the reply too, because a window can be closed and the file cannot. Agents skip this step
+  more than any other: a page built and only named in the reply sits unopened until he asks
+  where it is. Open once per piece of work; while you iterate on a page he already has open,
+  tell him to refresh. After a decision is logged, rebuild and open `feed.html`. In a remote
+  session the script reports there is no screen; say so and give the path. `/open` and
+  `/reveal` do the same on request, and `/open --browser <name>` picks another browser.
 - **Put every reminder somewhere outside this repo that will actually fire.** *"Remind me to
   chase Dana on Friday"* is not a note-taking request. This session will not be running on
   Friday and a file in `brain/` fires at nobody, so a reminder that lives only here is a
@@ -581,7 +581,8 @@ The same applies to `brain/lenses/`, the skills in `.claude/skills/`, and every 
 
 ## Commands (project skills)
 
-`/setup` (first run, and re-runnable) · **`/brief` (state the project back and get it
+`/setup` (first run, and re-runnable) · **`/open` (pull a page up in the browser) · `/reveal`
+(show a file in Finder)** · **`/brief` (state the project back and get it
 approved, as a page)** · `/braindump` (dump, saved verbatim, then routed) ·
 `/decide <topic>` (capture a decision) · **`/remind` (put an alarm somewhere that will
 actually fire)** · **`/update` (take the boilerplate's improvements without losing this

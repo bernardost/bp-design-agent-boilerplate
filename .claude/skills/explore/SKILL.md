@@ -72,7 +72,8 @@ uncomfortable — the safe six are the ones nobody remembers. Say which one that
 
 **4 · Write the file, render it, and hand over the page.** The markdown goes to
 `brain/explorations/YYYY-MM-DD-<topic>.md` in the shape README specifies, seeds included,
-tagged from `brain/tags.md`. Then `python3 brain/spread.py` and give the owner the path.
+tagged from `brain/tags.md`. Then `python3 brain/spread.py --open`, which puts the page in his
+browser, and give the owner the path.
 
 Do this *before* asking for reactions, not after. Eight directions pasted into a chat window
 is too much to judge, so what gets judged is whichever one you described best. The page puts
