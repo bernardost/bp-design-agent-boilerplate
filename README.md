@@ -78,8 +78,8 @@ costs your work.
 ## When the product is a code repo
 
 Clone it into `projects/<name>`. The folder is gitignored, so the product repo keeps its own
-history, remote and rules, and the workspace never records it. The charter's *Product repos*
-section says how a session behaves there: that repo's docs govern its code and git, and a push
+history, remote and rules, and the workspace never records it. The `/product-repo` skill says
+how a session behaves there: that repo's docs govern its code and git, and a push
 inside it is always a question (`.claude/hooks/guard_push.py` enforces that in Claude Code).
 For long stretches of code work, open a session inside `projects/<name>` so the product repo's
 own instructions, hooks and skills load natively.

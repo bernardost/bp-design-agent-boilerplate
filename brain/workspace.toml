@@ -32,7 +32,7 @@ labels = ["{{PRODUCT_NAME}}"]
 # Where the work being designed actually lives, one entry per strand, `key: where`.
 # A design project's product is often not in this repo: a Figma file, a live site, a deck,
 # or a code repo cloned into `projects/` — which keeps its own git, and its own rules
-# (AGENTS.md, "Product repos in projects/").
+# (the `/product-repo` skill).
 work_lives = []                    # e.g. ["portal: figma.com/file/…", "app: projects/app (own git repo)"]
 
 [tracker]

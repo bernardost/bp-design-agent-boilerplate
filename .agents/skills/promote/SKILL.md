@@ -55,7 +55,7 @@ terms:
   for anything that is only visual.
 - **What the destination's own rules add.** If it is a product repo under `projects/`, its
   docs govern the code: read them, and say which of its conventions the design has to meet
-  before a line is written there. The charter's *Product repos* section applies, and nothing
+  before a line is written there. The `/product-repo` skill applies, and nothing
   is pushed there without asking.
 
 Then stop. Building it in the destination is the destination's work, under its rules — in

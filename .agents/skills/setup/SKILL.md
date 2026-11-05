@@ -39,7 +39,7 @@ it is called, and where its work actually lives — this repo, a Figma file, a s
 or a code repo of its own. **A code repo is cloned into `projects/<name>`** (gitignored here,
 so it keeps its own history and remote) and recorded as `"key: projects/<name> (own git
 repo)"`. Say the one consequence: inside that folder the product repo's own rules govern code
-and git, and nothing there is pushed without asking — AGENTS.md, *Product repos*.
+and git, and nothing there is pushed without asking — see `/product-repo`.
 Give each a short lowercase-kebab key (`portal`, `bioventures`) and say that the key is
 permanent because every record cites it, while the label can change freely.
 → `brain/workspace.toml` (`projects.keys`, `projects.labels`, `projects.work_lives`), a
