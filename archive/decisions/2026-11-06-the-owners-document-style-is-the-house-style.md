@@ -24,7 +24,15 @@ rather than read. ^[owner · session · 2026-11-06]
 - Geist loads from Google Fonts, as Inter did, so no font file ships with the template.
 - His identity details (company line, tax number) stay out of the template.
 
+- The same day, every other page was converted: the feed, the exploration spreads, the
+  moodboard desk, the playground index, the review round and the playground's control panel.
+  Only long pages the reader types into get the full air; pages answered with a tap or a line
+  stay compact. ^[owner · session · 2026-11-06] The control panel stays dark because it sits
+  on top of the work.
+
 ## Consequences
 
-`feed.html`, the spreads, the desk, the review page and the playground canvas still use the
-old Inter styling until each is converted. Until then they disagree with the lens.
+The feed's colour coding (blue references, ochre drafts, green answers, coloured graph nodes)
+is gone; state is carried by square markers, greys and shapes instead, and red marks only what
+is waiting on the owner. A specimen inside a spread or a playground piece is the work and keeps
+its own fonts.

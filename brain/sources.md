@@ -43,7 +43,7 @@ prints provenance inside its sentences is a page nobody finishes reading. So the
 clean and the evidence stays reachable.
 
 **`^[inferred]` is required for anything worked out rather than heard**, and it renders as its
-own word in ochre rather than a numeral. A guess that reads like a quote is the failure the
+own word in a small dashed tag rather than a numeral. A guess that reads like a quote is the failure the
 whole convention exists to prevent — `doctor.py` counts sections that carry neither.
 
 ---

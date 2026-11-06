@@ -129,13 +129,14 @@ PAGE_CSS = f"""
 /* Wider than the feed on purpose: eight directions have to be comparable without scrolling,
    and comparison is the entire job of this page. */
 .wrap{{max-width:1480px}}
+.top h1{{max-width:none}}
 
 /* Three across on a laptop rather than four or five. Eight directions comparable without
    scrolling was the old goal; it bought comparability at the price of making each specimen
    too small to judge, which loses the argument the page exists to win. Scrolling one screen
    to see eight legible specimens beats seeing eight illegible ones at once. */
 .spread{{display:grid;gap:40px 30px;margin:0 0 60px;
-  grid-template-columns:repeat(auto-fill,minmax(380px,1fr))}}
+  grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))}}
 
 .dir{{display:flex;flex-direction:column;min-width:0}}
 /* Rejected directions stay in place, never hidden — keeping them is the whole reason the file
@@ -154,31 +155,32 @@ PAGE_CSS = f"""
 .dir .frame iframe{{width:100%;height:100%;border:0;display:block}}
 .dir .frame.empty{{display:flex;align-items:center;justify-content:center;
   background:var(--wash);border-style:dashed}}
-.dir .frame.empty span{{font-family:var(--mono);font-size:11px;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ochre)}}
+.dir .frame.empty span{{font-size:13px;color:var(--ink-3)}}
 
-.dir .letter{{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;
-  color:var(--ink-4);margin:14px 0 3px}}
-.dir h3{{font-size:19px;margin:0 0 7px;line-height:1.3}}
+.dir .letter{{font-size:13px;color:var(--ink-3);margin:14px 0 3px}}
+.dir h3{{font-size:20px;font-weight:520;margin:0 0 7px;line-height:1.3}}
 /* The verdict rules still land on one line across a row, but the alignment now comes from
    the card stretching to its grid row and the pitch taking the slack — not from reserving
    five lines of height for prose that is usually one. Reserved space is space the specimen
    could have had. */
-.dir .pitch{{font-size:14.5px;line-height:1.62;color:var(--ink-2);margin:0 0 14px;flex:1}}
+.dir .pitch{{font-size:15px;line-height:1.55;color:var(--ink);margin:0 0 14px;flex:1}}
 .dir .pitch p{{margin:0 0 .5em}}
 .dir .pitch p:last-child{{margin-bottom:0}}
 
-.dir .verdict{{padding-top:11px;border-top:1px solid var(--rule-soft);
-  font-size:13.5px;line-height:1.55;color:var(--ink-3)}}
-.dir .v{{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
-  display:block;margin-bottom:4px}}
+.dir .verdict{{padding-top:11px;border-top:1.5px solid var(--ink);
+  font-size:14px;line-height:1.55;color:var(--ink-3)}}
+.dir .v{{font-size:13px;font-weight:560;display:flex;align-items:center;gap:6px;
+  margin-bottom:4px;text-transform:capitalize}}
+.dir .v::before{{content:"";width:8px;height:8px;border:1.5px solid currentColor}}
 .dir.live .v{{color:var(--ink)}}
-.dir.rejected .v{{color:var(--red)}}
-.dir.undecided .v{{color:var(--ochre)}}
+.dir.live .v::before{{background:var(--ink)}}
+.dir.rejected .v{{color:var(--ink-3)}}
+.dir.undecided .v{{color:var(--ink-3)}}
+.dir.undecided .v::before{{border-style:dashed}}
 
-.top .brief{{font-size:18.5px;color:var(--ink-2);margin:14px 0 0;max-width:64ch}}
-.facts .seed{{font-family:var(--mono);font-size:12px;color:var(--ink-3);word-break:break-all}}
-.went{{border-top:1px solid var(--rule);padding-top:24px;font-size:15.5px;color:var(--ink-2)}}
+.top .brief{{grid-column:2 / 4;font-size:17px;color:var(--ink);margin:14px 0 0;max-width:64ch}}
+.facts .seed{{font-size:13px;color:var(--ink-3);word-break:break-all}}
+.went{{border-top:1.5px solid var(--ink);padding-top:12px;font-size:16px;color:var(--ink)}}
 .went.open p{{color:var(--ink-3)}}
 """
 
@@ -238,7 +240,7 @@ def build(ex: dict, g: dict) -> str:
 {FONT_LINK}<style>{CSS}{PAGE_CSS}</style></head><body>
 <div class="wrap">
 <div class="top">
-  <div class="kicker">{html.escape(PROJECT_NAME)}{project_kicker(ex)} · exploration</div>
+  <div class="kicker">Exploration{project_kicker(ex)}</div>
   <h1>{html.escape(ex["title"])}</h1>
   {f'<p class="brief">{html.escape(ex["brief"])}</p>' if ex["brief"] else ""}
   <div class="meta">generated {stamp} from

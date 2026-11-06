@@ -8,25 +8,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ROUND_TITLE}}</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#fff;--ink:#111;--muted:#666;--faint:#aaa;--rule:#e4e4e4;--red:#c8102e;--blue:#1a4fd6;--rail:340px;--strip:44px}
+/* brain/lenses/house.md, section 2 at a compact density: each answer is one tap and a line. */
+:root{--paper:#fff;--ink:#0a0a0a;--muted:#737373;--faint:#9b9b9b;--rule:#dedede;--red:#c8102e;--fill:rgb(241,241,239);--fill-hover:rgb(235,235,232);--field-line:#8a8a8a;--rail:340px;--strip:48px}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);overflow:hidden}
-body{font:15px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:grid;grid-template-rows:var(--strip) minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--rail)}
-.lbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+body{font:15px/1.5 Geist,'Helvetica Neue',Arial,sans-serif;letter-spacing:-0.012em;-webkit-font-smoothing:antialiased;display:grid;grid-template-rows:var(--strip) minmax(0,1fr);grid-template-columns:minmax(0,1fr) var(--rail)}
+.lbl{font-size:13px;font-weight:400;color:var(--muted)}
 
 /* the strip: every case as a small square, grouped by piece; filled when reacted to */
 .strip{grid-column:1/-1;display:flex;align-items:center;gap:22px;padding:0 16px;border-bottom:1px solid var(--ink);overflow-x:auto;scrollbar-width:none}
 .grp{display:flex;align-items:center;gap:8px;flex:none}
-.grp .t{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer}
+.grp .t{font-size:13px;font-weight:560;color:var(--muted);white-space:nowrap;cursor:pointer}
 .grp.on .t{color:var(--ink)}
 .dots{display:flex;gap:3px}
-.dot{width:14px;height:14px;border:1px solid var(--faint);background:none;padding:0;cursor:pointer;font:600 8px/12px Inter,sans-serif;color:transparent}
-.dot[data-s="Pick"]{background:var(--blue);border-color:var(--blue)}
+.dot{width:14px;height:14px;border:1.5px solid var(--faint);background:none;padding:0;cursor:pointer;font:600 8px/12px Geist,sans-serif;color:transparent}
+.dot[data-s="Pick"]{background:var(--ink);border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--paper)}
 .dot[data-s="Good"]{background:var(--ink);border-color:var(--ink)}
 .dot[data-s="Change"]{background:#fff;border-color:var(--ink);box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 7px var(--ink)}
-.dot[data-s="No"]{background:var(--red);border-color:var(--red)}
+.dot[data-s="No"]{background:var(--faint);border-color:var(--faint)}
 .dot.cur{outline:2px solid var(--ink);outline-offset:2px}
 
 /* the stage: the piece itself, scrolled to the case, one board filling it */
@@ -38,33 +39,36 @@ body{font:15px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased
 .rail{border-left:1px solid var(--rule);display:flex;flex-direction:column;min-height:0}
 .rbody{flex:1;overflow:auto;padding:22px 20px 16px}
 .pos{display:flex;justify-content:space-between;align-items:baseline}
-h1{font-size:21px;line-height:1.2;letter-spacing:-.01em;margin:8px 0 10px;font-weight:600}
-.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--ink);padding:1px 5px;margin-bottom:10px}
-.note{font-size:14px;color:#333;margin:0 0 18px}
+h1{font-size:20px;line-height:1.35;letter-spacing:-.015em;margin:8px 0 10px;font-weight:520}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-bottom:10px}
+.tag::before{content:"";width:8px;height:8px;background:var(--ink)}
+.note{font-size:14px;color:var(--muted);margin:0 0 18px}
 .react{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.chip{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--rule);background:none;padding:9px 10px;cursor:pointer;color:var(--ink);text-align:left;display:flex;justify-content:space-between}
+.chip{font:inherit;font-size:15px;font-weight:400;border:0;background:var(--fill);min-height:48px;padding:0 14px;cursor:pointer;color:var(--ink);text-align:left;display:flex;align-items:center;justify-content:space-between}
 .chip kbd{font:inherit;font-size:11px;color:var(--faint)}
-.chip:hover{border-color:var(--ink)}
-.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+.chip:hover{background:var(--fill-hover)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
 .chip[aria-pressed="true"] kbd{color:rgba(255,255,255,.6)}
-.chip.pick[aria-pressed="true"]{background:var(--blue);border-color:var(--blue)}
-.chip.no[aria-pressed="true"]{background:var(--red);border-color:var(--red)}
-textarea{width:100%;font:inherit;font-size:14px;border:1px solid var(--rule);padding:8px 10px;resize:vertical;min-height:64px;background:none;color:var(--ink);margin-top:10px}
-textarea:focus{outline:none;border-color:var(--ink)}
-.whole{margin-top:26px;padding-top:14px;border-top:1px solid var(--rule)}
+.chip.no[aria-pressed="true"]{background:var(--muted)}
+textarea{width:100%;font:inherit;font-size:16px;border:0;border-bottom:1.5px solid var(--field-line);border-radius:0;padding:12px 14px;resize:vertical;min-height:72px;background:var(--fill);color:var(--ink);margin-top:10px}
+textarea:hover{background:var(--fill-hover)}
+/* answered: white with an ink edge, so the page calms as it fills */
+textarea:not(:placeholder-shown){background:var(--paper);border-bottom-color:var(--ink)}
+textarea:focus{outline:none;background:var(--paper);border-bottom:2px solid var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.whole{margin-top:26px;padding-top:12px;border-top:1.5px solid var(--ink)}
 .whole .rec{font-size:13px;color:var(--muted);margin:6px 0 0}
-.whole .rec b{color:var(--ink);font-weight:600}
+.whole .rec b{color:var(--ink);font-weight:560}
 .nav{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 20px;border-top:1px solid var(--rule)}
-.nav button,.foot button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--rule);background:none;padding:9px;cursor:pointer;color:var(--ink)}
-.nav button:hover{border-color:var(--ink)}
+.nav button,.foot button{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--ink);border-radius:0;background:none;min-height:44px;padding:0 14px;cursor:pointer;color:var(--ink)}
+.nav button:hover{background:var(--fill)}
 .foot{padding:12px 20px 16px;border-top:1px solid var(--ink)}
-.foot .count{font-size:13px;color:#333;margin-bottom:8px}
+.foot .count{font-size:13px;color:var(--muted);margin-bottom:8px}
 .foot .row{display:flex;gap:6px;align-items:center}
 .foot #copy{flex:1;background:var(--ink);color:#fff;border-color:var(--ink)}
-.foot #reset{border:0;color:var(--muted);font-weight:500}
+.foot #reset{color:var(--ink)}
 .ok{font-size:13px;color:var(--muted);min-height:1.2em;margin-top:6px}
 .keys{font-size:12px;color:var(--faint);margin-top:14px}
-.open{font-size:13px;color:var(--blue);text-decoration:none}
+.open{font-size:13px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
 
 @media (max-width:860px){
   html,body{overflow:auto}

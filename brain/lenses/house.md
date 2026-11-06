@@ -98,12 +98,19 @@ page head, black rules for structure, grey for anything secondary. These change:
    for "pick three", rows with up and down buttons for ranking, sliders with both ends
    labelled and our guess marked beneath, a text field only where the answer is a sentence
    only they have.
-9. **Screen sizes and a lot of air.** 16px body and field text (phones zoom on anything
-   smaller), 20px questions at weight 520, 13px labels, 52px tap targets. 80px above and below
-   each question, 28px between a question and its control, 160px between sections, a 600px
-   measure for questions and controls. Below 760px: one column, status under the control.
+9. **Screen sizes, and air that matches the job.** 16px body and field text (phones zoom on
+   anything smaller), 13px labels, one column below 760px with the status under the control.
+   **A long page the reader types into** — the brief, a workshop — gets the full air: 20px
+   questions at weight 520, 52px tap targets, 80px above and below each question, 28px
+   between a question and its control, 160px between sections, a 600px measure. **A page
+   where each answer is a tap or a line** — the feed, a review round, a note on the desk —
+   stays compact: rows about 28px apart, 44px targets, the same fill and the same rules.
+   ^[owner · session · 2026-11-06]
 10. **Saving is visible.** "Saved" under a field after each edit, and no final submit the
     answers depend on.
+
+The playground's control panel is the one dark surface: it sits on top of the work, which is
+usually white. It still uses Geist, sentence case and square corners.
 
 Corners stay square and there are still no shadows, icons or illustrations. The fill and the
 dashed outline are the only additions, and each one has a single meaning.
