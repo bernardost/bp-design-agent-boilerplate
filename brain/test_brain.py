@@ -36,7 +36,7 @@ import upstream  # noqa: E402
 import when  # noqa: E402
 
 SCRIPTS = ("config.py", "doctor.py", "feed.py", "brief.py", "spread.py", "render.py",
-           "redate.py", "when.py", "playground.py", "review.py")
+           "redate.py", "when.py", "playground.py", "review.py", "show.py")
 CARRIED = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
            "project-brief.md", "tags.md", "glossary.md", "sources.md")
 
@@ -186,6 +186,57 @@ class GeneratedPages(unittest.TestCase):
             for href in re.findall(r'href="([^"]*)"', html):
                 self.assertFalse(href.startswith("/Users/") or href.startswith("/home/"),
                                  f"absolute path in a shipped page: {href}")
+
+
+class BriefQuestions(unittest.TestCase):
+    """The brief page reads each design question's state from how its answer is written, and
+    calls for a kickoff when a key one is missing."""
+
+    BRIEF = """# Engagement brief — Testbed
+
+Status: draft
+
+## Overview
+
+### What this is
+
+A portal for clinics. ^[Dana · kickoff · 2026-11-03]
+
+## Business and purpose
+
+- ★ **Why now?** Signups fell. ^[Dana · kickoff · 2026-11-03]
+- **What outcomes?** Conversion, probably. ^[inferred]
+- ★ **Who decides?** ? **[Dana]** a board, maybe
+- **What must not change?** n/a — no existing brand.
+
+## Visual language
+
+n/a — the client's design team owns the identity.
+"""
+
+    def test_states_and_kickoff(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            (ws / "brain" / "project-brief.md").write_text(self.BRIEF)
+            r = run(ws, "brief.py")
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("1 answered · 1 inferred · 1 missing (1 key) · 1 n/a", r.stdout)
+            self.assertIn("key, missing: Business and purpose — Who decides?", r.stdout)
+            page = (ws / "brain" / "brief.html").read_text()
+            self.assertIn('class="kickoff"', page)
+            self.assertIn("Dana can answer", page)
+            self.assertIn('id="s-visual-language"', page)
+            self.assertIn("Not applicable — the client", page)
+
+    def test_a_brief_without_questions_says_so(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = workspace(Path(tmp))
+            (ws / "brain" / "project-brief.md").write_text(
+                "# Brief\n\nStatus: draft\n\n## What this is\n\nA portal.\n")
+            self.assertEqual(run(ws, "brief.py").returncode, 0)
+            page = (ws / "brain" / "brief.html").read_text()
+            self.assertIn("this brief has no design questions yet", page)
+            self.assertNotIn('class="kickoff"', page)
 
 
 class Freshness(unittest.TestCase):
