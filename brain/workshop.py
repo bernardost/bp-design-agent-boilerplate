@@ -121,7 +121,8 @@ def board_content(b: dict):
                 "phases": [{"name": n, "s": s, "n": w} for n, s, w in b.get("phases", [])],
                 "ms": [{"name": n, "w": round(w * 7) / 7} for n, w in b.get("milestones", [])]}
     if k == "questions":
-        return [{"q": q, "d": "", "a": []} if isinstance(q, str) else {"q": q["q"], "d": q.get("d", ""), "a": []}
+        return [{"q": q, "d": "", "a": []} if isinstance(q, str)
+                else {"q": q["q"], "d": q.get("d", ""), "a": [], **({"pick": q["pick"]} if q.get("pick") else {})}
                 for q in b.get("questions", [])]
     if k == "personas":
         return [{"name": "", "qs": [{"a": []} for _ in b.get("questions", [])]}]
@@ -446,8 +447,38 @@ SECTION_NOTE = {
 }
 
 
+def library_picks() -> dict:
+    """Question text → its pick in the library, so a deck made before a question had options,
+    or one whose question was left as written, still gets them."""
+    out = {}
+    for b in library():
+        for q in b.get("questions") or []:
+            if isinstance(q, dict) and q.get("pick"):
+                out[q["q"]] = q["pick"]
+    return out
+
+
+def ask(qid: str, q: dict) -> dict:
+    """One question as the form asks it. A question with a `pick` in the library (or the spec)
+    is answered with a tap: `one` is a list of options, `many` is chips, `scale` is two words on
+    seven steps. `other` adds a field for an answer not listed; `note` adds a field for a line
+    of explanation. Without a pick it is a text field."""
+    pk = q.get("pick") or library_picks().get(_t(q.get("q"))) or {}
+    it = {"id": qid, "kind": pk.get("type") or "text", "q": _t(q.get("q")),
+          "d": _t(pk["d"] if "d" in pk else q.get("d"))}   # a pick's own `d` replaces examples its options now show
+    if it["kind"] in ("one", "many"):
+        it.update(options=list(pk.get("options") or []), other=bool(pk.get("other")), note=bool(pk.get("note")))
+        if pk.get("max"):
+            it["max"] = int(pk["max"])
+    elif it["kind"] == "scale":
+        it.update(a=pk.get("a", ""), b=pk.get("b", ""))
+    else:
+        it["kind"] = "text"
+    return it
+
+
 def form_spec(d: dict, to: str = "", token: str = "", note: str = "", due: str = "", keys=None,
-              preview: bool = False) -> dict:
+              preview: bool = False, reply_to: str = "") -> dict:
     """The questions a form asks, read from the deck as it stands: its question text as edited
     in prep, and only the boards switched on (or the ones named in `keys`). Team, timeline, RACI,
     week and next steps belong to the call and stay out."""
@@ -459,9 +490,11 @@ def form_spec(d: dict, to: str = "", token: str = "", note: str = "", due: str =
         if kind not in FORM_KINDS or (k not in keys if keys is not None else d.get("off", {}).get(k)):
             continue
         x, items = d.get(k), []
-        if kind in ("questions", "goals"):
-            items = [{"id": f"{k}.{i}", "kind": "text" if kind == "questions" else "list",
-                      "q": _t(q.get("q")), "d": _t(q.get("d"))} for i, q in enumerate(x or []) if _t(q.get("q"))]
+        if kind == "questions":
+            items = [ask(f"{k}.{i}", q) for i, q in enumerate(x or []) if _t(q.get("q"))]
+        elif kind == "goals":
+            items = [{"id": f"{k}.{i}", "kind": "list", "q": _t(q.get("q")), "d": _t(q.get("d"))}
+                     for i, q in enumerate(x or []) if _t(q.get("q"))]
         elif kind == "rows":
             cols = [col.replace("{client}", client or "you") for col in (x or {}).get("cols", [])]
             items = [{"id": f"{k}.{i}.{j}", "kind": "text", "q": r["label"] if len(cols) == 1 else f"{r['label']} — {col}",
@@ -473,13 +506,15 @@ def form_spec(d: dict, to: str = "", token: str = "", note: str = "", due: str =
             items = [{"id": k, "kind": "people", "one": "Audience", "add": "Add another audience",
                       "name_hint": "Name this audience, e.g. first-time buyers",
                       "names": [_t(p.get("name")) for p in x or [] if _t(p.get("name"))],
-                      "qs": [{"q": q["q"], "d": _t(q.get("prompt"))} for q in b.get("questions", [])]}]
+                      "qs": [ask(f"{k}.q{j}", {"q": q["q"], "d": q.get("prompt"), "pick": q.get("pick")})
+                             for j, q in enumerate(b.get("questions", []))]}]
         if items:
             sections.append({"key": k, "name": b.get("name", k), "title": _t(b.get("title")),
                              "d": SECTION_NOTE.get(kind, ""), "items": items})
     who = slugify(to) if to else ""
     return {"v": 1, "id": d.get("id", ""), "token": token, "to": to, "title": title, "client": client,
             "us": _t(c.get("us")), "note": note, "due": due, "sent": date.today().isoformat(), "preview": preview,
+            "reply_to": reply_to or _t(ws_conf().get("reply_to")),
             "save_as": f"{slugify(' '.join(filter(None, [client, title])))}-answers{'-' + who if who else ''}.html",
             "sections": sections}
 
@@ -516,15 +551,50 @@ def write_response(wid: str, rec: dict) -> None:
 
 def filled(it: dict, v) -> bool:
     if it["kind"] == "people":
-        return any(_t(p.get("name")) or any(_t(a) for a in p.get("a") or []) for p in v or [] if isinstance(p, dict))
+        for p in v if isinstance(v, list) else []:
+            a = p.get("a") or [] if isinstance(p, dict) else []
+            if isinstance(p, dict) and (_t(p.get("name")) or any(filled(q, a[j]) for j, q in enumerate(it["qs"]) if j < len(a))):
+                return True
+        return False
     if it["kind"] == "scale":
-        return bool(v)
+        return isinstance(v, (int, float)) and 1 <= v <= 7
+    if it["kind"] in ("one", "many"):
+        return isinstance(v, dict) and bool(v.get("v") or (v.get("o") and _t(v.get("other"))) or _t(v.get("note")))
     return bool(_t(v if isinstance(v, str) else ""))
 
 
+def said(it: dict, v) -> str:
+    """One answer as a line of markdown, or `_open_`."""
+    if not filled(it, v):
+        return "_open_"
+    if it["kind"] == "scale":
+        return lean(v, it["a"], it["b"])
+    if it["kind"] in ("one", "many"):
+        picked = v.get("v") or []
+        picked = [picked] if isinstance(picked, str) else list(picked)
+        if v.get("o") and _t(v.get("other")):
+            picked.append(_t(v["other"]))
+        out = ", ".join(picked)
+        if _t(v.get("note")):
+            out += (" — " if out else "") + _t(v["note"])
+        return out
+    return _t(v)
+
+
 def progress(rec: dict) -> tuple[int, int]:
-    its = [it for s in rec["spec"]["sections"] for it in s["items"]]
-    return sum(1 for it in its if filled(it, (rec.get("answers") or {}).get(it["id"]))), len(its)
+    """Answered and asked, counted as the page counts them: each audience's questions apiece."""
+    A, n, t = rec.get("answers") or {}, 0, 0
+    for it in (it for s in rec["spec"]["sections"] for it in s["items"]):
+        if it["kind"] == "people":
+            people = [p for p in A.get(it["id"]) or [] if isinstance(p, dict)] or [{"a": []}] * max(1, len(it.get("names") or []))
+            for p in people:
+                a = p.get("a") or []
+                t += len(it["qs"])
+                n += sum(1 for j, q in enumerate(it["qs"]) if j < len(a) and filled(q, a[j]))
+        else:
+            t += 1
+            n += filled(it, A.get(it["id"]))
+    return n, t
 
 
 def response_notes(rec: dict) -> list[str]:
@@ -535,7 +605,7 @@ def response_notes(rec: dict) -> list[str]:
     how = "a link" if rec.get("via") == "vercel" else "a file"
     out = [f"## Answers from {rec.get('to') or 'the client'}", "",
            f"Sent {rec.get('sent', '')[:10]} as {how}. {n} of {t} answered, {state}{last}. "
-           "Typed alone, in their own words; nothing was filled in for them.", ""]
+           "Answered alone, in their own words and picks; nothing was filled in for them.", ""]
     for sec in s["sections"]:
         out += [f"### {sec['name']}" + (f" — {sec['title']}" if sec.get("title") else ""), ""]
         for it in sec["items"]:
@@ -547,7 +617,7 @@ def response_notes(rec: dict) -> list[str]:
                 for i, p in enumerate(people):
                     out.append(f"**{_t(p.get('name')) or f'Audience {i + 1}'}**")
                     a = p.get("a") or []
-                    out += [f"- **{q['q']}** {_t(a[j] if j < len(a) else '') or '_open_'}" for j, q in enumerate(it["qs"])]
+                    out += [f"- **{q['q']}** {said(q, a[j] if j < len(a) else None)}" for j, q in enumerate(it["qs"])]
                     out.append("")
                 if not people:
                     out += ["_open_", ""]
@@ -555,7 +625,7 @@ def response_notes(rec: dict) -> list[str]:
                 lines = [ln.strip() for ln in (v or "").splitlines() if ln.strip()] if isinstance(v, str) else []
                 out += [f"**{it['q']}**"] + ([f"- {ln}" for ln in lines] or ["_open_"]) + [""]
             else:
-                out += [f"**{it['q']}**", (_t(v) if isinstance(v, str) else "") or "_open_", ""]
+                out += [f"**{it['q']}**", said(it, v), ""]
         out.append("")
     return out
 
@@ -589,13 +659,13 @@ def http_json(method: str, url: str, body=None, headers=None, timeout=20):
         return json.loads(r.read() or b"null")
 
 
-def send(wid: str, to: str = "", via: str = "", note: str = "", due: str = "", keys=None) -> dict:
+def send(wid: str, to: str = "", via: str = "", note: str = "", due: str = "", keys=None, reply_to: str = "") -> dict:
     via = via or _t(ws_conf().get("send_via")) or "file"
     if via not in VIAS:
         raise SystemExit(f"--via is file or vercel, not {via!r}")
     d = read_deck(wid)
     token = secrets.token_urlsafe(18)
-    spec = form_spec(d, to, token, note, due, keys)
+    spec = form_spec(d, to, token, note, due, keys, reply_to=reply_to)
     if not spec["sections"]:
         raise SystemExit("Nothing to ask: no question, goals, rows, audience or personality board is switched on.")
     rec = {"v": 1, "to": to, "via": via, "token": token, "sent": datetime.now().isoformat(timespec="seconds"),
@@ -958,6 +1028,7 @@ def main() -> int:
     sd.add_argument("--note", default="", help="a few lines from you, in place of the standard opening")
     sd.add_argument("--due", default="", help="when you need it, as it should read, e.g. 'Friday 13 November'")
     sd.add_argument("--boards", default=None, help="comma-separated keys, in place of the boards switched on")
+    sd.add_argument("--reply-to", default="", help="the address the answers go back to; see [workshop] reply_to")
     sd.add_argument("--no-show", action="store_true", help="do not reveal the file or open the link")
     pv = sub.add_parser("preview", help="open the form a client would get, without sending it")
     pv.add_argument("id")
@@ -995,8 +1066,8 @@ def main() -> int:
                       f"{s['answered']} of {s['of']} answered{', finished' if s['done'] else ''}")
         return 0
     if a.cmd == "send":
-        rec = send(a.id, a.to, a.via, a.note, a.due, a.boards.split(",") if a.boards else None)
-        n = sum(len(s["items"]) for s in rec["spec"]["sections"])
+        rec = send(a.id, a.to, a.via, a.note, a.due, a.boards.split(",") if a.boards else None, a.reply_to)
+        n = progress(rec)[1]
         print(f"{n} questions in {len(rec['spec']['sections'])} sections for {a.to or 'the client'}.")
         if rec["via"] == "file":
             print(f"Attach this file to an email: {rec['file']}")

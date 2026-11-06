@@ -30,7 +30,22 @@
    "questions": [
     {
      "q": "What should a customer feel?",
-     "d": "From first seeing the brand to finishing their most important task in the product."
+     "d": "From first seeing the brand to finishing their most important task in the product.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Calm",
+       "Confident",
+       "Reassured",
+       "In control",
+       "Welcome",
+       "Delighted",
+       "Impressed",
+       "Excited"
+      ],
+      "other": true,
+      "max": 3
+     }
     },
     {
      "q": "What should they understand?",
@@ -68,7 +83,21 @@
     },
     {
      "q": "What should it drive?",
-     "d": "Signups, retention, conversion, trust, pricing power, expansion."
+     "d": "Signups, retention, conversion, trust, pricing power, expansion.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Signups",
+       "Retention",
+       "Conversion",
+       "Trust",
+       "Pricing power",
+       "Expansion"
+      ],
+      "other": true,
+      "max": 3,
+      "d": ""
+     }
     },
     {
      "q": "What does success look like at launch, in three months, in a year?",
@@ -76,11 +105,43 @@
     },
     {
      "q": "What must stay unchanged?",
-     "d": "Name, logo, core colours, the product promise, legal claims, what customers expect."
+     "d": "Name, logo, core colours, the product promise, legal claims, what customers expect.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "The name",
+       "The logo",
+       "Core colours",
+       "The typeface",
+       "The product promise",
+       "Legal claims",
+       "Tone of voice",
+       "Nothing is fixed"
+      ],
+      "other": true,
+      "note": true,
+      "d": ""
+     }
     },
     {
      "q": "What evidence do we have?",
-     "d": "Analytics, support tickets, interviews, sales objections, churn reasons."
+     "d": "Analytics, support tickets, interviews, sales objections, churn reasons.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Analytics",
+       "Support tickets",
+       "Interviews",
+       "Surveys",
+       "Sales objections",
+       "Churn reasons",
+       "Reviews",
+       "None yet"
+      ],
+      "other": true,
+      "note": true,
+      "d": ""
+     }
     }
    ]
   },
@@ -236,12 +297,42 @@
     {
      "q": "Where do they first meet us?",
      "short": "First contact",
-     "prompt": "App store, social, a referral, a sales call, search, the website."
+     "prompt": "App store, social, a referral, a sales call, search, the website.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "App store",
+       "Social",
+       "A referral",
+       "A sales call",
+       "Search",
+       "The website",
+       "Events",
+       "Press"
+      ],
+      "other": true,
+      "d": ""
+     }
     },
     {
      "q": "On what, and how confident are they?",
      "short": "Context",
-     "prompt": "Devices, surroundings, language, accessibility needs, digital confidence."
+     "prompt": "Devices, surroundings, language, accessibility needs, digital confidence.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Phone",
+       "Laptop",
+       "Tablet",
+       "On the move",
+       "At a desk",
+       "Low digital confidence",
+       "Accessibility needs"
+      ],
+      "other": true,
+      "note": true,
+      "d": ""
+     }
     },
     {
      "q": "After the first visit, what should they think, feel and do?",
@@ -296,7 +387,23 @@
     },
     {
      "q": "What should people feel?",
-     "d": "Confidence, calm, delight, urgency, authority, play."
+     "d": "Confidence, calm, delight, urgency, authority, play.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Confidence",
+       "Calm",
+       "Delight",
+       "Urgency",
+       "Authority",
+       "Play",
+       "Warmth",
+       "Trust"
+      ],
+      "other": true,
+      "max": 3,
+      "d": ""
+     }
     },
     {
      "q": "What is non-negotiable, and what is open to reinvention?",
@@ -364,11 +471,37 @@
    "questions": [
     {
      "q": "Are we evolving an identity or starting from nothing?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "one",
+      "options": [
+       "Evolve the identity we have",
+       "Refresh it and keep the core",
+       "Start from nothing",
+       "Not sure yet"
+      ],
+      "note": true
+     }
     },
     {
      "q": "What can we reuse?",
-     "d": "Guidelines, fonts, imagery, illustration, photography, icons."
+     "d": "Guidelines, fonts, imagery, illustration, photography, icons.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Brand guidelines",
+       "The logo",
+       "Fonts",
+       "Colours",
+       "Imagery",
+       "Illustration",
+       "Photography",
+       "Icons",
+       "Nothing"
+      ],
+      "other": true,
+      "d": ""
+     }
     },
     {
      "q": "Which references do you admire, and exactly why?",
@@ -380,7 +513,22 @@
     },
     {
      "q": "Where must the system work?",
-     "d": "Marketing, product UI, sales decks, social, packaging, events, future sub-brands."
+     "d": "Marketing, product UI, sales decks, social, packaging, events, future sub-brands.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Marketing site",
+       "Product UI",
+       "Sales decks",
+       "Social",
+       "Email",
+       "Packaging",
+       "Events",
+       "Future sub-brands"
+      ],
+      "other": true,
+      "d": ""
+     }
     }
    ]
   },
@@ -424,7 +572,22 @@
    "questions": [
     {
      "q": "Which surfaces are in scope?",
-     "d": "Marketing site, onboarding, dashboard, checkout, settings, emails, empty states, errors."
+     "d": "Marketing site, onboarding, dashboard, checkout, settings, emails, empty states, errors.",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Marketing site",
+       "Onboarding",
+       "Dashboard",
+       "Checkout",
+       "Settings",
+       "Emails",
+       "Empty states",
+       "Errors"
+      ],
+      "other": true,
+      "d": ""
+     }
     },
     {
      "q": "Which flows matter for launch, and which can wait?",
@@ -432,7 +595,16 @@
     },
     {
      "q": "Is this a redesign, a new product, or a system extension?",
-     "d": "Which components exist already."
+     "d": "Which components exist already.",
+     "pick": {
+      "type": "one",
+      "options": [
+       "A redesign",
+       "A new product",
+       "An extension of an existing system"
+      ],
+      "note": true
+     }
     },
     {
      "q": "What content, data and imagery will we have while designing?",
@@ -440,7 +612,19 @@
     },
     {
      "q": "Languages, dark mode, breakpoints, accessibility?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "many",
+      "options": [
+       "More than one language",
+       "Dark mode",
+       "Phone first",
+       "Tablet",
+       "Large screens",
+       "Accessibility to WCAG AA"
+      ],
+      "other": true
+     }
     }
    ]
   },
@@ -464,7 +648,12 @@
     },
     {
      "q": "How simple, and how deep for power users?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "scale",
+      "a": "Simple for everyone",
+      "b": "Deep for power users"
+     }
     },
     {
      "q": "Where is it worth breaking the category’s conventions?",
@@ -496,15 +685,48 @@
     },
     {
      "q": "Who builds the UI, and how closely must designs match what they can build?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "one",
+      "options": [
+       "Our studio",
+       "Your in-house team",
+       "Another agency",
+       "Not decided yet"
+      ],
+      "note": true
+     }
     },
     {
      "q": "Which legal, privacy or industry rules affect the design?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "many",
+      "options": [
+       "Privacy law (GDPR and similar)",
+       "Health data rules",
+       "Financial regulation",
+       "Accessibility law",
+       "Age rules",
+       "None we know of"
+      ],
+      "other": true
+     }
     },
     {
      "q": "Who keeps the content up to date after launch?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "one",
+      "options": [
+       "Marketing",
+       "The product team",
+       "Engineers",
+       "An agency",
+       "Not decided yet"
+      ],
+      "other": true
+     }
     }
    ]
   },
@@ -536,7 +758,17 @@
     },
     {
      "q": "How many review rounds, and what feedback format works best?",
-     "d": ""
+     "d": "",
+     "pick": {
+      "type": "one",
+      "options": [
+       "One round",
+       "Two rounds",
+       "Three rounds",
+       "As many as it takes"
+      ],
+      "note": true
+     }
     }
    ]
   },

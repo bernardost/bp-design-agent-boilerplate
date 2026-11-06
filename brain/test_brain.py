@@ -958,6 +958,10 @@ class Workshop(unittest.TestCase):
         kinds = {s["key"]: s["items"][0]["kind"] for s in spec["sections"]}
         self.assertEqual(kinds, {"gq": "text", "mv": "text", "goals": "list", "pers": "people", "traits": "scale"})
         self.assertEqual(spec["save_as"], "acme-kickoff-answers-dana.html")
+        drive = spec["sections"][0]["items"][1]                 # the library gives it options
+        self.assertEqual((drive["kind"], drive["max"], drive["d"]), ("many", 3, ""))
+        self.assertEqual(self.w.said(drive, {"v": ["Trust"], "o": True, "other": "Referrals"}), "Trust, Referrals")
+        self.assertEqual(self.w.said(drive, {"v": [], "other": "typed, then unticked"}), "_open_")
 
     def _sent_back(self, rec, answers, at):
         """The page a client downloads: the form as sent, with their answers inside."""
@@ -989,7 +993,7 @@ class Workshop(unittest.TestCase):
         self.w.host_url, self.w.env_value = (lambda: "https://forms.example"), (lambda n: "key")
         def fake(method, url, body=None, headers=None, timeout=20):
             calls.append((method, url, headers))
-            return {"ok": True} if method == "POST" else {"answers": {"answers": {"gq.1": "Signups"}, "at": 5, "done": False}}
+            return {"ok": True} if method == "POST" else {"answers": {"answers": {"gq.1": {"v": ["Signups", "Trust"], "note": "Trust first"}}, "at": 5, "done": False}}
         self.w.http_json = fake
         try:
             rec = self.w.send(wid, "Sam", "vercel")
@@ -997,7 +1001,7 @@ class Workshop(unittest.TestCase):
             self.assertEqual(calls[0][2], {"x-workshop-key": "key"})
             got = self.w.pull(wid)
             self.assertTrue(got[0][2])
-            self.assertIn("Signups", (self.tmp / wid / "notes.md").read_text())
+            self.assertIn("Signups, Trust — Trust first", (self.tmp / wid / "notes.md").read_text())
         finally:
             self.w.http_json, self.w.host_url, self.w.env_value = old
 

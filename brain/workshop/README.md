@@ -4,11 +4,13 @@
 `brain/workshops/`; the `/workshop` skill has the commands and the routine.*
 
 ```
-library.json   the boards a workshop can hold, their questions and defaults. Edit to change
+library.json   the boards a workshop can hold, their questions and defaults. A question's
+               `pick` is how the async form asks it: options, chips or a scale instead of a field. Edit to change
                what every new workshop starts with; an existing deck keeps its own copy.
 deck.html      the page, deck.css its styles, deck.js every board and the saving.
 home.html      the home page: a new workshop with its boards picked, and the past ones.
-form.html      the async form: a deck's questions as one plain page a client fills in alone.
+form.html      the async form: a deck's questions as one page a client fills in alone, in
+               the house style for pages that are used, the same design as brief.html.
                `workshop.py send` fills it in and writes it as a file, or serves it hosted.
 hosted/        the hosted form for Vercel: `api/form.js` saves answers to Upstash Redis.
                `workshop.py host` links, deploys and checks it; nothing here holds answers.

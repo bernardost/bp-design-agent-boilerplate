@@ -88,10 +88,13 @@ page head, black rules for structure, grey for anything secondary. These change:
    closes with a black rule and one grey line saying what comes next.
 5. **A sticky top bar** shows the document name, overall progress as a thin black line with a
    count, and the one main action.
-6. **Status sits in the right column**: *Open*, *Our guess*, *Needed to start*, *Answered*,
-   *Optional*, each with a small square marker (outlined, dashed, filled), plus who can
-   answer. Red `#c8102e` is the only colour on the page and marks only what is needed and
-   still empty.
+6. **Status sits in the right column as a tag the reader can scan**: a tinted fill, a darker
+   word and a small line icon, plus who can answer. *Open* is grey with an empty circle,
+   *Our guess* amber with a dashed circle, *Needed to start* red with an exclamation mark,
+   *Answered* green with a tick, *Not applicable* plain grey with a dash. These tags are the
+   one place colour carries status; elsewhere red `#c8102e` still marks only what is needed
+   and still empty. A row of grey square markers made the owner read every line to find
+   what needed him. ^[owner · session · 2026-11-06]
 7. **Buttons look like buttons.** Black filled for the main action, a 1px ink outline for the
    alternative, square corners. Never text links standing in for actions.
 8. **Controls match the shape of the answer**: full-width option rows for one choice, chips
@@ -112,8 +115,8 @@ page head, black rules for structure, grey for anything secondary. These change:
 The playground's control panel is the one dark surface: it sits on top of the work, which is
 usually white. It still uses Geist, sentence case and square corners.
 
-Corners stay square and there are still no shadows, icons or illustrations. The fill and the
-dashed outline are the only additions, and each one has a single meaning.
+Corners stay square and there are still no shadows or illustrations. The fill, the dashed
+outline and the status tags are the only additions, and each one has a single meaning.
 
 ## 3 · Printed documents
 
@@ -127,7 +130,8 @@ columns: the owner's name, the contact line, the page count. Render with headles
 
 ## 4 · What to refuse
 
-Colour beyond the one red on a used page, logos, icons, photographs, a second typeface, bold
+Colour beyond the one red and the status tags on a used page, logos, icons outside those
+tags, photographs, a second typeface, bold
 700, centred titles, boxes or shaded panels, all-caps labels, decorative rules, and anything
 that makes the page busier than it needs to be.
 

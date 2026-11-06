@@ -124,6 +124,7 @@ notion_parent = ""
 #             `python3 brain/workshop.py host` once; it writes host_url. Client answers then sit
 #             in that account's Redis store, which is the owner's call to make.
 send_via = "file"
+reply_to = ""                      # the address a client emails the answers back to
 host_url = ""                      # written by `workshop.py host`
 host_project = ""                  # the Vercel project's name; "" = <engagement>-workshop
 

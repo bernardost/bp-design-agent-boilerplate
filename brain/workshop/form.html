@@ -8,110 +8,205 @@
 <title>Questions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" referrerpolicy="no-referrer" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
 <style>
-/* The async workshop: the questions of a deck as one plain page a client fills in alone.
-   House style on purpose. The look of the work is still undecided, so the form stays neutral:
-   white paper, black ink, hairlines, one sans. Every value is a property here. */
+/* The async workshop: a deck's questions as one page a client fills in alone. It is a page that
+   is used, so it follows brain/lenses/house.md section 2, the same as brief.html: Geist, three
+   columns (label · content · status), a fill only where the reader answers, a sticky bar with
+   the progress and the one action, and a sticky band per section. Every value is a property. */
 :root{
-  --paper:#fff;--ink:#0d0d0e;--ink-2:#3a3a3e;--ink-3:#6e6e75;--ink-4:#9a9aa1;
-  --rule:rgba(13,13,14,.13);--rule-soft:rgba(13,13,14,.08);--field:rgba(13,13,14,.24);
-  --warn:#8a5a12;--ok:#1f6640;
-  --measure:740px;--q:17px;--answer:16px;
-  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --ink:#0a0a0a; --muted:#737373; --hair:#dedede; --paper:#ffffff;
+  --fill:rgb(241,241,239); --fill-hover:rgb(235,235,232); --field-line:#8a8a8a; --need:#c8102e;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --track:-0.012em;
+  --cols:180px 1fr 170px; --gap:48px; --side:56px; --max:1200px;
+  --body:16px; --q:20px; --small:13px; --lede:30px; --band-t:30px;
+  --row-pad:64px; --tap-pad:48px; --field-pad:18px; --tap:52px; --measure:600px; --sec-gap:160px;
+  --bar-h:81px;
+  /* status tags: a tint, a darker word, an icon — so what needs the reader scans at a glance */
+  --open-bg:rgb(241,241,239); --open-fg:#5c5c5c;
+  --done-bg:#e4f1e8; --done-fg:#17663a;
+  --need-bg:#fbe7ea; --need-fg:#b00d28;
 }
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans);
-  -webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
-main{max-width:var(--measure);margin:0 auto;padding:72px 24px 160px}
-.kicker{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
-h1{font-size:clamp(32px,5vw,46px);line-height:1.08;letter-spacing:-.033em;font-weight:600;margin:0;text-wrap:balance}
-.for{font-size:19px;color:var(--ink-3);margin:10px 0 0;letter-spacing:-.01em}
-.intro{margin:30px 0 0;padding-top:20px;border-top:1px solid var(--ink);color:var(--ink-2)}
-.intro p{margin:0 0 .75em;max-width:62ch}
-.intro b{color:var(--ink);font-weight:600}
-section{margin-top:68px}
-section>header{border-bottom:1px solid var(--ink);padding-bottom:12px}
-section>header .kicker{margin:0 0 6px}
-section>header .d{margin-top:6px}
-h2{font-size:26px;line-height:1.2;letter-spacing:-.022em;font-weight:600;margin:0;text-wrap:balance}
-.it{display:block;padding:22px 0 24px;border-top:1px solid var(--rule-soft)}
-section>header+.it,section>header+.sc{border-top:0}
-.q{display:block;font-size:var(--q);font-weight:600;letter-spacing:-.011em;line-height:1.4;text-wrap:pretty}
-.d{display:block;font-size:14.5px;color:var(--ink-3);margin-top:3px;line-height:1.5;white-space:pre-line;text-wrap:pretty}
-textarea,input[type=text]{display:block;width:100%;margin-top:12px;font:inherit;font-size:var(--answer);line-height:1.55;
-  color:var(--ink);background:var(--paper);border:1px solid var(--field);border-radius:6px;padding:10px 12px;
-  resize:none;overflow:hidden;outline:none;transition:border-color .12s,box-shadow .12s}
-textarea{min-height:70px}
-textarea:focus,input[type=text]:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(13,13,14,.07)}
-::placeholder{color:var(--ink-4)}
+html,body{background:var(--paper)}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--bar-h) + 12px)}
+body{margin:0;font-family:var(--sans);color:var(--ink);font-size:var(--body);line-height:1.5;
+  letter-spacing:var(--track);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+h1,h2,h3,p{margin:0;font-weight:inherit;letter-spacing:inherit}
+b{font-weight:560}
+.muted{color:var(--muted)}
+button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--hair);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ink)}
+[hidden]{display:none!important}
+.row{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap)}
+.span{grid-column:2 / 4}
 
-/* A pair of words on seven steps. The ends are bigger, so the middle reads as balanced. */
-.sc{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:16px;
-  padding:16px 0 10px;border-top:1px solid var(--rule-soft)}
-.pole{font-size:16px;font-weight:500;letter-spacing:-.01em}
-.pole.a{text-align:right}
-.dots{display:flex}
-.dots label{width:34px;height:34px;display:grid;place-items:center;cursor:pointer}
-.dots input{appearance:none;-webkit-appearance:none;margin:0;width:13px;height:13px;border-radius:50%;
-  border:1.5px solid var(--field);background:var(--paper);cursor:pointer;transition:background .12s,border-color .12s,transform .12s}
-.dots label:is(:nth-child(1),:nth-child(7)) input{width:21px;height:21px}
-.dots label:is(:nth-child(2),:nth-child(6)) input{width:17px;height:17px}
-.dots label:hover input{border-color:var(--ink)}
-.dots input:checked{background:var(--ink);border-color:var(--ink)}
-.dots input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-.lean{grid-column:1/-1;text-align:center;font-size:13px;color:var(--ink-3);min-height:20px}
+/* buttons: black for the main action, an ink outline for the alternative, square */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;
+  border:1px solid var(--ink);font-size:var(--small);font-weight:500;white-space:nowrap;text-decoration:none}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.sm{min-height:34px;padding:0 12px}
+.btn[disabled]{opacity:.35;cursor:default}
+.btn:focus-visible,.opt:focus-visible,.cell:focus-visible,.field:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-/* Audiences repeat: a name, then the same questions for each. */
-.aud{margin-top:26px;padding-top:14px;border-top:1px solid var(--ink)}
-.aud:first-child{margin-top:4px;border-top:0;padding-top:16px}
-.aud-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.aud-h .kicker{margin:0}
-.aud>input[type=text]{font-size:19px;font-weight:600;letter-spacing:-.015em}
-.aud .it{padding:18px 0 20px}
-button{font:inherit;cursor:pointer}
-.ln{background:none;border:0;padding:0;color:var(--ink-3);font-size:14px;text-decoration:underline;text-underline-offset:3px}
-.ln:hover{color:var(--ink)}
-.ln.add{margin-top:18px;color:var(--ink);font-weight:600;text-decoration:none;border:1px solid var(--field);border-radius:6px;padding:9px 14px}
-.ln.add:hover{border-color:var(--ink)}
+/* status tags */
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 7px;font-size:var(--small);
+  font-weight:500;line-height:1.25;letter-spacing:0;background:var(--open-bg);color:var(--open-fg);white-space:nowrap}
+.tag::before{content:"";width:14px;height:14px;flex:none;background:currentColor;
+  -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+.t-open{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E")}
+.t-done{background:var(--done-bg);color:var(--done-fg);
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5.2 8.3l1.9 1.9 3.7-3.9' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.t-need{background:var(--need-bg);color:var(--need-fg);
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.7v4' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='1.05'/%3E%3C/svg%3E")}
 
-.finish{margin-top:84px;padding-top:20px;border-top:1px solid var(--ink)}
-.finish p{color:var(--ink-2);max-width:60ch;margin:12px 0 0}
-.acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:22px}
-.go{font-size:15px;font-weight:600;background:var(--ink);color:#fff;border:1px solid var(--ink);border-radius:6px;padding:11px 18px;white-space:nowrap}
-.go.alt{background:none;color:var(--ink);border-color:var(--field)}
-.go.alt:hover{border-color:var(--ink)}
-.go.ok{background:var(--paper);color:var(--ok);border-color:var(--ok)}
-.note{font-size:14px;color:var(--ink-3)}
+/* top bar: what this is, where you are, how much is left, the one action */
+.bar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--hair)}
+.bar-in{max-width:var(--max);margin:0 auto;padding:18px var(--side);display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;column-gap:var(--gap);align-items:center;font-size:var(--small)}
+.where{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.where #cur{color:var(--muted)}
+.prog{display:flex;align-items:center;gap:12px}
+.track{flex:1;height:2px;background:var(--hair);position:relative;max-width:300px}
+.track i{position:absolute;inset:0 auto 0 0;background:var(--ink);transition:width .3s}
+.bar .r{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+#st{color:var(--muted);margin-right:8px;white-space:nowrap}
+#st.off{color:var(--need)}
+.menu{position:absolute;left:0;right:0;top:100%;border-top:1px solid var(--hair);border-bottom:1.5px solid var(--ink);background:var(--paper);max-height:calc(100vh - var(--bar-h) - 40px);overflow:auto}
+.menu-in{max-width:var(--max);margin:0 auto;padding:6px var(--side) 18px}
+.menu a,.toc a{padding:13px 0;border-top:1px solid var(--hair);text-decoration:none;align-items:baseline}
+.menu a:first-child{border-top:0}
+.menu a:hover .t,.toc a:hover .t{text-decoration:underline;text-underline-offset:3px}
+.menu a.here .t{font-weight:560}
+.menu .n,.toc .n{font-size:var(--small);color:var(--muted)}
+.menu .r,.toc .r{text-align:right;font-size:var(--small)}
 
-/* The status line is always on screen: what is saved, and how far along. */
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,.94);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--rule)}
-.bar .in{max-width:var(--measure);margin:0 auto;display:flex;align-items:center;gap:16px;
-  padding:11px 24px calc(11px + env(safe-area-inset-bottom))}
-.st{flex:1;min-width:0;font-size:13.5px;color:var(--ink-3);line-height:1.4}
-.st b{color:var(--ink);font-weight:600}
-.st.off b{color:var(--warn)}
-.st .pr{white-space:nowrap}
-.bar .go{font-size:14px;padding:8px 14px}
-.bar .go[hidden]{display:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:72px var(--side) 200px}
 
-@media (max-width:560px){
-  main{padding:48px 18px 150px}
-  .bar .in{padding-left:18px;padding-right:18px}
-  h2{font-size:23px}
-  .sc{grid-template-columns:1fr 1fr;row-gap:4px}
-  .pole.a{text-align:left;grid-row:1}
-  .pole.b{text-align:right;grid-row:1;grid-column:2}
-  .dots{grid-column:1/-1;justify-content:space-between}
+/* page head, lede, how it works */
+.head{border-top:1.5px solid var(--ink);padding-top:12px;font-size:var(--small)}
+.head .r{text-align:right}
+.lede{font-size:var(--lede);line-height:1.22;letter-spacing:-0.03em;margin-top:96px;max-width:760px;text-wrap:balance}
+.how{margin-top:28px;font-size:17px;line-height:1.6;color:#333;max-width:640px}
+.how p+p{margin-top:12px}
+.key{display:flex;flex-wrap:wrap;align-items:center;gap:14px 28px;margin-top:32px;font-size:var(--small);color:var(--muted)}
+.key>span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:34px;height:18px;display:inline-block}
+.sw.f{background:var(--fill);border-bottom:1.5px solid var(--field-line)}
+.sw.p{background:var(--ink)}
+
+/* contents */
+.toc{margin-top:96px}
+.toc .h{border-top:1.5px solid var(--ink);padding:12px 0 14px;font-size:var(--small)}
+
+/* sections: a band that sticks, a rule that closes */
+.sec{margin-top:var(--sec-gap);scroll-margin-top:var(--bar-h)}
+.band{position:sticky;top:var(--bar-h);z-index:10;background:var(--paper);
+  border-top:1.5px solid var(--ink);border-bottom:1px solid var(--hair);padding:18px 0 26px}
+.band .n{font-weight:560;font-size:var(--small)}
+.band .t{font-size:var(--band-t);letter-spacing:-0.03em;line-height:1.2;font-weight:500;text-wrap:balance}
+.band .s{color:var(--muted);font-size:var(--small);margin-top:2px}
+.band .r{text-align:right;font-size:var(--small)}
+.mini{display:block;height:2px;background:var(--hair);margin-top:8px;position:relative}
+.mini i{position:absolute;inset:0 auto 0 0;background:var(--ink);transition:width .3s}
+.sec-help{padding-top:28px}
+.sec-help p{color:var(--muted);max-width:var(--measure)}
+.end{border-top:1.5px solid var(--ink);margin-top:24px;padding-top:14px;font-size:var(--small);color:var(--muted)}
+
+/* a question */
+.q{padding:var(--row-pad) 0;border-top:1px solid var(--hair)}
+.q.tap{padding:var(--tap-pad) 0}
+.q.pair{padding:30px 0}
+.sec-help+.q,.band+.q,.aud-h+.q{border-top:0}
+.q .qn{font-size:var(--small);color:var(--muted);padding-top:4px}
+.q h3{font-size:var(--q);font-weight:520;line-height:1.35;letter-spacing:-0.015em;max-width:var(--measure);text-wrap:pretty}
+.q .help{color:var(--muted);font-size:15.5px;margin-top:8px;max-width:var(--measure);white-space:pre-line}
+.q .ctl{margin-top:28px;max-width:var(--measure)}
+.q.pair .ctl{margin-top:0}
+.q .st{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px}
+.saved{font-size:var(--small);color:var(--muted);min-height:18px}
+
+/* a field: the fill means "write here" */
+.field{display:block;width:100%;background:var(--fill);border:0;border-bottom:1.5px solid var(--field-line);
+  padding:var(--field-pad) 14px;font:inherit;font-size:var(--body);letter-spacing:var(--track);color:var(--ink);
+  resize:none;overflow:hidden;min-height:120px;border-radius:0;line-height:1.55}
+.field.line{min-height:var(--tap);padding:13px 14px}
+.field::placeholder{color:#9b9b9b}
+.field:hover{background:var(--fill-hover)}
+.field:focus{outline:none;background:var(--paper);border-bottom:2px solid var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.field.filled{background:var(--paper);border-bottom-color:var(--ink)}
+.sub{margin-top:10px}
+
+/* options: one choice is a stack of rows, several are chips; a pick commits to ink */
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts.one{display:grid;gap:6px}
+.opt{display:flex;align-items:center;gap:12px;min-height:44px;padding:9px 14px;background:var(--fill);
+  font-size:15px;text-align:left;line-height:1.3;transition:background .12s,color .12s}
+.opts.one .opt{min-height:var(--tap);padding:12px 16px;font-size:var(--body)}
+.opt::before{content:"";width:14px;height:14px;flex:none;border:1.5px solid var(--field-line);background:var(--paper)}
+.opts.one .opt::before{border-radius:50%}
+.opt:hover{background:var(--fill-hover)}
+.opt[aria-pressed="true"]{background:var(--ink);color:#fff}
+.opt[aria-pressed="true"]::before{border-color:#fff;background:#fff;box-shadow:inset 0 0 0 3.5px var(--ink)}
+.opt[aria-disabled="true"]{opacity:.38;cursor:default}
+.opt[aria-disabled="true"]:hover{background:var(--fill)}
+.addnote{margin-top:12px}
+
+/* two words on seven steps; the ends are the strong choices */
+.ends{display:flex;justify-content:space-between;gap:16px;font-size:17px;font-weight:520;margin-bottom:10px}
+.cells{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cell{height:var(--tap);background:var(--fill);position:relative}
+.cell::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;background:var(--field-line);opacity:.55}
+.cell:nth-child(4)::after{width:2px;height:16px;margin:-8px 0 0 -1px}
+.cell:hover{background:var(--fill-hover)}
+.cell[aria-pressed="true"]{background:var(--ink)}
+.cell[aria-pressed="true"]::after{background:#fff;opacity:1}
+.lean{font-size:var(--small);color:var(--muted);margin-top:8px;min-height:20px}
+
+/* audiences repeat: a name, then the same questions */
+.aud-h{border-top:1.5px solid var(--ink);margin-top:40px;padding-top:18px}
+.sec-help+[data-people] .aud-h:first-child,.band+[data-people] .aud-h:first-child{margin-top:28px}
+.aud-h .qn{font-weight:560;font-size:var(--small);padding-top:16px}
+.aud-h .field{font-size:19px;font-weight:520}
+.aud-h .st{display:flex;justify-content:flex-end;align-items:flex-start;padding-top:8px}
+.adder{padding:28px 0 0}
+
+/* sending back */
+.send .acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.files{font-size:var(--small);color:var(--muted)}
+
+@media (max-width:760px){
+  :root{--side:20px;--gap:0px;--lede:24px;--row-pad:40px;--tap-pad:34px;--sec-gap:110px;--band-t:24px;--bar-h:99px}
+  .row{grid-template-columns:1fr}
+  .span{grid-column:1}
+  .bar-in{grid-template-columns:minmax(0,1fr) auto;row-gap:10px;padding-top:12px;padding-bottom:12px}
+  .bar .prog{grid-column:1 / 3;grid-row:2}
+  #st{display:none}
+  .head .r{text-align:left;margin-top:8px}
+  .band .r{text-align:left;margin-top:6px}
+  .band{padding:12px 0 14px}
+  .band .s{display:none}
+  .q .qn{padding-top:0;margin-bottom:6px}
+  .q .ctl{margin-top:20px}
+  .q .st{flex-direction:row;align-items:center;justify-content:flex-start;margin-top:14px;gap:12px}
+  .menu .r,.toc .r{text-align:left;margin-top:2px}
+  .aud-h .st{justify-content:flex-start;padding-top:10px}
+  .lede{margin-top:56px}
+  .toc{margin-top:64px}
+  .cells{gap:3px}
 }
-@media print{.bar,.acts,.ln.add{display:none}main{padding-top:0}}
+@media print{.bar{position:static}.band{position:static}}
 </style>
 </head>
 <body>
-<main id="app"><p class="kicker">Loading</p></main>
-<div class="bar"><div class="in"><p class="st" id="st"></p><button class="go" id="dl" type="button" hidden>Download answers</button></div></div>
+<header class="bar"><div class="bar-in">
+  <span class="where"><b id="doc">Questions</b><span id="cur"></span></span>
+  <span class="prog"><span class="track"><i id="prog-i" style="width:0"></i></span><span id="prog-n"></span></span>
+  <span class="r"><span id="st"></span><button type="button" class="btn" id="menu-btn" aria-expanded="false" aria-controls="menu">Contents</button><button type="button" class="btn primary" id="go">Send answers</button></span>
+</div><nav class="menu" id="menu" hidden><div class="menu-in" id="menu-in"></div></nav></header>
+<main class="wrap" id="app"><p class="muted">Loading…</p></main>
 <script id="spec" type="application/json">null</script>
 <script id="answers" type="application/json">null</script>
 <script>
@@ -119,20 +214,22 @@ button{font:inherit;cursor:pointer}
    file     the questions are inside this file (`workshop.py send --via file`); answers are kept
             in this browser and leave as a downloaded copy of this page with them inside.
    hosted   no questions inside; the address is /f/<token> and the answers save to /api/form.
-   preview  the owner's look at the form before sending; nothing leaves the browser. */
+   preview  the owner's look at the form before sending; nothing leaves the browser.
+   Answers: text → "…" · one/many → {v, other, o, note} · scale → 1..7 · people → [{name, a:[…]}] */
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const $=s=>document.querySelector(s);
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const embedded=id=>{try{return JSON.parse(document.getElementById(id).textContent)}catch(e){return null}};
 const EMB=embedded('spec'),EMBA=embedded('answers');
 const MODE=EMB?(EMB.preview?'preview':'file'):'hosted';
 const TOKEN=MODE==='hosted'?decodeURIComponent((location.pathname.match(/\/f\/([^/?#]+)/)||[])[1]||''):null;
-let SPEC=null,A={},AT=0,DONE=false,dirty=false,dirtySince=0,saving=false,again=false,fails=0,offline=false,lastSaved=null,timer=null;
+let SPEC=null,A={},AT=0,DONE=false,GOT=false,dirty=false,dirtySince=0,saving=false,again=false,fails=0,offline=false,lastSaved=null,timer=null;
 
 const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const KEY=()=>'form:'+(SPEC?SPEC.token:TOKEN);
-const keep=()=>lsSet(KEY(),{spec:SPEC,answers:A,at:AT,done:DONE,dirty});
+const keep=()=>lsSet(KEY(),{spec:SPEC,answers:A,at:AT,done:DONE,got:GOT,dirty});
 const adopt=x=>{if(x){A=x.answers||{};AT=x.at||0;DONE=!!x.done}};
+const who=()=>SPEC.us||'us';
 
 async function boot(){
   if(MODE!=='hosted'){SPEC=EMB;adopt(EMBA)}
@@ -149,100 +246,180 @@ async function boot(){
   }
   // The browser's copy wins when it is newer: typed offline, or the tab closed before it sent.
   const loc=lsGet(KEY());
-  if(loc&&(loc.at||0)>AT){A=loc.answers||{};AT=loc.at;DONE=!!loc.done;if(MODE==='hosted'){dirty=true;dirtySince=Date.now()}}
-  render();paint();
+  if(loc){GOT=!!loc.got;if((loc.at||0)>AT){A=loc.answers||{};AT=loc.at;DONE=!!loc.done;if(MODE==='hosted'){dirty=true;dirtySince=Date.now()}}}
+  render();
   if(dirty)push();
 }
+function stop(title,line){$('#app').innerHTML=`<div class="row head"><span><b>Questions</b></span><span></span><span></span></div><div class="row"><span></span><div class="span"><p class="lede">${esc(title)}</p><p class="how">${esc(line)}</p></div></div>`;$('.bar').hidden=true}
 
-function stop(title,line){$('#app').innerHTML=`<p class="kicker">Questions</p><h1>${esc(title)}</h1><p class="intro">${esc(line)}</p>`;$('.bar').hidden=true}
+/* ── the questions ── */
+const LEAN={1:'Strongly',2:'Clearly',3:'A little',5:'A little',6:'Clearly',7:'Strongly'};
+const lean=(n,it)=>!n?'':n===4?'Balanced':`${LEAN[n]} ${(n<4?it.a:it.b).toLowerCase()}`;
+const items=()=>SPEC.sections.flatMap(s=>s.items);
+const item=id=>items().find(i=>i.id===id);
+const people=it=>{const L=A[it.id];return Array.isArray(L)&&L.length?L:(it.names&&it.names.length?it.names:['']).map(n=>({name:n,a:[]}))};
+// A path names one answer: "gq.1", or "pers#0#3" for audience 0, question 3, or "pers#0#name".
+function itemAt(p){const[id,,j]=p.split('#'),it=item(id);return j==null||j==='name'?it:it.qs[+j]}
+function get(p){const[id,i,j]=p.split('#');if(i==null)return A[id];const x=people(item(id))[+i];if(!x)return undefined;return j==='name'?x.name:(x.a||[])[+j]}
+function put(p,v){const[id,i,j]=p.split('#');if(i==null){A[id]=v;return}
+  const L=people(item(id)).map(x=>({name:x.name||'',a:[...(x.a||[])]}));if(j==='name')L[+i].name=v;else L[+i].a[+j]=v;A[id]=L}
+const t=s=>(typeof s==='string'?s:'').trim();
+function filled(it,v){
+  if(it.kind==='scale')return v>=1&&v<=7;
+  if(it.kind==='one'||it.kind==='many')return !!(v&&((Array.isArray(v.v)?v.v.length:v.v)||(v.o&&t(v.other))||t(v.note)));
+  return !!t(v)}
+// Every answerable row on the page, in order: what progress counts.
+function rows(){const out=[];SPEC.sections.forEach((s,si)=>s.items.forEach(it=>{
+  if(it.kind==='people')people(it).forEach((x,i)=>it.qs.forEach((q,j)=>out.push({p:`${it.id}#${i}#${j}`,it:q,si})));
+  else out.push({p:it.id,it,si})}));return out}
+function counts(){const R=rows(),per=SPEC.sections.map(()=>[0,0]);let n=0;
+  for(const r of R){per[r.si][1]++;if(filled(r.it,get(r.p))){per[r.si][0]++;n++}}return{n,t:R.length,per}}
+const minutes=()=>Math.max(5,Math.round(rows().reduce((m,r)=>m+(r.it.kind==='text'||r.it.kind==='list'?1.2:.35),0)/5)*5);
 
 /* ── drawing ── */
-const LEAN={1:'Strongly',2:'Clearly',3:'A little',5:'A little',6:'Clearly',7:'Strongly'};
-const lean=(n,it)=>!n?'':n===4?'Balanced':`${LEAN[n]} ${n<4?it.a:it.b}`;
-const items=()=>SPEC.sections.flatMap(s=>s.items);
-const itemById=id=>items().find(i=>i.id===id);
-const people=it=>{const L=A[it.id];return Array.isArray(L)&&L.length?L:(it.names&&it.names.length?it.names:['']).map(n=>({name:n,a:[]}))};
+function field(p,v,ph,cls=''){return `<textarea class="field${cls}${t(v)?' filled':''}" data-p="${esc(p)}" data-f="text" rows="${cls?1:3}" placeholder="${esc(ph||'')}" aria-label="Your answer">${esc(v||'')}</textarea>`}
+function control(it,p){const v=get(p);
+  if(it.kind==='text')return field(p,v,'Type your answer');
+  if(it.kind==='list')return field(p,v,'One per line');
+  if(it.kind==='scale'){const n=+v||0;
+    return `<div class="ends"><span>${esc(it.a)}</span><span>${esc(it.b)}</span></div><div class="cells" role="radiogroup" aria-label="${esc(it.a+' or '+it.b)}">${[1,2,3,4,5,6,7].map(k=>
+      `<button type="button" class="cell" data-p="${esc(p)}" data-scale="${k}" role="radio" aria-checked="${n===k}" aria-pressed="${n===k}" aria-label="${esc(lean(k,it))}" title="${esc(lean(k,it))}"></button>`).join('')}</div><div class="lean">${esc(lean(n,it))}</div>`}
+  if(it.kind==='one'||it.kind==='many'){const x=v||{},many=it.kind==='many',picked=many?(x.v||[]):[x.v].filter(Boolean),chosen=picked.length+(x.o?1:0);
+    const full=many&&it.max&&chosen>=it.max;
+    const opt=(i,label,on)=>`<button type="button" class="opt" data-p="${esc(p)}" data-opt="${i}" aria-pressed="${on}"${full&&!on?' aria-disabled="true"':''}>${esc(label)}</button>`;
+    let h=`<div class="opts ${it.kind}">${it.options.map((o,i)=>opt(i,o,picked.includes(o))).join('')}${it.other?opt('other','Something else',!!x.o):''}</div>`;
+    if(it.other&&x.o)h+=`<div class="sub"><textarea class="field line${t(x.other)?' filled':''}" data-p="${esc(p)}" data-f="other" rows="1" placeholder="What else?" aria-label="Something else">${esc(x.other||'')}</textarea></div>`;
+    if(it.note){if(x.n||t(x.note))h+=`<div class="sub"><textarea class="field line${t(x.note)?' filled':''}" data-p="${esc(p)}" data-f="note" rows="1" placeholder="Anything to add" aria-label="A note">${esc(x.note||'')}</textarea></div>`;
+      else h+=`<button type="button" class="btn sm addnote" data-p="${esc(p)}" data-addnote>Add a note</button>`}
+    return h}
+  return ''}
+function help(it){const parts=[];if(it.d)parts.push(it.d.replace(/[.\s]+$/,'')+'.');
+  if(it.kind==='one')parts.push('Pick one.');
+  if(it.kind==='many')parts.push(it.max?`Pick up to ${it.max}.`:'Pick any that apply.');
+  return parts.length?`<p class="help">${esc(parts.join(' '))}</p>`:''}
+function status(it,p){const on=filled(it,get(p));return `<span class="tag ${on?'t-done':'t-open'}">${on?'Answered':'Open'}</span><span class="saved"></span>`}
+function qrow(it,p,num){const tap=it.kind!=='text'&&it.kind!=='list',pair=it.kind==='scale'&&!it.q;
+  return `<div class="row q${tap?' tap':''}${pair?' pair':''}" data-row="${esc(p)}"><span class="qn">${esc(num)}</span><div>${it.q?`<h3>${esc(it.q)}</h3>`:''}${help(it)}<div class="ctl" data-ctl="${esc(p)}">${control(it,p)}</div></div><div class="st">${status(it,p)}</div></div>`}
+function peopleHTML(it,sn){const L=people(it);
+  return L.map((x,i)=>`<div class="row aud-h"><span class="qn">${esc(it.one||'Audience')} ${i+1}</span><div>${field(`${it.id}#${i}#name`,x.name,it.name_hint||'Name them',' line')}</div><div class="st">${L.length>1?`<button type="button" class="btn sm" data-rm="${i}" data-pid="${esc(it.id)}">Remove</button>`:''}</div></div>`
+    +it.qs.map((q,j)=>qrow(q,`${it.id}#${i}#${j}`,`${sn}.${i+1}.${j+1}`)).join('')).join('')
+    +`<div class="row adder"><span></span><div><button type="button" class="btn" data-add data-pid="${esc(it.id)}">${esc(it.add||'Add another')}</button></div><span></span></div>`}
+function secHTML(s,si){const n=si+1,N=SPEC.sections.length;let k=0,body='';
+  for(const it of s.items){if(it.kind==='people')body+=`<div data-people="${esc(it.id)}">${peopleHTML(it,n)}</div>`;else body+=qrow(it,it.id,`${n}.${++k}`)}
+  const next=si+1<N?`<a href="#s${si+2}">Next: ${esc(SPEC.sections[si+1].name)}</a>`:`<a href="#send">Next: send your answers</a>`;
+  return `<section class="sec" id="s${n}" data-si="${si}"><div class="band row"><span class="n">${n} of ${N}</span><div><div class="t">${esc(s.name)}</div><div class="s">${esc(s.title||'')}</div></div><div class="r"><span class="cnt"></span><span class="mini"><i></i></span></div></div>${s.d?`<div class="row sec-help"><span></span><p class="span">${esc(s.d)}</p></div>`:''}${body}<div class="end">End of ${n} · ${next}</div></section>`}
 
-function field(id,q,d,v,ph){
-  return `<label class="it"><span class="q">${esc(q)}</span>${d?`<span class="d">${esc(d)}</span>`:''}<textarea ${id} rows="2"${ph?` placeholder="${esc(ph)}"`:''}>${esc(v||'')}</textarea></label>`}
-
-function item(it){
-  if(it.kind==='text')return field(`data-id="${esc(it.id)}"`,it.q,it.d,A[it.id]);
-  if(it.kind==='list')return field(`data-id="${esc(it.id)}"`,it.q,it.d,A[it.id],'One per line');
-  if(it.kind==='scale'){const v=+A[it.id]||0;
-    return `<div class="sc" role="radiogroup" aria-label="${esc(it.a+' or '+it.b)}"><span class="pole a">${esc(it.a)}</span><span class="dots">${[1,2,3,4,5,6,7].map(n=>
-      `<label title="${esc(lean(n,it))}"><input type="radio" name="${esc(it.id)}" value="${n}" data-id="${esc(it.id)}" aria-label="${esc(lean(n,it))}"${v===n?' checked':''}></label>`).join('')}</span><span class="pole b">${esc(it.b)}</span><span class="lean" data-lean="${esc(it.id)}">${esc(lean(v,it))}</span></div>`}
-  if(it.kind==='people')return `<div class="ppl" data-pid="${esc(it.id)}">${peopleHTML(it)}</div>`;
-  return '';
-}
-function peopleHTML(it){const L=people(it);
-  return L.map((p,i)=>`<div class="aud"><div class="aud-h"><span class="kicker">${esc(it.one||'Audience')} ${i+1}</span>${L.length>1?`<button type="button" class="ln" data-rm="${i}">Remove</button>`:''}</div>
-    <input type="text" data-pp="${i}" data-f="name" value="${esc(p.name||'')}" placeholder="${esc(it.name_hint||'Name them')}" aria-label="Name">
-    ${it.qs.map((q,j)=>field(`data-pp="${i}" data-f="${j}"`,q.q,q.d,(p.a||[])[j])).join('')}</div>`).join('')
-    +`<button type="button" class="ln add" data-add>${esc(it.add||'Add another')}</button>`}
+function sendHTML(){const us=esc(who());let rowsH,sub;
+  const step=(n,h,hp,acts,tag)=>`<div class="row q tap"><span class="qn">${n}</span><div><h3>${h}</h3>${hp?`<p class="help">${hp}</p>`:''}${acts?`<div class="ctl acts">${acts}</div>`:''}</div><div class="st">${tag||''}</div></div>`;
+  const tag=(on,yes,no)=>`<span class="tag ${on?'t-done':'t-open'}">${on?yes:no}</span>`;
+  if(MODE==='hosted'){sub='Your answers are already saved; there is nothing to upload';
+    rowsH=step(1,'Your answers are already saved',`They reach ${us} as you type. You can close this page and come back to it through the same link.`,'',`<span class="tag t-done">Saved</span>`)
+      +step(2,`Tell ${us} you are finished`,DONE?'Thank you. You can still change anything; it keeps saving.':'One press, so they know to read them. Blank questions are fine.',`<button type="button" class="btn primary" data-done${DONE?' disabled':''}>${DONE?'Finished':'I am finished'}</button>`,tag(DONE,'Done','To do'))}
+  else{const mail=SPEC.reply_to?`mailto:${encodeURIComponent(SPEC.reply_to)}?subject=${encodeURIComponent('Answers: '+SPEC.title)}&body=${encodeURIComponent(`Hi,\n\nMy answers are attached (${SPEC.save_as}).\n\n`)}`:'';
+    sub=MODE==='preview'?'This is a preview: nothing here is sent':'Two steps: download a file, then email it';
+    rowsH=step(1,'Download your answers',`One file with every answer in it, called <b>${esc(SPEC.save_as)}</b>. It opens in a browser, like this page.`,`<button type="button" class="btn primary" data-dl${MODE==='preview'?' disabled':''}>Download answers</button>`,tag(GOT,'Done','To do'))
+      +step(2,`Email the file to ${us}`,SPEC.reply_to?`Attach it from your downloads folder and send it to <b>${esc(SPEC.reply_to)}</b>.`:`Attach it from your downloads folder and reply to the email this form came with.`,mail&&MODE!=='preview'?`<a class="btn" href="${mail}">Write the email</a>`:'','')
+      +step('','Or send them as text',`If attaching a file is awkward, copy your answers and paste them into the email instead.`,`<button type="button" class="btn" data-copy${MODE==='preview'?' disabled':''}>Copy answers as text</button><span class="files" id="copied"></span>`,'')}
+  return `<section class="sec send" id="send"><div class="band row"><span class="n">Last</span><div><div class="t">Send your answers</div><div class="s">${sub}</div></div><div class="r"><span class="cnt" id="send-cnt"></span></div></div>${rowsH}<div class="end">That is everything. Thank you.</div></section>`}
 
 function render(){
   const S=SPEC;document.title=[S.title,S.client].filter(Boolean).join(' — ')||'Questions';
-  const who=S.us||'us';
-  let h=`<p class="kicker">${esc([S.us,S.client&&'for '+S.client].filter(Boolean).join(' · ')||'Questions')}</p><h1>${esc(S.title)}</h1>`;
-  if(S.to)h+=`<p class="for">Questions for ${esc(S.to)}</p>`;
-  const intro=[];
-  if(S.note)intro.push(esc(S.note).replace(/\n+/g,'</p><p>'));
-  else intro.push(`These are the questions we would ask you in a kickoff. Answer what you can, in your own words. Short answers are fine, and so is leaving one blank.`);
-  if(MODE==='hosted')intro.push(`<b>Your answers save as you type</b> and reach ${esc(who)} as they save; there is nothing to submit. Close the page whenever you like and come back to it through the same link.`);
-  else intro.push(`<b>Your answers are kept in this browser as you type</b>, so you can close this and come back to it here. When you are done, download your answers at the end and email the file back to ${esc(who)}.`);
-  if(S.due)intro.push(`It helps most if we have them by <b>${esc(S.due)}</b>.`);
-  if(EMBA&&EMBA.saved)intro.unshift(`<b>Answers saved ${esc(new Date(EMBA.saved).toLocaleString([], {dateStyle:'long',timeStyle:'short'}))}.</b>`);
-  h+=`<div class="intro">${intro.map(p=>`<p>${p}</p>`).join('')}</div>`;
-  for(const s of S.sections){
-    h+=`<section><header>${s.title?`<p class="kicker">${esc(s.name)}</p><h2>${esc(s.title)}</h2>`:`<h2>${esc(s.name)}</h2>`}${s.d?`<p class="d">${esc(s.d)}</p>`:''}</header>${s.items.map(item).join('')}</section>`}
-  h+=`<div class="finish" id="finish"></div>`;
+  $('#doc').textContent=S.title;
+  const N=S.sections.length,mins=minutes(),total=rows().length;
+  const lede=S.note?esc(S.note).replace(/\n+/g,'<br>'):`A few questions before we start on ${esc(S.title)}.`;
+  const saving=MODE==='hosted'?`Everything saves as you type and reaches ${esc(who())} as it saves, so you can stop at any point and come back through the same link.`
+    :`Everything saves in this browser as you type, so you can stop at any point and come back to this file.`;
+  const sending=MODE==='hosted'?`When you are done, press <b>Send answers</b> at the top; it takes you to the last step.`
+    :`When you are done, press <b>Send answers</b> at the top. It takes you to the two steps that send them: download a file, then email it to ${esc(who())}.`;
+  let h=`<div class="row head"><span><b>Questions</b></span><span><b>${esc(S.title)}</b><br><span class="muted">${esc([S.client,S.to&&'for '+S.to].filter(Boolean).join(' · '))}</span></span><span class="r">${S.us?`From ${esc(S.us)}`:''}<br><span class="muted">${esc(S.due?'Needed by '+S.due:'Sent '+longDate(S.sent))}</span></span></div>
+  <div class="row"><span></span><p class="lede span">${lede}</p></div>
+  <div class="row"><span></span><div class="span how"><p>Tap an option to pick it, and write in the grey boxes. Nothing is required: answer what you can, and a blank is fine. It takes about ${mins} minutes.</p><p>${saving}</p><p>${sending}</p>
+    <div class="key"><span><i class="sw f"></i>Yours to fill</span><span><i class="sw p"></i>Picked</span><span class="tag t-open">Open</span><span class="tag t-done">Answered</span></div></div></div>
+  <div class="toc"><div class="row h"><b>Contents</b><span class="muted">${N} sections · ${total} questions · about ${mins} minutes</span><span></span></div>${tocRows()}</div>`;
+  S.sections.forEach((s,si)=>h+=secHTML(s,si));
+  h+=sendHTML();
   $('#app').innerHTML=h;
-  document.querySelectorAll('textarea').forEach(grow);
-  paintFinish();
+  $('#menu-in').innerHTML=tocRows();
+  $$('textarea.field').forEach(grow);
+  $('#go').textContent=MODE==='hosted'&&DONE?'Finished':'Send answers';
+  barH();refresh();where();
 }
-
-function paintFinish(){
-  const who=esc(SPEC.us||'us');let h;
-  if(MODE==='preview')h=`<p class="kicker">The end</p><h2>This is where the client sends their answers back.</h2><p>This is a preview. Nothing typed here leaves this browser.</p>`;
-  else if(MODE==='hosted')h=DONE
-    ?`<p class="kicker">Thank you</p><h2>${who} has your answers.</h2><p>You can still change anything; it keeps saving.</p><div class="acts"><button class="go ok" type="button" disabled>Finished</button></div>`
-    :`<p class="kicker">That is everything</p><h2>Your answers are already with ${who}.</h2><p>Press Finished to tell them you are done. You can still change anything afterwards.</p><div class="acts"><button class="go" type="button" data-done>Finished</button></div>`;
-  else h=`<p class="kicker">That is everything</p><h2>Send your answers back to ${who}.</h2><p>Download your answers and attach the file to an email to ${who}. It opens in a browser, like this page.</p><div class="acts"><button class="go" type="button" data-dl>Download answers</button><button class="go alt" type="button" data-copy>Copy as text instead</button><span class="note" id="fnote"></span></div>`;
-  $('#finish').innerHTML=h;
-  $('#dl').hidden=MODE!=='file';
-}
-
+function tocRows(){return SPEC.sections.map((s,si)=>`<a class="row" href="#s${si+1}"><span class="n">${si+1}</span><span class="t">${esc(s.name)}</span><span class="r muted" data-cnt="${si}"></span></a>`).join('')
+  +`<a class="row" href="#send"><span class="n">Last</span><span class="t">Send your answers</span><span class="r muted"></span></a>`}
+const longDate=iso=>{try{const[y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}catch(e){return iso||''}};
 function grow(t){t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px'}
 
+/* ── progress, where you are, saving ── */
+function refresh(){const c=counts();
+  $('#prog-n').textContent=`${c.n} of ${c.t} answered`;$('#prog-i').style.width=(c.t?100*c.n/c.t:0)+'%';
+  c.per.forEach(([d,tt],si)=>{const sec=$(`#s${si+1}`);if(sec){sec.querySelector('.cnt').textContent=`${d} of ${tt}`;sec.querySelector('.mini i').style.width=(tt?100*d/tt:0)+'%'}
+    $$(`[data-cnt="${si}"]`).forEach(e=>{e.textContent=d===tt?'All answered':d?`${d} of ${tt} answered`:`${tt} open`})});
+  const sc=$('#send-cnt');if(sc)sc.textContent=`${c.n} of ${c.t} answered`;
+  paint()}
+function rowStatus(p){const r=document.querySelector(`[data-row="${CSS.escape(p)}"]`);if(!r)return;
+  const on=filled(itemAt(p),get(p)),tg=r.querySelector('.tag');tg.className='tag '+(on?'t-done':'t-open');tg.textContent=on?'Answered':'Open';
+  const s=r.querySelector('.saved');s.textContent=MODE==='hosted'?'Saving…':MODE==='file'?'Saved in this browser':'';
+  clearTimeout(s._t);if(MODE==='hosted')s._t=setTimeout(()=>{if(!dirty)s.textContent='Saved'},900)}
+function where(){const y=Math.max((parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h'))||80)+30,innerHeight*.4);let cur=null;
+  $$('.sec').forEach(s=>{if(s.getBoundingClientRect().top<=y)cur=s});
+  const N=SPEC.sections.length,si=cur&&cur.dataset.si!=null?+cur.dataset.si:null;
+  $('#cur').textContent=cur?(cur.id==='send'?' · Send your answers':` · ${si+1} of ${N}: ${SPEC.sections[si].name}`):'';
+  $$('#menu a').forEach((a,i)=>a.classList.toggle('here',!!cur&&(cur.id==='send'?i===N:i===si)))}
+addEventListener('scroll',()=>{if(SPEC)where()},{passive:true});
+function barH(){document.documentElement.style.setProperty('--bar-h',$('.bar').offsetHeight+'px')}
+addEventListener('resize',barH);
+
+const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+function paint(){if(!SPEC)return;const st=$('#st');let s='',off=false;
+  if(MODE==='preview')s='Preview: nothing is sent';
+  else if(MODE==='file')s=AT?'Saved in this browser':'';
+  else if(dirty&&offline){s='Not connected: kept on this device';off=true}
+  else if(dirty&&Date.now()-dirtySince>3000)s='Saving…';
+  else if(lastSaved)s='Saved at '+clock(lastSaved);
+  st.textContent=s;st.className=off?'off':'';
+  if(MODE==='hosted'&&!dirty)$$('.saved').forEach(e=>{if(e.textContent==='Saving…')e.textContent='Saved'})}
+setInterval(paint,1000);
+
 /* ── answering ── */
-function touch(){AT=Date.now();if(MODE==='hosted'&&!dirty){dirty=true;dirtySince=Date.now()}keep();paint();
+function touch(p){AT=Date.now();if(MODE==='hosted'&&!dirty){dirty=true;dirtySince=Date.now()}keep();
+  if(p)rowStatus(p);refresh();
   if(MODE==='hosted'){clearTimeout(timer);timer=setTimeout(push,700)}}
+function redraw(p){const box=document.querySelector(`[data-ctl="${CSS.escape(p)}"]`);if(box){box.innerHTML=control(itemAt(p),p);box.querySelectorAll('textarea').forEach(grow)}}
 
 const app=$('#app');
-app.addEventListener('input',e=>{const t=e.target;
-  if(t.dataset.id&&t.type!=='radio'){A[t.dataset.id]=t.value;grow(t);return touch()}
-  if(t.dataset.pp!=null){const box=t.closest('[data-pid]'),it=itemById(box.dataset.pid);
-    const L=people(it).map(p=>({name:p.name||'',a:[...(p.a||[])]}));const p=L[+t.dataset.pp];
-    if(t.dataset.f==='name')p.name=t.value;else{p.a[+t.dataset.f]=t.value;grow(t)}
-    A[it.id]=L;touch()}});
-app.addEventListener('click',e=>{const t=e.target;
-  if(t.type==='radio'){const it=itemById(t.dataset.id),n=+t.value;
-    if(+A[it.id]===n){t.checked=false;A[it.id]=0}else A[it.id]=n;   // a second tap clears it
-    app.querySelector(`[data-lean="${CSS.escape(it.id)}"]`).textContent=lean(+A[it.id]||0,it);return touch()}
-  const box=t.closest('[data-pid]');
-  if(box&&(t.matches('[data-add]')||t.matches('[data-rm]'))){const it=itemById(box.dataset.pid);
-    const L=people(it).map(p=>({name:p.name||'',a:[...(p.a||[])]}));
-    if(t.matches('[data-add]'))L.push({name:'',a:[]});
-    else{const i=+t.dataset.rm,p=L[i];if((p.name||p.a.some(x=>(x||'').trim()))&&!confirm('Remove this one and its answers?'))return;L.splice(i,1)}
-    A[it.id]=L;box.innerHTML=peopleHTML(it);box.querySelectorAll('textarea').forEach(grow);
-    if(t.matches('[data-add]'))box.querySelectorAll('.aud')[L.length-1].querySelector('input').focus();
-    return touch()}
-  if(t.matches('[data-done]')){DONE=true;touch();paintFinish();return}
-  if(t.matches('[data-dl]'))return download();
-  if(t.matches('[data-copy]'))return copyText();
+app.addEventListener('input',e=>{const el=e.target;if(!el.dataset||!el.dataset.p)return;const p=el.dataset.p,f=el.dataset.f;grow(el);
+  el.classList.toggle('filled',!!el.value.trim());
+  if(f==='text')put(p,el.value);
+  else{const x={...(get(p)||{})};x[f]=el.value;put(p,x)}
+  touch(p.endsWith('#name')?null:p)});
+app.addEventListener('click',e=>{const el=e.target.closest('button,a');if(!el)return;const p=el.dataset.p;
+  if(el.dataset.scale){const k=+el.dataset.scale;put(p,(+get(p)===k)?0:k);redraw(p);touch(p);return}   // a second tap clears it
+  if(el.dataset.opt!=null){const it=itemAt(p);if(el.getAttribute('aria-disabled')==='true')return;
+    const x={...(get(p)||{})},i=el.dataset.opt;
+    if(it.kind==='one'){if(i==='other'){x.o=!x.o;x.v=''}else{const o=it.options[+i];x.v=x.v===o?'':o;x.o=false}}
+    else{const L=[...(x.v||[])];if(i==='other')x.o=!x.o;else{const o=it.options[+i],k=L.indexOf(o);k<0?L.push(o):L.splice(k,1)}x.v=L}
+    put(p,x);redraw(p);touch(p);
+    if(i==='other'&&x.o){const f=document.querySelector(`[data-ctl="${CSS.escape(p)}"] [data-f="other"]`);if(f)f.focus()}
+    return}
+  if(el.matches('[data-addnote]')){const x={...(get(p)||{}),n:true};put(p,x);redraw(p);keep();const f=document.querySelector(`[data-ctl="${CSS.escape(p)}"] [data-f="note"]`);if(f)f.focus();return}
+  if(el.matches('[data-add],[data-rm]')){const it=item(el.dataset.pid),L=people(it).map(x=>({name:x.name||'',a:[...(x.a||[])]}));
+    if(el.matches('[data-add]'))L.push({name:'',a:[]});
+    else{const i=+el.dataset.rm,x=L[i];if((t(x.name)||it.qs.some((q,j)=>filled(q,x.a[j])))&&!confirm('Remove this audience and its answers?'))return;L.splice(i,1)}
+    A[it.id]=L;const box=document.querySelector(`[data-people="${CSS.escape(it.id)}"]`),si=+box.closest('.sec').dataset.si;
+    box.innerHTML=peopleHTML(it,si+1);box.querySelectorAll('textarea').forEach(grow);
+    if(el.matches('[data-add]'))box.querySelectorAll('.aud-h')[L.length-1].querySelector('textarea').focus();
+    touch();return}
+  if(el.matches('[data-done]')){DONE=true;touch();redrawSend();$('#go').textContent='Finished';return}
+  if(el.matches('[data-dl]'))return download();
+  if(el.matches('[data-copy]'))return copyText();
 });
-$('#dl').addEventListener('click',()=>download());
+function redrawSend(){const s=$('#send');if(s){s.outerHTML=sendHTML();refresh()}}
+$('#go').addEventListener('click',()=>{closeMenu();$('#send').scrollIntoView({behavior:'smooth',block:'start'})});
+const menu=$('#menu'),mbtn=$('#menu-btn');
+function closeMenu(){menu.hidden=true;mbtn.setAttribute('aria-expanded','false')}
+mbtn.addEventListener('click',()=>{menu.hidden=!menu.hidden;mbtn.setAttribute('aria-expanded',String(!menu.hidden));where()});
+menu.addEventListener('click',e=>{if(e.target.closest('a'))closeMenu()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 
 /* ── saving (hosted) ── */
 async function push(){
@@ -260,43 +437,34 @@ addEventListener('pagehide',()=>{if(MODE!=='hosted'||!dirty)return;keep();
   const body=JSON.stringify({answers:A,at:AT,done:DONE});
   if(body.length<60000)try{fetch('/api/form?t='+encodeURIComponent(TOKEN),{method:'PUT',headers:{'Content-Type':'application/json'},body,keepalive:true})}catch(e){}});
 
-function progress(){let n=0,t=0;for(const it of items()){t++;const v=A[it.id];
-  if(it.kind==='people'?people(it).some(p=>(p.name||'').trim()||(p.a||[]).some(x=>(x||'').trim())):it.kind==='scale'?+v>0:(v||'').trim())n++}return[n,t]}
-const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-function paint(){if(!SPEC)return;const[n,t]=progress();let s,off=false;
-  if(MODE==='preview')s='<b>Preview.</b> Nothing typed here is sent.';
-  else if(MODE==='file')s='<b>Kept in this browser</b> as you type.';
-  else if(dirty&&offline){s='<b>Not connected.</b> Your answers are kept on this device and sent when you are back online.';off=true}
-  else if(dirty&&Date.now()-dirtySince>3000)s='Saving…';
-  else if(!lastSaved&&!AT)s='<b>Saves as you type.</b>';
-  else s=`<b>Saved</b>${lastSaved?' at '+clock(lastSaved):''}.`;
-  const st=$('#st');st.className='st'+(off?' off':'');st.innerHTML=`${s} <span class="pr">${n} of ${t} answered.</span>`}
-setInterval(paint,1000);
-
 /* ── sending back (file) ── */
 function download(){
   const saved=new Date().toISOString();
   const doc=document.documentElement.cloneNode(true);
-  doc.querySelector('#app').innerHTML='<p class="kicker">Loading</p>';
+  doc.querySelector('#app').innerHTML='<p class="muted">Loading…</p>';doc.querySelector('#menu-in').innerHTML='';
   doc.querySelector('#answers').textContent=JSON.stringify({answers:A,at:AT,done:true,saved}).replace(/</g,'\\u003c');
   const blob=new Blob(['<!doctype html>\n'+doc.outerHTML],{type:'text/html'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=SPEC.save_as||'answers.html';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
-  DONE=true;keep();
-  const f=$('#fnote');if(f)f.textContent=`Downloaded ${a.download}. Attach it to an email to ${SPEC.us||'us'}.`}
+  DONE=true;GOT=true;keep();redrawSend()}
 
+function answerText(it,v){if(!filled(it,v))return '—';
+  if(it.kind==='scale')return lean(+v,it);
+  if(it.kind==='one'||it.kind==='many'){const L=(Array.isArray(v.v)?v.v:[v.v]).filter(Boolean);if(v.o&&t(v.other))L.push(t(v.other));
+    return L.join(', ')+(t(v.note)?(L.length?' — ':'')+t(v.note):'')}
+  return t(v)}
 function asText(){const L=[SPEC.title+(SPEC.to?' — answers from '+SPEC.to:''),''];
-  for(const s of SPEC.sections){L.push('## '+(s.title?s.name+': '+s.title:s.name),'');
+  SPEC.sections.forEach((s,si)=>{L.push(`${si+1}. ${s.name}`,'');
     for(const it of s.items){
-      if(it.kind==='scale')L.push(`${it.a} / ${it.b}: ${lean(+A[it.id]||0,it)||'—'}`);
-      else if(it.kind==='people')people(it).forEach((p,i)=>{L.push(`${it.one||'Audience'} ${i+1}: ${p.name||'—'}`);it.qs.forEach((q,j)=>L.push(q.q,((p.a||[])[j]||'').trim()||'—',''))});
-      else L.push(it.q,(A[it.id]||'').trim()||'—','')}
-    L.push('')}
+      if(it.kind==='people')people(it).forEach((x,i)=>{L.push(`${it.one||'Audience'} ${i+1}: ${t(x.name)||'—'}`);it.qs.forEach((q,j)=>L.push(q.q,answerText(q,(x.a||[])[j]),''))});
+      else if(it.kind==='scale'&&!it.q)L.push(`${it.a} or ${it.b}: ${answerText(it,A[it.id])}`);
+      else L.push(it.q,answerText(it,A[it.id]),'')}
+    L.push('')});
   return L.join('\n').replace(/\n{3,}/g,'\n\n').trim()+'\n'}
-async function copyText(){const txt=asText(),f=$('#fnote');
+async function copyText(){const txt=asText(),f=$('#copied');
   try{await navigator.clipboard.writeText(txt)}
   catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
-  if(f)f.textContent=`Copied. Paste it into an email to ${SPEC.us||'us'}.`}
+  if(f)f.textContent=`Copied. Paste it into an email to ${who()}.`}
 
 boot();
 </script>

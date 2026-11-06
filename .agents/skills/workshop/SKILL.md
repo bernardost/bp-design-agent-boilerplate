@@ -71,14 +71,31 @@ logo in; the rule in `AGENTS.md` has no exceptions here either.
 ## Sent as a form: the async workshop
 
 Prep exactly as for a live workshop: create the deck, switch boards, edit the questions. Then
-send it. The client gets one plain page in the house style, like the brief: the switched-on
-question, mission, goals, audience and personality boards as fields to fill in, nothing
-pre-filled, nothing to log in to. Team, timeline, RACI, week and next steps belong to a call
-and stay out.
+send it. The client gets one page in the same design as the brief (`brain/lenses/house.md`,
+section 2): contents with what is left in each section, a sticky bar with progress and *Send
+answers*, a band per section, a status tag per question, and the two steps that send the
+answers back spelled out at the end. Nothing is pre-filled and there is nothing to log in to.
+Team, timeline, RACI, week and next steps belong to a call and stay out.
+
+**Make answering a tap wherever the answer has a shape.** A question with a `pick` is answered
+with options instead of a text field. The library already gives one to the questions that
+have a short list of likely answers; give one to every question you write whose answers you
+can list, and leave a text field only for an answer that is a sentence only they have:
+
+```json
+{"q": "What should it drive?", "d": "",
+ "pick": {"type": "many", "options": ["Signups", "Retention", "Trust"], "max": 3, "other": true}}
+```
+
+`type` is `one` (a stack of options), `many` (chips, `max` to cap them) or `scale` (two words
+on seven steps: `"a": "Simple", "b": "Deep"`). `other` adds *Something else* with a field;
+`note` adds *Add a note*. A pick's own `d` replaces the question's hint, so a hint that only
+listed the options can go. The live deck ignores `pick`; it still shows the question.
 
 ```
 python3 brain/workshop.py preview <id>                       # what the client will see; sends nothing
 python3 brain/workshop.py send <id> --to "Dana Ruiz" [--due "Friday 13 November"] [--note "…"]
+                                    [--reply-to studio@example.com]   # or [workshop] reply_to
 python3 brain/workshop.py receive ~/Downloads/<…>-answers-dana-ruiz.html
 python3 brain/workshop.py pull [<id>]                        # hosted forms: fetch the answers
 python3 brain/workshop.py host                               # once per workspace, for --via vercel

@@ -386,17 +386,22 @@ a{color:inherit;text-decoration:underline;text-decoration-color:var(--hair);
 .q .ans{font-size:17px;line-height:1.55}
 .q .st{text-align:right;font-size:var(--small);padding-top:3px}
 .q.na h3,.q.na .ans{color:var(--muted)}
-.tag{display:inline-flex;align-items:center;gap:6px}
-.tag::before{content:"";width:8px;height:8px;border:1.5px solid currentColor;display:inline-block}
-.tag.t-open{color:var(--muted)}
-.tag.t-need{color:var(--need)}
-.tag.t-guess{color:var(--muted)}
-.tag.t-guess::before{border-style:dashed}
-.tag.t-done{color:var(--ink)}
-.tag.t-done::before{background:var(--ink)}
-.tag.t-na{color:var(--muted)}
-.tag.t-na::before{border-color:transparent;border-top-color:currentColor;height:0;
-  border-width:1.5px 0 0}
+/* Status is a tag: a tint, a darker word and an icon, so what needs the owner scans at a
+   glance. The one place colour is allowed besides red: brain/lenses/house.md, section 2.6.
+   brain/workshop/form.html carries the same tags. */
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 7px;font-size:var(--small);
+  font-weight:500;line-height:1.25;letter-spacing:0;white-space:nowrap;background:var(--fill);color:#5c5c5c}
+.tag::before{content:"";width:14px;height:14px;flex:none;background:currentColor;
+  -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+.tag.t-open{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E")}
+.tag.t-need{background:#fbe7ea;color:#b00d28;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.7v4' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='1.05'/%3E%3C/svg%3E")}
+.tag.t-guess{background:#f8eedb;color:#80520e;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6' stroke-dasharray='2.4 2.1'/%3E%3C/svg%3E")}
+.tag.t-done{background:#e4f1e8;color:#17663a;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5.2 8.3l1.9 1.9 3.7-3.9' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tag.t-na{background:none;color:var(--muted);padding-left:0;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
 .who{display:block;color:var(--muted);margin-top:4px}
 
 /* a field: the fill means "write here" */
