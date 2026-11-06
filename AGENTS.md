@@ -228,16 +228,18 @@ pushed."*
 
 ```
 ┌─ YOUR TURN ──────────────────────────────┐
-│ 1. Get Dana's org chart and the roster   │
+│ A. Get Dana's org chart and the roster   │
 │    into context/.                        │
-│ 2. Prep Friday's call, Sep 4, 11:00 ET.  │
-│ 3. Answer Q19: "Client or us as author?" │
+│ B. Prep Friday's call, Sep 4, 11:00 ET.  │
+│ C. Answer Q19: "Client or us as author?" │
 └──────────────────────────────────────────┘
 ```
 
 - Emit it in a fenced code block; unfenced, the terminal reflows it.
 - Keep it 44 characters wide; cut a line that does not fit.
-- One numbered, imperative item per action, in order. A question is quoted in full.
+- **Letter the items A, B, C, never number them.** The reply above the box often has its own
+  numbered list, and *"do 2"* was ambiguous between the two; *"B"* can only mean the box.
+  One imperative item per action, in order. A question is quoted in full.
 - Nothing he does not have to act on. If nothing needs him, write no box: *"nothing needed
   from you."*
 
