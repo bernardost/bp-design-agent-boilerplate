@@ -31,7 +31,12 @@ whole apparatus exists to prevent.
 **Every design question shows its state at a glance.** A question answered from a source, an
 answer that is only inferred, a question nobody has answered, and one that does not apply each
 get their own mark, and the side navigation counts what is missing per section. Key questions
-left unanswered raise a call for a kickoff workshop, with the agenda ready to copy. The
+left unanswered raise a call for a kickoff workshop, with the agenda ready to copy.
+
+**The owner can answer on the page.** A missing question has a field under it, and an inferred
+answer can be confirmed or corrected. Replies stay in the browser (`localStorage`) until he
+copies them as one block and pastes it into the session, which routes each into the brief;
+the same contract as `review.py`. A reply whose question is no longer open is dropped. The
 question list itself lives in `.claude/skills/brief/questions.md`.
 
 **Unwritten sections render as gaps, not as absence.** A missing section prints "not written
@@ -344,6 +349,12 @@ BRIEF_CSS = """
   .nav .navh{display:none}
   .nav ol{display:inline-flex;gap:18px;margin:0 18px 0 0}
   .nav a{border:0;padding:4px 0;gap:6px}
+  .sec{scroll-margin-top:64px}
+}
+@media (max-width:640px){
+  .nav{margin:0 -20px;padding:10px 20px}
+  .tray{padding:12px 20px}
+  .tray .hint{display:none}
 }
 
 /* Coverage: one bar for the whole brief, and a legend that doubles as the filter. */
@@ -418,6 +429,34 @@ BRIEF_CSS = """
   color:var(--blue);margin-top:5px}
 .secna{font-size:14.5px;color:var(--ink-4);padding:14px 0}
 .hidden{display:none !important}
+
+/* Replying on the page: a field that looks like a line to write on, not a form. */
+.reply{margin-top:10px}
+.reply textarea{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:15px;
+  line-height:1.55;color:var(--ink);background:transparent;border:0;
+  border-bottom:1px solid var(--rule);padding:6px 0;resize:none;overflow:hidden}
+.reply textarea:focus{outline:none;border-bottom-color:var(--ink)}
+.reply textarea::placeholder{color:var(--ink-4)}
+.reply.filled textarea{border-bottom-color:var(--blue)}
+.rbtns{display:flex;gap:18px}
+.rbtns button{font:inherit;font-size:13px;color:var(--ink-3);background:none;border:0;
+  border-bottom:1px solid var(--rule);padding:2px 0;cursor:pointer}
+.rbtns button:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.rbtns button[aria-pressed=true]{color:var(--green);border-bottom-color:var(--green);
+  font-weight:600}
+.rbtns + textarea{margin-top:8px}
+.tray{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--paper);
+  border-top:1px solid var(--ink);padding:12px 28px;display:flex;justify-content:center}
+.tray .in{width:100%;max-width:1104px;display:flex;flex-wrap:wrap;align-items:center;
+  gap:10px 20px;font-size:14px;color:var(--ink-2)}
+.tray .count{font-weight:600;color:var(--ink)}
+.tray .sp{flex:1}
+.tray button{font:inherit;font-size:13.5px;cursor:pointer;border:0;background:none;
+  color:var(--ink-3);padding:6px 0}
+.tray button.go{font-weight:600;color:var(--paper);background:var(--ink);border-radius:2px;
+  padding:8px 14px}
+.tray button.go.done{background:var(--green)}
+body.has-replies .wrap{padding-bottom:220px}
 """
 
 
@@ -449,6 +488,83 @@ FILTER_JS = r"""
     else { var a = document.getElementById('agenda'); a.classList.remove('hidden'); a.select();
       document.execCommand('copy'); a.classList.add('hidden'); done(); }
   });
+
+  // Replies. Kept in this browser until copied; a reply whose question is no longer open on
+  // this page (answered since, or removed) is dropped on load.
+  var KEY = 'brief-replies:' + document.title, store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { store = {}; }
+  var boxes = document.querySelectorAll('.reply');
+  var live = {};
+  boxes.forEach(function(b){ live[b.dataset.qid] = b; });
+  Object.keys(store).forEach(function(k){ if (!live[k]) delete store[k]; });
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+  function grow(t){ t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+  var tray = document.getElementById('tray');
+  function refresh(){
+    var n = Object.keys(store).length;
+    tray.classList.toggle('hidden', n === 0);
+    document.body.classList.toggle('has-replies', n > 0);
+    document.getElementById('tray-count').textContent =
+      n + (n === 1 ? ' reply' : ' replies') + ' ready';
+  }
+  boxes.forEach(function(b){
+    var id = b.dataset.qid, t = b.querySelector('textarea'), btns = b.querySelectorAll('button');
+    function set(v){
+      if (v && (v.ok || (v.text && v.text.trim()))) store[id] = v; else delete store[id];
+      b.classList.toggle('filled', !!store[id]); save(); refresh();
+    }
+    var v = store[id];
+    if (v) {
+      if (v.text) { t.value = v.text; t.classList.remove('hidden'); setTimeout(function(){ grow(t); }, 0); }
+      btns.forEach(function(x){ x.setAttribute('aria-pressed',
+        String((x.dataset.act === 'ok' && v.ok) || (x.dataset.act === 'fix' && !!v.text))); });
+      b.classList.add('filled');
+    }
+    t.addEventListener('input', function(){ grow(t); set(t.value.trim() ? {text: t.value} : null); });
+    btns.forEach(function(x){ x.addEventListener('click', function(){
+      var on = x.getAttribute('aria-pressed') !== 'true';
+      btns.forEach(function(y){ y.setAttribute('aria-pressed', 'false'); });
+      x.setAttribute('aria-pressed', String(on));
+      if (x.dataset.act === 'ok') { t.classList.add('hidden'); set(on ? {ok: true} : null); }
+      else { t.classList.toggle('hidden', !on); if (on) t.focus();
+             set(on && t.value.trim() ? {text: t.value} : null); }
+    }); });
+  });
+  function block(){
+    var d = new Date().toISOString().slice(0, 10), lines = [], i = 0;
+    lines.push('Brief replies — ' + document.body.dataset.project + ' · ' + d);
+    lines.push('Route each into brain/project-brief.md, cited ^[' + document.body.dataset.owner +
+               ' · brief page · ' + d + '].');
+    boxes.forEach(function(b){
+      var v = store[b.dataset.qid]; if (!v) return;
+      i++;
+      lines.push('');
+      if (b.dataset.state === 'inferred') {
+        lines.push(i + '. ' + b.dataset.sec + ' — ' + b.dataset.q + ' (inferred: "' + b.dataset.was + '")');
+        lines.push(v.ok ? '   Confirmed.' : '   Correction: ' + v.text.trim().replace(/\n+/g, ' '));
+      } else {
+        lines.push(i + '. ' + b.dataset.sec + ' — ' + b.dataset.q);
+        lines.push('   Answer: ' + v.text.trim().replace(/\n+/g, ' '));
+      }
+    });
+    return lines.join('\n');
+  }
+  document.getElementById('tray-copy').addEventListener('click', function(){
+    var btn = this, text = block();
+    var done = function(){ btn.textContent = 'Copied — paste it into the session';
+      btn.classList.add('done'); setTimeout(function(){ btn.textContent = 'Copy replies';
+      btn.classList.remove('done'); }, 2400); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function(){});
+  });
+  document.getElementById('tray-clear').addEventListener('click', function(){
+    store = {}; save();
+    boxes.forEach(function(b){ b.classList.remove('filled');
+      var t = b.querySelector('textarea'); t.value = ''; grow(t);
+      if (b.dataset.state === 'inferred') t.classList.add('hidden');
+      b.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', 'false'); }); });
+    refresh();
+  });
+  refresh();
 
   // The navigation marks the section in view.
   var links = {};
@@ -597,9 +713,25 @@ def build() -> str:
                 n_ans += 1
             own = (f'<div class="qowner">{html.escape(q["owner"])} can answer</div>'
                    if q["owner"] and st == "missing" else "")
+            reply = ""
+            if st in ("missing", "inferred"):
+                qid = re.sub(r"[^a-z0-9]+", "-", f'{sec["title"]} {plain(q["q"])}'.lower())[:90]
+                attrs = (f'data-qid="{qid}" data-sec="{html.escape(sec["title"])}" '
+                         f'data-q="{html.escape(plain(q["q"]))}" data-state="{st}" '
+                         f'data-was="{html.escape(plain(q["a"]))}"')
+                if st == "missing":
+                    reply = (f'<div class="reply" {attrs}><textarea rows="1" '
+                             f'placeholder="Type the answer, if you know it" '
+                             f'aria-label="Your answer"></textarea></div>')
+                else:
+                    reply = (f'<div class="reply" {attrs}><div class="rbtns">'
+                             f'<button type="button" data-act="ok">That is right</button>'
+                             f'<button type="button" data-act="fix">Correct it</button></div>'
+                             f'<textarea rows="1" class="hidden" placeholder="What is it, then?" '
+                             f'aria-label="Your correction"></textarea></div>')
             qrows.append(f'<div class="qa {st}{key}"><span class="mk {st}{key}"></span>'
                          f'<div class="qbody"><div class="qq">{inline(q["q"], g)}{keytag}'
-                         f'</div><div class="qans">{ans}</div>{own}</div></div>')
+                         f'</div><div class="qans">{ans}</div>{own}{reply}</div></div>')
         miss = [q for q in sec["questions"] if q["state"] == "missing"]
         kmiss = [q for q in miss if q["key"]]
         applic = [q for q in sec["questions"] if q["state"] != "na"]
@@ -725,7 +857,8 @@ def build() -> str:
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Project brief — {html.escape(PROJECT_NAME)}</title>
-{FONT_LINK}<style>{CSS}{PAGE_CSS}{BRIEF_CSS}</style></head><body>
+{FONT_LINK}<style>{CSS}{PAGE_CSS}{BRIEF_CSS}</style></head>
+<body data-project="{html.escape(PROJECT_NAME)}" data-owner="{html.escape(OWNER)}">
 <div class="wrap">
 <div class="layout">
 {navhtml}
@@ -757,6 +890,13 @@ who said it and when, click it for the recording, the thread or the message.</di
 </div>
 </div>
 </div>
+<div class="tray hidden" id="tray"><div class="in">
+  <span class="count" id="tray-count"></span>
+  <span class="hint">Copy them, then paste into the session and I will file each one in the brief.</span>
+  <span class="sp"></span>
+  <button type="button" id="tray-clear">Clear</button>
+  <button type="button" class="go" id="tray-copy">Copy replies</button>
+</div></div>
 <div id="tip"></div>
 <script>{TIP_JS}</script><script>{FILTER_JS}</script></body></html>"""
 

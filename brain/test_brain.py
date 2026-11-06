@@ -227,6 +227,10 @@ n/a — the client's design team owns the identity.
             self.assertIn("Dana can answer", page)
             self.assertIn('id="s-visual-language"', page)
             self.assertIn("Not applicable — the client", page)
+            # The owner can answer the missing question and confirm the inferred one on the page.
+            self.assertEqual(page.count('class="reply"'), 2)
+            self.assertIn('data-state="missing"', page)
+            self.assertIn('data-act="ok"', page)
 
     def test_a_brief_without_questions_says_so(self):
         with tempfile.TemporaryDirectory() as tmp:

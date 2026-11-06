@@ -28,6 +28,11 @@ important gaps. He supplied the question set. ^[owner · session · 2026-11-06]
 - Missing design questions stay in the brief and are not copied into `open-questions.md`,
   which keeps the other unknowns.
 
+- The owner can answer on the page: a field under each missing question, and confirm or
+  correct under each inferred answer. Replies stay in the browser until he copies them as one
+  block and pastes it into the session, the same contract as the review page. `/brief` step 8
+  routes them, cited to him and the brief page. ^[owner · session · 2026-11-06]
+
 ## Consequences
 
 A brief written before this has no question sections; the page says so and `/brief` adds

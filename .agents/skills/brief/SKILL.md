@@ -126,8 +126,9 @@ is the deliverable, and re-narrating it in the terminal defeats the purpose.
 
 ```
 ┌─ YOUR TURN ──────────────────────────────┐
-│ A. Read the brief and check the ochre    │
-│    (inferred) answers first.             │
+│ A. Read the brief. Confirm or correct    │
+│    the inferred answers and fill what    │
+│    you know, then paste the replies.     │
 │ B. Tell me what's wrong, or approve it.  │
 │ C. Answer: "Kickoff with Dana for the 6  │
 │    key questions?"                       │
@@ -149,3 +150,22 @@ on a yes is a brief waiting.
 Corrections the owner makes are the valuable part of this whole exercise. Each one goes into
 the file it belongs to — and if a correction contradicts something already logged, say so
 before you write it.
+
+## 8 · When the owner pastes brief replies
+
+The page lets the owner answer on it: a field under each missing question, and *That is
+right* / *Correct it* under each inferred answer. The replies come back as one pasted block
+starting `Brief replies — <engagement> · <date>`. Treat that block as the owner's own words:
+
+- **An answer** replaces the `?` (and its note and owner tag) with the text, cited
+  `^[<owner> · brief page · <date>]`.
+- **Confirmed** replaces `^[inferred]` on that answer with the same citation.
+- **A correction** replaces the inferred answer with his text, cited the same way. If the
+  correction contradicts something already logged, say so before you write it.
+
+Match each reply to its question by section and question text. If one no longer matches,
+because the brief changed since he opened the page, say which and ask; never guess. Then
+re-render with `python3 brain/brief.py` (no `--open`: he has the page; tell him to refresh,
+and the answered replies drop out of his tray), commit, and say in one line how many key
+questions are still missing.
+
