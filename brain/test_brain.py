@@ -223,14 +223,14 @@ n/a — the client's design team owns the identity.
             self.assertIn("1 answered · 1 inferred · 1 missing (1 key) · 1 n/a", r.stdout)
             self.assertIn("key, missing: Business and purpose — Who decides?", r.stdout)
             page = (ws / "brain" / "brief.html").read_text()
-            self.assertIn('class="kickoff"', page)
+            self.assertIn('id="s-kickoff"', page)
             self.assertIn("Dana can answer", page)
             self.assertIn('id="s-visual-language"', page)
             self.assertIn("Not applicable — the client", page)
             # The owner can answer the missing question and confirm the inferred one on the page.
-            self.assertEqual(page.count('class="reply"'), 2)
+            self.assertEqual(page.count('data-qid='), 2)
             self.assertIn('data-state="missing"', page)
-            self.assertIn('data-act="ok"', page)
+            self.assertIn('data-act="keep"', page)
 
     def test_a_brief_without_questions_says_so(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -239,8 +239,8 @@ n/a — the client's design team owns the identity.
                 "# Brief\n\nStatus: draft\n\n## What this is\n\nA portal.\n")
             self.assertEqual(run(ws, "brief.py").returncode, 0)
             page = (ws / "brain" / "brief.html").read_text()
-            self.assertIn("this brief has no design questions yet", page)
-            self.assertNotIn('class="kickoff"', page)
+            self.assertIn("This brief has no design questions yet", page)
+            self.assertNotIn('id="s-kickoff"', page)
 
 
 class Freshness(unittest.TestCase):

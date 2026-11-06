@@ -27,9 +27,10 @@ Every lens file answers four questions, and a lens that skips one is not finishe
   default when `/reviewer` is invoked with no lens named.**
 - **`motion.md`** — does the work move the way this project decided? Ships with the rules that
   hold regardless, and two empty sections `/motion` fills with this project's own vocabulary.
-- **`house.md`** — does a page generated for the owner look right? Inter, white paper, hairline
-  rules, colour only where it carries intent. Governs `feed.html` and its siblings, never the
-  project's own work.
+- **`house.md`** — does a page generated for the owner look right? Geist, black on white, a
+  three-column grid, rules instead of boxes; a page he fills in adds fills for "write here" and
+  dashed outlines for "my guess". Governs `feed.html` and its siblings, never the project's own
+  work.
 - **`deck.md`** — would an agency hand this over? Titles that carry the argument, plain
   English, a held grid, ideas drawn rather than bulleted. Governs what goes **out** — a deck,
   a proposal, a client document — where `craft.md` governs how anything looks.

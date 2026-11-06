@@ -60,7 +60,7 @@ Two more workstreams are probably coming. ^[inferred]
 - `who · where · when`, and a link straight to the moment where one exists — a timestamped
   recording URL, a permalink to the message, the mail thread. Not a link to the tool.
 - **`^[inferred]` is mandatory for anything you worked out rather than heard.** It renders as
-  its own word in ochre. A guess that reads like a quote is the exact failure the charter's
+  a small dashed tag. A guess that reads like a quote is the exact failure the charter's
   "label evidence, never launder it" rule exists to stop, and this is how the page enforces it.
 - Name every person, nickname and acronym you had to decode in `brain/glossary.md`. A decoded
   name that lives only in the brief is a guess that will harden into a fact.

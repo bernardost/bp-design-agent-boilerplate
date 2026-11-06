@@ -25,7 +25,7 @@ carry who said it and when. Printed inline that requirement destroys the documen
 reads provenance instead of the argument. So `feed.py` renders a `^[who · where · when](url)`
 tag as a faint superscript numeral: invisible while reading, one hover from the transcript,
 and listed in full at the foot of the page. An unsourced guess is written `^[inferred]` and
-renders as its own word in ochre, because a guess that reads like a quote is the failure this
+renders as a small dashed tag, because a guess that reads like a quote is the failure this
 whole apparatus exists to prevent.
 
 **Every design question shows its state at a glance.** A question answered from a source, an
@@ -267,325 +267,359 @@ def stage_strip(plan_text: str) -> tuple[str, str]:
 # The page
 # ---------------------------------------------------------------------------------------------
 
+GEIST_LINK = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link rel="stylesheet" referrerpolicy="no-referrer" '
+    'href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">'
+)
+
+# The brief is a page that is *used*: brain/lenses/house.md, section 2. The feed's stylesheet is
+# loaded first for the parts this page shares with it (citations, the tooltip, the stage strip
+# and the exit-bar conditions); its tokens are then remapped onto the document palette, and
+# everything below is this page's own.
 PAGE_CSS = """
-/* One column, one measure. This page is read start to finish, unlike the feed, which is
-   scanned — so it gets a book's width rather than a dashboard's. */
-.wrap{max-width:820px}
+:root{
+  /* the feed's tokens, remapped: one typeface, ink and grey, red only for "needed" */
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif; --mono:var(--sans);
+  --ink:#0a0a0a; --ink-2:#0a0a0a; --ink-3:#737373; --ink-4:#9b9b9b;
+  --rule:#dedede; --rule-soft:#dedede; --wash:rgb(241,241,239);
+  --blue:#0a0a0a; --blue-wash:rgb(241,241,239); --ochre:#737373; --ochre-wash:#dedede;
+  --green:#0a0a0a; --green-wash:rgb(241,241,239); --red:#c8102e;
 
-.approval{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 18px;
-  margin:26px 0 0;padding:15px 0;border-top:1px solid var(--ink);
-  border-bottom:1px solid var(--rule)}
-.approval .state{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.13em;
-  text-transform:uppercase}
-.approval.draft .state{color:var(--ochre)}
-.approval.approved .state{color:var(--ink)}
-.approval.unset .state{color:var(--red)}
-.approval .what{font-size:14px;color:var(--ink-3);max-width:62ch}
-
-.sec{margin:58px 0 0}
-.sec > h2{font-size:13px;font-family:var(--mono);font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-3);margin:0 0 22px;padding-bottom:11px;
-  border-bottom:1px solid var(--ink)}
-.sec .body h3{font-size:21px;margin:34px 0 10px;letter-spacing:-.015em}
-.sec .body h3:first-child{margin-top:0}
-.sec .body p,.sec .body li{font-size:16.5px;line-height:1.68;color:var(--ink-2)}
-.sec .body em{color:var(--ink-4)}
-
-.gap{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ochre);
-  padding:11px 0 11px 14px;border-left:2px solid var(--ochre-wash);margin:0 0 8px}
-
-.q{display:flex;gap:16px;padding:15px 0;border-top:1px solid var(--rule-soft)}
-.q:first-child{border-top:0}
-.q .qid{flex:0 0 42px;font-family:var(--mono);font-size:12.5px;color:var(--ink-3);
-  padding-top:3px}
-.q .qbody{min-width:0}
-.q .qtext{font-size:16px;line-height:1.6;color:var(--ink)}
-.q .qowner{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--blue);margin-top:5px}
-.q .qowner.none{color:var(--red)}
-
-.step{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--rule-soft)}
-.step:first-child{border-top:0}
-.step .num{flex:0 0 26px;font-family:var(--mono);font-size:15px;color:var(--ink-4);
-  padding-top:1px}
-.step .stitle{font-size:16.5px;line-height:1.5;color:var(--ink);font-weight:500}
-.step .snote{font-size:14px;line-height:1.6;color:var(--ink-3);margin-top:5px;max-width:62ch}
-.step .stags{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ink-4);margin-top:7px}
-.step .stags .bar{color:var(--blue)}
-.step .stags .doing{color:var(--ink)}
-.rest{font-size:13.5px;color:var(--ink-4);margin-top:18px}
-
-.footnote{margin:62px 0 0;padding-top:22px;border-top:1px solid var(--rule);
-  font-size:14px;line-height:1.65;color:var(--ink-3)}
-.footnote b{color:var(--ink)}
-"""
-
-
-BRIEF_CSS = """
-/* Two columns on a wide screen: the navigation stays put while the brief scrolls, so the owner
-   can see at any point which sections still have holes. On a phone it becomes a strip. */
-.wrap{max-width:1160px}
-.layout{display:grid;grid-template-columns:208px minmax(0,1fr);gap:0 64px;align-items:start}
-.main{max-width:780px;min-width:0}
-.nav{position:sticky;top:28px;padding-top:6px;font-size:13.5px}
-.nav .navh{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--ink-4);margin:0 0 10px}
-.nav ol{list-style:none;margin:0 0 26px;padding:0}
-.nav li{margin:0}
-.nav a{display:flex;justify-content:space-between;gap:10px;padding:6px 0;color:var(--ink-2);
-  text-decoration:none;border-bottom:1px solid var(--rule-soft)}
-.nav a:hover{color:var(--ink)}
-.nav a.on{color:var(--ink);font-weight:600}
-.nav .n{font-family:var(--mono);font-size:11px;color:var(--ink-4);white-space:nowrap}
-.nav .n.miss{color:var(--ink-2)}
-.nav .n.key{color:var(--red)}
-.nav .n.done{color:var(--green)}
-.nav .n.na{color:var(--ink-4)}
-@media (max-width:900px){
-  .layout{display:block}
-  .nav{position:sticky;top:0;z-index:5;background:var(--paper);margin:0 -28px;
-    padding:10px 28px;border-bottom:1px solid var(--rule);overflow-x:auto;white-space:nowrap}
-  .nav .navh{display:none}
-  .nav ol{display:inline-flex;gap:18px;margin:0 18px 0 0}
-  .nav a{border:0;padding:4px 0;gap:6px}
-  .sec{scroll-margin-top:64px}
+  /* the document style */
+  --muted:#737373; --hair:#dedede; --paper:#ffffff;
+  --fill:rgb(241,241,239); --fill-hover:rgb(235,235,232);
+  --field-line:#8a8a8a; --guess-line:#9a9a9a; --need:#c8102e;
+  --track:-0.012em; --track-big:-0.035em;
+  --cols:180px 1fr 170px; --gap:48px; --side:56px; --max:1200px;
+  --body:16px; --q:20px; --small:13px; --lede:30px; --band-t:30px;
+  --row-pad:80px; --field-pad:18px; --tap:52px; --measure:600px; --sec-gap:160px;
+  --bar-h:81px;
 }
-@media (max-width:640px){
-  .nav{margin:0 -20px;padding:10px 20px}
-  .tray{padding:12px 20px}
-  .tray .hint{display:none}
-}
+*{box-sizing:border-box}
+html,body{background:var(--paper)}
+body{margin:0;font-family:var(--sans);color:var(--ink);font-size:var(--body);line-height:1.5;
+  letter-spacing:var(--track);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0;font-weight:inherit;letter-spacing:inherit}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;cursor:pointer;
+  padding:0}
+code{font-family:var(--sans);font-size:.94em;background:var(--fill);padding:1px 5px;
+  border-radius:0}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--hair);
+  text-underline-offset:3px}
+.row{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap)}
+.span{grid-column:2 / 4}
 
-/* Coverage: one bar for the whole brief, and a legend that doubles as the filter. */
-.cov{margin:30px 0 0}
-.covbar{display:flex;height:8px;gap:2px}
-.covbar span{display:block;min-width:2px}
-.covbar .answered{background:var(--green)}
-.covbar .inferred{background:var(--ochre)}
-.covbar .missing{background:transparent;box-shadow:inset 0 0 0 1px var(--ink-4)}
-.covbar .na{background:var(--rule)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px}
-.legend button{font:inherit;font-size:13px;color:var(--ink-3);background:none;border:0;
-  border-bottom:1px solid transparent;padding:3px 0;cursor:pointer;display:inline-flex;
-  align-items:center;gap:7px}
-.legend button:hover{color:var(--ink)}
-.legend button[aria-pressed=true]{color:var(--ink);border-bottom-color:var(--ink)}
-.legend b{font-weight:600;color:var(--ink)}
+/* buttons: black for the main action, an ink outline for the alternative */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  padding:0 20px;border:1px solid var(--ink);font-size:var(--small);font-weight:500}
+.btn.primary{background:var(--ink);color:#fff}
+.btn[disabled]{opacity:.35;cursor:default}
+.btn:focus-visible,.field:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-/* The four marks. Shape carries the state as well as colour, so it survives a grey print. */
-.mk{flex:0 0 auto;width:10px;height:10px;border-radius:50%;display:inline-block}
-.mk.answered{background:var(--green)}
-.mk.inferred{background:linear-gradient(90deg,var(--ochre) 50%,transparent 50%);
-  box-shadow:inset 0 0 0 1.5px var(--ochre)}
-.mk.missing{box-shadow:inset 0 0 0 1.5px var(--ink-3)}
-.mk.missing.key{box-shadow:inset 0 0 0 2px var(--red)}
-.mk.na{width:10px;height:1.5px;border-radius:0;background:var(--ink-4)}
+/* top bar: what this is, how much is left, the one action */
+.bar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--hair)}
+.bar-in{max-width:var(--max);margin:0 auto;padding:18px var(--side);display:grid;
+  grid-template-columns:180px 1fr auto;column-gap:var(--gap);align-items:center;
+  font-size:var(--small)}
+.bar .where{font-weight:560}
+.bar .prog{display:flex;align-items:center;gap:12px}
+.bar .track{flex:1;height:2px;background:var(--hair);position:relative;max-width:360px}
+.bar .track i{position:absolute;inset:0 auto 0 0;background:var(--ink);transition:width .3s}
+.bar .r{display:flex;justify-content:flex-end;gap:8px;white-space:nowrap}
 
-/* Kickoff call: a hairline frame in red, because key questions are blocking the work. */
-.kickoff{margin:34px 0 0;padding:20px 0 22px 20px;border-left:2px solid var(--red)}
-.kickoff .ov{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--red);margin:0 0 8px}
-.kickoff h3{font-size:21px;margin:0 0 10px}
-.kickoff p{font-size:15px;line-height:1.6;color:var(--ink-2);margin:0 0 12px;max-width:62ch}
-.kickoff blockquote{margin:0 0 14px;padding:0 0 0 14px;border-left:1px solid var(--rule);
-  font-size:15px;line-height:1.6;color:var(--ink)}
-.kickoff ul{margin:0 0 14px;padding:0 0 0 18px;font-size:14.5px;line-height:1.6;
-  color:var(--ink-2)}
-.kickoff ul .sect{list-style:none;margin:10px 0 2px -18px;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4)}
-.kickoff .who{color:var(--blue);font-size:13px}
-.kickoff .actions{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:13.5px;
-  color:var(--ink-3)}
-.kickoff button{font:inherit;font-size:13.5px;font-weight:600;color:var(--paper);
-  background:var(--ink);border:0;border-radius:2px;padding:8px 14px;cursor:pointer}
-.kickoff button.done{background:var(--green)}
+.wrap{max-width:var(--max);margin:0 auto;padding:72px var(--side) 200px}
 
-/* A design section and its questions. */
-.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
-  border-bottom:1px solid var(--ink);padding-bottom:11px;margin:0 0 6px}
-.sec > .sechead h2{font-size:13px;font-family:var(--mono);font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-3);margin:0;padding:0;border:0}
-.sechead .tally{font-size:12.5px;color:var(--ink-4);white-space:nowrap}
-.sechead .tally .key{color:var(--red)}
-.sec{scroll-margin-top:24px}
-.qa{display:flex;gap:14px;padding:15px 0;border-top:1px solid var(--rule-soft)}
-.qa:first-of-type{border-top:0}
-.qa .mk{margin-top:6px}
-.qa .qbody{min-width:0;flex:1}
-.qa .qq{font-size:14px;line-height:1.5;color:var(--ink-3)}
-.qa .keytag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--ink-4);margin-left:6px;white-space:nowrap}
-.qa .qans{font-size:16px;line-height:1.62;color:var(--ink);margin-top:4px}
-.qa .qans p{margin:0}
-.qa.missing .qq{color:var(--ink)}
-.qa.missing .qans{color:var(--ink-4);font-style:italic;font-size:14.5px}
-.qa.missing.key .keytag{color:var(--red)}
-.qa.missing.key .qans{color:var(--red)}
-.qa.inferred .qans{color:var(--ink-2)}
-.qa.na{opacity:.55}
-.qa.na .qans{font-size:14px;color:var(--ink-4)}
-.qa .qowner{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--blue);margin-top:5px}
-.secna{font-size:14.5px;color:var(--ink-4);padding:14px 0}
+/* page head: same pattern as the printed documents */
+.head{border-top:1.5px solid var(--ink);padding-top:12px;font-size:var(--small)}
+.head b{font-weight:560}
+.head .r{text-align:right}
+.head .state.draft{color:var(--ink)}
+.head .state.unset{color:var(--need)}
+.lede{font-size:var(--lede);line-height:1.22;letter-spacing:-0.03em;margin-top:96px;
+  max-width:760px}
+.how{margin-top:28px;font-size:17px;line-height:1.6;color:#333;max-width:640px}
+.key{display:flex;flex-wrap:wrap;gap:14px 36px;margin-top:36px;font-size:var(--small);
+  color:var(--muted)}
+.key span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:34px;height:18px;display:inline-block}
+.sw.f{background:var(--fill);border-bottom:1.5px solid var(--field-line)}
+.sw.g{border:1.5px dashed var(--guess-line)}
+.sw.d{background:var(--paper);border-bottom:1.5px solid var(--ink)}
+
+/* contents: every section with what is left in it */
+.toc{margin-top:96px}
+.toc .h{border-top:1.5px solid var(--ink);padding:12px 0 14px;font-size:var(--small)}
+.toc .h b{font-weight:560}
+.toc a.row{padding:13px 0;border-top:1px solid var(--hair);text-decoration:none;
+  align-items:baseline}
+.toc a.row:hover .t{text-decoration:underline;text-underline-offset:3px}
+.toc .n{font-size:var(--small);color:var(--muted)}
+.toc .r{text-align:right;font-size:var(--small);color:var(--muted)}
+.toc .r .need{color:var(--need)}
+.toc .filter{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* sections: a band that sticks, a rule that closes */
+.sec{margin-top:var(--sec-gap);scroll-margin-top:var(--bar-h)}
+.band{position:sticky;top:var(--bar-h);z-index:10;background:var(--paper);
+  border-top:1.5px solid var(--ink);border-bottom:1px solid var(--hair);padding:18px 0 28px}
+.band .n{font-weight:560;font-size:var(--small)}
+.band .t{font-size:var(--band-t);letter-spacing:-0.03em;line-height:1.2;font-weight:500}
+.band .s{color:var(--muted);font-size:var(--small);margin-top:2px}
+.band .r{text-align:right;font-size:var(--small)}
+.mini{display:block;height:2px;background:var(--hair);margin-top:8px;position:relative}
+.mini i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+.end{border-top:1.5px solid var(--ink);margin-top:24px;padding-top:14px;font-size:var(--small);
+  color:var(--muted)}
+
+/* a question */
+.q{padding:var(--row-pad) 0;border-top:1px solid var(--hair)}
+.q:first-of-type{border-top:0}
+.q .qn{font-size:var(--small);color:var(--muted);padding-top:3px}
+.q h3{font-size:var(--q);font-weight:520;line-height:1.35;letter-spacing:-0.015em;
+  max-width:var(--measure)}
+.q .help{color:var(--muted);font-size:15.5px;margin-top:8px;max-width:var(--measure)}
+.q .ctl{margin-top:28px;max-width:var(--measure)}
+.q .ans{font-size:17px;line-height:1.55}
+.q .st{text-align:right;font-size:var(--small);padding-top:3px}
+.q.na h3,.q.na .ans{color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:6px}
+.tag::before{content:"";width:8px;height:8px;border:1.5px solid currentColor;display:inline-block}
+.tag.t-open{color:var(--muted)}
+.tag.t-need{color:var(--need)}
+.tag.t-guess{color:var(--muted)}
+.tag.t-guess::before{border-style:dashed}
+.tag.t-done{color:var(--ink)}
+.tag.t-done::before{background:var(--ink)}
+.tag.t-na{color:var(--muted)}
+.tag.t-na::before{border-color:transparent;border-top-color:currentColor;height:0;
+  border-width:1.5px 0 0}
+.who{display:block;color:var(--muted);margin-top:4px}
+
+/* a field: the fill means "write here" */
+.field{display:block;width:100%;background:var(--fill);border:0;
+  border-bottom:1.5px solid var(--field-line);padding:var(--field-pad) 14px;font:inherit;
+  font-size:var(--body);letter-spacing:var(--track);color:var(--ink);resize:vertical;
+  min-height:120px;border-radius:0}
+.field::placeholder{color:#9b9b9b}
+.field:hover{background:var(--fill-hover)}
+.field:focus{outline:none;background:var(--paper);border-bottom:2px solid var(--ink);
+  box-shadow:inset 0 0 0 1px var(--ink)}
+.field.filled{background:var(--paper);border-bottom-color:var(--ink)}
+.saved{font-size:var(--small);color:var(--muted);margin-top:6px;min-height:18px}
+
+/* my guess: dashed, with two real buttons */
+.guess{border:1.5px dashed var(--guess-line);padding:22px 24px}
+.guess .lbl{font-size:var(--small);color:var(--muted)}
+.guess .txt{font-size:17px;margin-top:4px}
+.guess .acts{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.guess.kept{border-style:solid;border-color:var(--ink)}
+.guess.kept .lbl::after{content:" · kept";color:var(--ink)}
+.guess.changing .acts,.guess.changing .txt{display:none}
+.guess.changing{border:0;padding:0}
+.guess.changing .lbl{margin-bottom:8px}
+
+/* kickoff: the needed questions, and the agenda to copy */
+.kick .lede2{font-size:22px;line-height:1.35;letter-spacing:-0.02em;max-width:var(--measure)}
+.kick blockquote{margin:28px 0 0;padding:0 0 0 18px;border-left:1.5px solid var(--ink);
+  font-size:17px;line-height:1.55;max-width:var(--measure)}
+.kick .list{margin-top:44px}
+.kick .li{padding:13px 0;border-top:1px solid var(--hair);align-items:baseline}
+.kick .li .n{font-size:var(--small);color:var(--muted)}
+.kick .li .r{text-align:right;font-size:var(--small);color:var(--muted)}
+.kick .acts{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.kick .acts .muted{font-size:var(--small);max-width:420px}
+
+/* read-only rows: prose, other questions, next steps */
+.rrow{padding:22px 0;border-top:1px solid var(--hair)}
+.rrow:first-of-type{border-top:0}
+.rrow .l{font-size:var(--small);color:var(--muted);padding-top:3px}
+.rrow .body{max-width:680px;font-size:var(--body);line-height:1.6}
+.rrow .body p+p{margin-top:10px}
+.rrow .r{text-align:right;font-size:var(--small);color:var(--muted)}
+.rrow .r.need{color:var(--need)}
+.rrow .sub{color:var(--muted);font-size:var(--small);margin-top:4px}
+.gapline{color:var(--muted)}
+
+/* the parts shared with the feed, brought into this register */
+.stages{margin:28px 0 36px}
+.stage b,.cond .dot{font-family:var(--sans)}
+.cond .status,.stage b{letter-spacing:0;text-transform:none;font-size:var(--small);
+  font-weight:500}
+.cite.inferred{font-family:var(--sans);text-transform:none;letter-spacing:0;color:var(--muted);
+  border:1px dashed var(--guess-line);padding:0 4px;font-size:.7em}
+a.ref.cite{color:var(--muted);text-decoration:none}
+.srclist{font-size:var(--small)}
+#tip .k{font-family:var(--sans);text-transform:none;letter-spacing:0}
+
 .hidden{display:none !important}
+body.only-mine .q.done,body.only-mine .q.na,body.only-mine .readonly{display:none}
 
-/* Replying on the page: a field that looks like a line to write on, not a form. */
-.reply{margin-top:10px}
-.reply textarea{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:15px;
-  line-height:1.55;color:var(--ink);background:transparent;border:0;
-  border-bottom:1px solid var(--rule);padding:6px 0;resize:none;overflow:hidden}
-.reply textarea:focus{outline:none;border-bottom-color:var(--ink)}
-.reply textarea::placeholder{color:var(--ink-4)}
-.reply.filled textarea{border-bottom-color:var(--blue)}
-.rbtns{display:flex;gap:18px}
-.rbtns button{font:inherit;font-size:13px;color:var(--ink-3);background:none;border:0;
-  border-bottom:1px solid var(--rule);padding:2px 0;cursor:pointer}
-.rbtns button:hover{color:var(--ink);border-bottom-color:var(--ink)}
-.rbtns button[aria-pressed=true]{color:var(--green);border-bottom-color:var(--green);
-  font-weight:600}
-.rbtns + textarea{margin-top:8px}
-.tray{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--paper);
-  border-top:1px solid var(--ink);padding:12px 28px;display:flex;justify-content:center}
-.tray .in{width:100%;max-width:1104px;display:flex;flex-wrap:wrap;align-items:center;
-  gap:10px 20px;font-size:14px;color:var(--ink-2)}
-.tray .count{font-weight:600;color:var(--ink)}
-.tray .sp{flex:1}
-.tray button{font:inherit;font-size:13.5px;cursor:pointer;border:0;background:none;
-  color:var(--ink-3);padding:6px 0}
-.tray button.go{font-weight:600;color:var(--paper);background:var(--ink);border-radius:2px;
-  padding:8px 14px}
-.tray button.go.done{background:var(--green)}
-body.has-replies .wrap{padding-bottom:220px}
+@media (max-width:760px){
+  :root{--side:20px;--gap:0px;--lede:24px;--row-pad:40px;--sec-gap:110px;--band-t:24px;
+    --bar-h:99px}
+  .row{grid-template-columns:1fr}
+  .span{grid-column:1}
+  .bar-in{grid-template-columns:1fr auto;row-gap:8px}
+  .bar .prog{grid-column:1 / 3;grid-row:2}
+  .head .r{text-align:left;margin-top:8px}
+  .band .r{text-align:left;margin-top:6px}
+  .q .qn{padding-top:0;margin-bottom:4px}
+  .q .ctl{margin-top:20px}
+  .q .st{text-align:left;margin-top:12px}
+  .toc .r,.rrow .r,.kick .li .r{text-align:left}
+  .lede{margin-top:56px}
+}
 """
 
 
-FILTER_JS = r"""
+PAGE_JS = r"""
 (function(){
-  var btns = document.querySelectorAll('.legend button');
-  function apply(f){
-    btns.forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.f === f)); });
-    document.querySelectorAll('.qa').forEach(function(r){
-      r.classList.toggle('hidden', f !== 'all' && !r.classList.contains(f));
-    });
-    // While filtering, a section with nothing to show steps out of the way, and so does
-    // everything that is not a design question.
-    document.querySelectorAll('.main > .sec').forEach(function(s){
-      if (f === 'all') { s.classList.remove('hidden'); return; }
-      var any = s.querySelector('.qa:not(.hidden)');
-      s.classList.toggle('hidden', !any);
-    });
-  }
-  btns.forEach(function(b){ b.addEventListener('click', function(){
-    apply(b.getAttribute('aria-pressed') === 'true' ? 'all' : b.dataset.f); }); });
+  // The section bands stick under the top bar, whose height changes with the screen.
+  var barEl = document.querySelector('.bar');
+  function barH(){ document.documentElement.style.setProperty('--bar-h', barEl.offsetHeight + 'px'); }
+  barH(); window.addEventListener('resize', barH);
 
-  var copy = document.getElementById('copy-agenda');
-  if (copy) copy.addEventListener('click', function(){
-    var t = document.getElementById('agenda').value;
-    var done = function(){ copy.textContent = 'Copied'; copy.classList.add('done');
-      setTimeout(function(){ copy.textContent = 'Copy the agenda'; copy.classList.remove('done'); }, 1800); };
-    if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function(){});
-    else { var a = document.getElementById('agenda'); a.classList.remove('hidden'); a.select();
-      document.execCommand('copy'); a.classList.add('hidden'); done(); }
-  });
-
-  // Replies. Kept in this browser until copied; a reply whose question is no longer open on
-  // this page (answered since, or removed) is dropped on load.
   var KEY = 'brief-replies:' + document.title, store = {};
   try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { store = {}; }
-  var boxes = document.querySelectorAll('.reply');
+  var qs = document.querySelectorAll('.q[data-qid]');
   var live = {};
-  boxes.forEach(function(b){ live[b.dataset.qid] = b; });
+  qs.forEach(function(q){ live[q.dataset.qid] = q; });
+  // A reply whose question is no longer open here (answered since, or removed) is dropped.
   Object.keys(store).forEach(function(k){ if (!live[k]) delete store[k]; });
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
-  function grow(t){ t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
-  var tray = document.getElementById('tray');
-  function refresh(){
-    var n = Object.keys(store).length;
-    tray.classList.toggle('hidden', n === 0);
-    document.body.classList.toggle('has-replies', n > 0);
-    document.getElementById('tray-count').textContent =
-      n + (n === 1 ? ' reply' : ' replies') + ' ready';
+
+  var copyBtn = document.getElementById('copy'), clearBtn = document.getElementById('clear');
+  var base = +document.body.dataset.answered, total = +document.body.dataset.total;
+
+  function status(q){
+    var st = q.querySelector('.st .tag'), v = store[q.dataset.qid];
+    if (!st) return;
+    if (v) { st.className = 'tag t-done'; st.textContent = v.ok ? 'Kept' : 'Answered'; }
+    else { st.className = 'tag ' + st.dataset.c; st.textContent = st.dataset.t; }
   }
-  boxes.forEach(function(b){
-    var id = b.dataset.qid, t = b.querySelector('textarea'), btns = b.querySelectorAll('button');
+  function refresh(){
+    var n = Object.keys(store).length, done = base + n;
+    document.getElementById('prog-n').textContent = done + ' of ' + total + ' answered';
+    document.getElementById('prog-i').style.width = (total ? 100 * done / total : 0) + '%';
+    copyBtn.textContent = n ? 'Copy ' + n + (n === 1 ? ' reply' : ' replies') : 'Copy replies';
+    copyBtn.disabled = n === 0;
+    clearBtn.classList.toggle('hidden', n === 0);
+    document.querySelectorAll('.sec[data-total]').forEach(function(s){
+      var t = +s.dataset.total, d = +s.dataset.done;
+      s.querySelectorAll('.q[data-qid]').forEach(function(q){ if (store[q.dataset.qid]) d++; });
+      var c = s.querySelector('.band .cnt'); if (c) c.textContent = d + ' of ' + t;
+      var m = s.querySelector('.band .mini i'); if (m) m.style.width = (t ? 100 * d / t : 0) + '%';
+    });
+  }
+  function grow(t){ t.style.height = 'auto'; t.style.height = Math.max(120, t.scrollHeight + 4) + 'px'; }
+  var timers = {};
+  function said(q){
+    var s = q.querySelector('.saved'); if (!s) return;
+    s.textContent = 'Saving…'; clearTimeout(timers[q.dataset.qid]);
+    timers[q.dataset.qid] = setTimeout(function(){ s.textContent = store[q.dataset.qid] ? 'Saved' : ''; }, 500);
+  }
+
+  qs.forEach(function(q){
+    var id = q.dataset.qid, f = q.querySelector('textarea.field'), g = q.querySelector('.guess');
     function set(v){
       if (v && (v.ok || (v.text && v.text.trim()))) store[id] = v; else delete store[id];
-      b.classList.toggle('filled', !!store[id]); save(); refresh();
+      save(); status(q); refresh(); said(q);
     }
     var v = store[id];
     if (v) {
-      if (v.text) { t.value = v.text; t.classList.remove('hidden'); setTimeout(function(){ grow(t); }, 0); }
-      btns.forEach(function(x){ x.setAttribute('aria-pressed',
-        String((x.dataset.act === 'ok' && v.ok) || (x.dataset.act === 'fix' && !!v.text))); });
-      b.classList.add('filled');
+      if (g && v.ok) g.classList.add('kept');
+      if (v.text) { if (g) g.classList.add('changing'); f.classList.remove('hidden'); f.value = v.text;
+        f.classList.add('filled'); setTimeout(function(){ grow(f); }, 0); }
+      status(q); q.querySelector('.saved').textContent = 'Saved';
     }
-    t.addEventListener('input', function(){ grow(t); set(t.value.trim() ? {text: t.value} : null); });
-    btns.forEach(function(x){ x.addEventListener('click', function(){
-      var on = x.getAttribute('aria-pressed') !== 'true';
-      btns.forEach(function(y){ y.setAttribute('aria-pressed', 'false'); });
-      x.setAttribute('aria-pressed', String(on));
-      if (x.dataset.act === 'ok') { t.classList.add('hidden'); set(on ? {ok: true} : null); }
-      else { t.classList.toggle('hidden', !on); if (on) t.focus();
-             set(on && t.value.trim() ? {text: t.value} : null); }
-    }); });
+    if (f) f.addEventListener('input', function(){
+      grow(f); f.classList.toggle('filled', !!f.value.trim());
+      set(f.value.trim() ? {text: f.value} : (g ? null : null));
+    });
+    if (g) {
+      g.querySelector('[data-act=keep]').addEventListener('click', function(){
+        var on = !g.classList.contains('kept');
+        g.classList.toggle('kept', on); set(on ? {ok: true} : null);
+      });
+      g.querySelector('[data-act=change]').addEventListener('click', function(){
+        g.classList.remove('kept'); g.classList.add('changing');
+        f.classList.remove('hidden'); f.value = g.dataset.was; grow(f); f.focus();
+        set(null);
+      });
+    }
   });
+
   function block(){
     var d = new Date().toISOString().slice(0, 10), lines = [], i = 0;
     lines.push('Brief replies — ' + document.body.dataset.project + ' · ' + d);
     lines.push('Route each into brain/project-brief.md, cited ^[' + document.body.dataset.owner +
                ' · brief page · ' + d + '].');
-    boxes.forEach(function(b){
-      var v = store[b.dataset.qid]; if (!v) return;
-      i++;
-      lines.push('');
-      if (b.dataset.state === 'inferred') {
-        lines.push(i + '. ' + b.dataset.sec + ' — ' + b.dataset.q + ' (inferred: "' + b.dataset.was + '")');
+    qs.forEach(function(q){
+      var v = store[q.dataset.qid]; if (!v) return;
+      i++; lines.push('');
+      if (q.dataset.state === 'inferred') {
+        lines.push(i + '. ' + q.dataset.sec + ' — ' + q.dataset.q + ' (inferred: "' + q.dataset.was + '")');
         lines.push(v.ok ? '   Confirmed.' : '   Correction: ' + v.text.trim().replace(/\n+/g, ' '));
       } else {
-        lines.push(i + '. ' + b.dataset.sec + ' — ' + b.dataset.q);
+        lines.push(i + '. ' + q.dataset.sec + ' — ' + q.dataset.q);
         lines.push('   Answer: ' + v.text.trim().replace(/\n+/g, ' '));
       }
     });
     return lines.join('\n');
   }
-  document.getElementById('tray-copy').addEventListener('click', function(){
-    var btn = this, text = block();
-    var done = function(){ btn.textContent = 'Copied — paste it into the session';
-      btn.classList.add('done'); setTimeout(function(){ btn.textContent = 'Copy replies';
-      btn.classList.remove('done'); }, 2400); };
-    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function(){});
+  function flash(btn, txt, back){
+    btn.textContent = txt; setTimeout(function(){ btn.textContent = back(); }, 2200);
+  }
+  copyBtn.addEventListener('click', function(){
+    var t = block();
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
+      flash(copyBtn, 'Copied. Paste it into the session', function(){
+        var n = Object.keys(store).length; return 'Copy ' + n + (n === 1 ? ' reply' : ' replies'); });
+    }, function(){});
   });
-  document.getElementById('tray-clear').addEventListener('click', function(){
+  clearBtn.addEventListener('click', function(){
     store = {}; save();
-    boxes.forEach(function(b){ b.classList.remove('filled');
-      var t = b.querySelector('textarea'); t.value = ''; grow(t);
-      if (b.dataset.state === 'inferred') t.classList.add('hidden');
-      b.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', 'false'); }); });
+    qs.forEach(function(q){
+      var f = q.querySelector('textarea.field'), g = q.querySelector('.guess');
+      if (g) { g.classList.remove('kept', 'changing'); if (f) f.classList.add('hidden'); }
+      if (f) { f.value = ''; f.classList.remove('filled'); }
+      var s = q.querySelector('.saved'); if (s) s.textContent = '';
+      status(q);
+    });
     refresh();
   });
-  refresh();
 
-  // The navigation marks the section in view.
-  var links = {};
-  document.querySelectorAll('.nav a').forEach(function(a){ links[a.getAttribute('href').slice(1)] = a; });
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if (e.isIntersecting && links[e.target.id]) {
-          Object.values(links).forEach(function(l){ l.classList.remove('on'); });
-          links[e.target.id].classList.add('on');
-        }
-      });
-    }, {rootMargin: '-20% 0px -70% 0px'});
-    document.querySelectorAll('.main > .sec[id]').forEach(function(s){ io.observe(s); });
-  }
+  var only = document.getElementById('only');
+  if (only) only.addEventListener('click', function(){
+    var on = document.body.classList.toggle('only-mine');
+    only.textContent = on ? 'Show everything' : 'Show only what needs you';
+  });
+
+  var ag = document.getElementById('copy-agenda');
+  if (ag) ag.addEventListener('click', function(){
+    if (navigator.clipboard) navigator.clipboard.writeText(document.getElementById('agenda').value)
+      .then(function(){ flash(ag, 'Copied', function(){ return 'Copy the agenda'; }); }, function(){});
+  });
+
+  refresh();
 })();
 """
 
 OPENING = ("Describe the experience you want a customer to have, from first seeing the brand to "
            "completing their most important task. What should they feel, understand and be "
            "able to do?")
+
+STATUS = {  # state -> (tag class, words)
+    "answered": ("t-done", "Answered"),
+    "inferred": ("t-guess", "My guess"),
+    "missing": ("t-open", "Open"),
+    "need": ("t-need", "Needed to start"),
+    "na": ("t-na", "Not applicable"),
+}
 
 
 def inline(md: str, g: dict) -> str:
@@ -596,10 +630,14 @@ def inline(md: str, g: dict) -> str:
 
 
 def plain(md: str) -> str:
-    """Markdown down to plain text, for the copyable agenda."""
+    """Markdown down to plain text, for the copyable agenda and the replies."""
     t = re.sub(r"\^\[[^\]]*\](\([^)]*\))?", "", md)
     t = re.sub(r"\*\*|__|`", "", t)
     return " ".join(t.split())
+
+
+def long_date(d: datetime) -> str:
+    return f"{d.day} {d.strftime('%B %Y')}"
 
 
 def build() -> str:
@@ -611,295 +649,314 @@ def build() -> str:
     qs = unknowns()
     steps, counts = next_steps()
     plan_text = (BRAIN / "plan.md").read_text(encoding="utf-8")
-    strip, here = stage_strip(plan_text)
-    # The brief is the engagement's one approved understanding, so it shows the bars of every
-    # project that is inside a stage rather than picking one.
+    strip, _here = stage_strip(plan_text)
     bars = bar_conditions()
-    stamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    total_q = t["answered"] + t["inferred"] + t["missing"] + t["na"]
+    now = datetime.now()
+    total = t["answered"] + t["inferred"] + t["missing"]      # n/a is not asked of anyone
+    answered = t["answered"]
+    esc = html.escape
 
-    # The approval strip. Three states, and "unset" is loud on purpose: a brief with no status
-    # line has never been put in front of anyone, which is the exact failure this page fixes.
-    words = {
-        "draft": ("draft — awaiting your approval",
-                  "Read it, then say what is wrong or say it is approved. Approving it writes "
-                  "a decision and this line changes to name it."),
-        "approved": (detail.lower(),
-                     "Approved. Re-approval is only needed when the engagement itself changes "
-                     "— volatile state lives in now.md, not here."),
-        "unset": ("no status line",
-                  "brain/project-brief.md carries no `Status:` line, so nothing records "
-                  "whether this was ever agreed. Add one under the title."),
+    head_state = {
+        "draft": ("draft", "Draft · awaiting your approval"),
+        "approved": ("approved", detail[:1].upper() + detail[1:]),
+        "unset": ("unset", "No status line: never agreed"),
     }[state]
 
-    secs, nav = [], []
-
-    # ── coverage and the filter ──────────────────────────────────────────────────────────────
-    if total_q:
-        bar = "".join(f'<span class="{k}" style="flex:{t[k]}" title="{t[k]} {k}"></span>'
-                      for k in ("answered", "inferred", "missing", "na") if t[k])
-        km = len(t["key_missing"])
-        legend = [
-            ("answered", f'<b>{t["answered"]}</b> answered'),
-            ("inferred", f'<b>{t["inferred"]}</b> inferred — check these'),
-            ("missing", f'<b>{t["missing"]}</b> missing' + (f', {km} key' if km else "")),
-            ("na", f'<b>{t["na"]}</b> not applicable'),
-        ]
-        cov = (f'<div class="cov"><div class="covbar">{bar}</div><div class="legend">'
-               + "".join(f'<button type="button" data-f="{k}" aria-pressed="false">'
-                         f'<span class="mk {k}{" key" if k == "missing" and km else ""}">'
-                         f'</span>{label}</button>' for k, label in legend if t[k] or k != "na")
-               + '</div></div>')
-    else:
-        cov = ('<div class="gap" style="margin-top:28px">this brief has no design questions yet '
-               '— /brief adds the ones that fit the project from '
-               '.claude/skills/brief/questions.md</div>')
+    # ── contents ─────────────────────────────────────────────────────────────────────────────
+    toc, out_secs = [], []
+    n_sec = 0
+    design = [s for s in brief_secs if s["questions"] or s["na"]]
+    for sec in brief_secs:
+        n_sec += 1
+        sec["n"] = n_sec
+        qn = [q for q in sec["questions"] if q["state"] != "na"]
+        done = sum(1 for q in qn if q["state"] == "answered")
+        need = sum(1 for q in qn if q["state"] == "missing" and q["key"])
+        sec["done"], sec["total"], sec["need"] = done, len(qn), need
+        if sec["na"]:
+            right = "Not applicable"
+        elif sec["questions"]:
+            right = f"{done} of {len(qn)} answered" + (
+                f' · <span class="need">{need} needed</span>' if need else "")
+        else:
+            right = (f'{len(sec["gaps"])} not written' if sec["gaps"] else "Written")
+        toc.append(f'<a class="row" href="#{sec["id"]}"><span class="n">{n_sec}</span>'
+                   f'<span class="t">{esc(sec["title"])}</span><span class="r">{right}</span></a>')
+    work = [("s-open", "Other open questions", f"{len(qs)} open" if qs else "None recorded"),
+            ("s-plan", "The plan", "Exit bar set" if bars else
+             '<span class="need">No exit bar</span>'),
+            ("s-next", "What I would do next", f"{len(steps)} steps" if steps else "None"),
+            ("s-sources", "Sources", "")]
+    for i, (sid, title, right) in enumerate(work):
+        toc.append(f'<a class="row" href="#{sid}"><span class="n">{n_sec + i + 1}</span>'
+                   f'<span class="t">{esc(title)}</span><span class="r">{right}</span></a>')
 
     # ── the kickoff call ─────────────────────────────────────────────────────────────────────
     kick = ""
     if t["key_missing"]:
         km = t["key_missing"]
-        items, agenda, last = [], [f"Kickoff — {PROJECT_NAME}", "", "Opening question:",
-                                    OPENING, ""], None
-        missing_all = [(sec["title"], q) for sec in brief_secs for q in sec["questions"]
+        missing_all = [(sec, q) for sec in brief_secs for q in sec["questions"]
                        if q["state"] == "missing"]
-        # Key questions first, each group in the brief's own section order.
         ordered = ([x for x in missing_all if x[1]["key"]]
                    + [x for x in missing_all if not x[1]["key"]])
-        for title, q in [x for x in ordered if x[1]["key"]]:
-            if title != last:
-                items.append(f'<li class="sect">{html.escape(title)}</li>')
-                last = title
-            who = f' <span class="who">— {html.escape(q["owner"])}</span>' if q["owner"] else ""
-            items.append(f'<li>{inline(q["q"], g)}{who}</li>')
+        agenda = [f"Kickoff — {PROJECT_NAME}", "", "Opening question:", OPENING]
         last = None
-        for i, (title, q) in enumerate(ordered):
+        for i, (sec, q) in enumerate(ordered):
             if i == len(km):
                 agenda += ["", "If there is time:"]
                 last = None
-            if title != last:
-                agenda += ["", title.upper()]
-                last = title
+            if sec["title"] != last:
+                agenda += ["", sec["title"].upper()]
+                last = sec["title"]
             agenda.append(f"- {plain(q['q'])}" + (f" ({q['owner']})" if q["owner"] else ""))
-        n = len(km)
-        kick = f"""<div class="kickoff">
-  <div class="ov">Kickoff workshop</div>
-  <h3>{n} key question{"s are" if n != 1 else " is"} still unanswered, so I suggest a kickoff
-  workshop to ask {"them" if n != 1 else "it"}.</h3>
-  <p>Open with one question that ties brand, product, audience and business together, before
-  anyone talks about colours or layout:</p>
-  <blockquote>{html.escape(OPENING)}</blockquote>
-  <p>Then the key questions:</p>
-  <ul>{"".join(items)}</ul>
-  <div class="actions"><button type="button" id="copy-agenda">Copy the agenda</button>
-  <span>It holds every missing question, key ones first. If a meeting is hard to get,
-  <code>/workshop</code> sends them as questions to answer on a phone.</span></div>
-  <textarea id="agenda" class="hidden" aria-hidden="true">{html.escape(chr(10).join(agenda))}</textarea>
-</div>"""
-
+        kick = "pending"  # the rows need the question numbers, which the loop below assigns
     # ── the brief, section by section ────────────────────────────────────────────────────────
     for sec in brief_secs:
-        qrows, n_ans = [], 0
-        for q in sec["questions"]:
+        qrows = []
+        for j, q in enumerate(sec["questions"], 1):
+            q["num"] = f'{sec["n"]}.{j}'
             st = q["state"]
-            key = " key" if q["key"] else ""
-            keytag = '<span class="keytag">key</span>' if q["key"] else ""
-            if st == "missing":
-                ans = "Not answered yet" + (f" — {inline(q['a'], g)}" if q["a"] else "")
-            elif st == "na":
-                ans = "Not applicable" + (f" — {inline(q['a'], g)}" if q["a"] else "")
-            else:
-                ans = render_md(q["a"], g)
-                n_ans += 1
-            own = (f'<div class="qowner">{html.escape(q["owner"])} can answer</div>'
+            need = st == "missing" and q["key"]
+            cls, words = STATUS["need" if need else st]
+            who = (f'<span class="who">{esc(q["owner"])} can answer</span>'
                    if q["owner"] and st == "missing" else "")
-            reply = ""
+            attrs = ""
             if st in ("missing", "inferred"):
                 qid = re.sub(r"[^a-z0-9]+", "-", f'{sec["title"]} {plain(q["q"])}'.lower())[:90]
-                attrs = (f'data-qid="{qid}" data-sec="{html.escape(sec["title"])}" '
-                         f'data-q="{html.escape(plain(q["q"]))}" data-state="{st}" '
-                         f'data-was="{html.escape(plain(q["a"]))}"')
-                if st == "missing":
-                    reply = (f'<div class="reply" {attrs}><textarea rows="1" '
-                             f'placeholder="Type the answer, if you know it" '
-                             f'aria-label="Your answer"></textarea></div>')
-                else:
-                    reply = (f'<div class="reply" {attrs}><div class="rbtns">'
-                             f'<button type="button" data-act="ok">That is right</button>'
-                             f'<button type="button" data-act="fix">Correct it</button></div>'
-                             f'<textarea rows="1" class="hidden" placeholder="What is it, then?" '
-                             f'aria-label="Your correction"></textarea></div>')
-            qrows.append(f'<div class="qa {st}{key}"><span class="mk {st}{key}"></span>'
-                         f'<div class="qbody"><div class="qq">{inline(q["q"], g)}{keytag}'
-                         f'</div><div class="qans">{ans}</div>{own}{reply}</div></div>')
-        miss = [q for q in sec["questions"] if q["state"] == "missing"]
-        kmiss = [q for q in miss if q["key"]]
-        applic = [q for q in sec["questions"] if q["state"] != "na"]
+                attrs = (f' data-qid="{qid}" data-sec="{esc(sec["title"])}" '
+                         f'data-q="{esc(plain(q["q"]))}" data-state="{st}" '
+                         f'data-was="{esc(plain(q["a"]))}"')
+            if st == "answered":
+                ctl = f'<div class="ans">{inline(q["a"], g)}</div>'
+                help_ = ""
+            elif st == "inferred":
+                was = esc(plain(q["a"]))
+                ctl = (f'<div class="guess" data-was="{was}"><div class="lbl">My guess</div>'
+                       f'<div class="txt">{inline(q["a"].replace("^[inferred]", ""), g)}</div>'
+                       f'<div class="acts"><button type="button" class="btn primary" '
+                       f'data-act="keep">Keep it</button><button type="button" class="btn" '
+                       f'data-act="change">Change it</button></div></div>'
+                       f'<textarea class="field hidden" aria-label="Your answer"></textarea>'
+                       f'<div class="saved"></div>')
+                help_ = ""
+            elif st == "missing":
+                ctl = ('<textarea class="field" placeholder="Type the answer, if you know it" '
+                       'aria-label="Your answer"></textarea><div class="saved"></div>')
+                help_ = (f'<p class="help">{inline(q["a"], g)}</p>' if q["a"] else "")
+            else:
+                ctl = (f'<div class="ans">Not applicable'
+                       + (f' — {inline(q["a"], g)}' if q["a"] else "") + '</div>')
+                help_ = ""
+            done_cls = " done" if st == "answered" else ""
+            qrows.append(
+                f'<div class="row q {st}{done_cls}"{attrs}><span class="qn">{q["num"]}</span>'
+                f'<div><h3>{inline(q["q"], g)}</h3>{help_}<div class="ctl">{ctl}</div></div>'
+                f'<div class="st"><span class="tag {cls}" data-c="{cls}" data-t="{words}">'
+                f'{words}</span>{who}</div></div>')
 
+        nxt = (brief_secs[sec["n"]].get("title") if sec["n"] < len(brief_secs)
+               else "Other open questions")
         if sec["na"]:
-            tally_txt, navn = "not applicable", ('na', "n/a")
+            body = (f'<div class="row rrow"><span class="l"></span><div class="body muted">'
+                    f'Not applicable — {inline(sec["na"], g)}</div><span></span></div>')
+            sub, right, data = "Considered, and left out", "", ""
         elif sec["questions"]:
-            tally_txt = f"{n_ans} of {len(applic)} answered"
-            if miss:
-                tally_txt += (f' · <span class="key">{len(miss)} missing</span>' if kmiss
-                              else f" · {len(miss)} missing")
-            navn = (("key", f"{len(miss)} missing") if kmiss else
-                    ("miss", f"{len(miss)} missing") if miss else ("done", "✓"))
+            body = "".join(qrows)
+            sub = (f'{sec["total"]} question{"s" if sec["total"] != 1 else ""}'
+                   + (f' · <span style="color:var(--need)">{sec["need"]} needed to start</span>'
+                      if sec["need"] else ""))
+            pct = 100 * sec["done"] / sec["total"] if sec["total"] else 100
+            right = (f'<span class="cnt num">{sec["done"]} of {sec["total"]}</span>'
+                     f'<span class="mini"><i style="width:{pct:.0f}%"></i></span>')
+            data = f' data-total="{sec["total"]}" data-done="{sec["done"]}"'
         else:
-            tally_txt = (f"{len(sec['gaps'])} not written" if sec["gaps"] else "")
-            navn = ("miss", f"{len(sec['gaps'])} to write") if sec["gaps"] else ("done", "✓")
+            rows = []
+            subs = list(re.finditer(r"^###\s+(.+?)\s*\n(.*?)(?=^###\s|\Z)", sec["prose"],
+                                    re.M | re.S))
+            if subs:
+                for sm in subs:
+                    rows.append(f'<div class="row rrow"><span class="l">{esc(sm.group(1))}</span>'
+                                f'<div class="body">{render_md(sm.group(2).strip(), g)}</div>'
+                                f'<span class="r">Written</span></div>')
+            elif sec["prose"].strip():
+                rows.append(f'<div class="row rrow"><span class="l"></span><div class="body">'
+                            f'{render_md(sec["prose"], g)}</div><span></span></div>')
+            for gap in sec["gaps"]:
+                rows.append(f'<div class="row rrow"><span class="l">{esc(gap)}</span>'
+                            f'<div class="body gapline">Not written yet</div>'
+                            f'<span class="r">Open</span></div>')
+            body = "".join(rows)
+            sub = (f'{len(sec["gaps"])} part{"s" if len(sec["gaps"]) != 1 else ""} not written'
+                   if sec["gaps"] else "Written")
+            right, data = "", ""
+        ro = " readonly" if not sec["questions"] else ""
+        out_secs.append(
+            f'<section class="sec{ro}" id="{sec["id"]}"{data}><div class="band row">'
+            f'<span class="n">{sec["n"]}</span><div><div class="t">{esc(sec["title"])}</div>'
+            f'<div class="s">{sub}</div></div><div class="r">{right}</div></div>{body}'
+            f'<div class="end">End of {sec["n"]} · Next, {esc(nxt.lower() if nxt else "")}</div>'
+            f'</section>')
 
-        prose = render_md(sec["prose"], g) if sec["prose"].strip() else ""
-        gaps = "".join(f'<div class="gap">{html.escape(e)} — not written yet</div>'
-                       for e in sec["gaps"])
-        na = (f'<div class="secna">Not applicable — {inline(sec["na"], g)}</div>'
-              if sec["na"] else "")
-        secs.append(f'<div class="sec" id="{sec["id"]}"><div class="sechead">'
-                    f'<h2>{html.escape(sec["title"])}</h2><span class="tally">{tally_txt}</span>'
-                    f'</div>{na}<div class="body">{prose}</div>{gaps}{"".join(qrows)}</div>')
-        nav.append((sec["id"], sec["title"], navn))
+    if kick:
+        km = [q for sec in brief_secs for q in sec["questions"]
+              if q["state"] == "missing" and q["key"]]
+        rows = "".join(
+            f'<div class="row li"><span class="n">{q["num"]}</span><span>{inline(q["q"], g)}'
+            f'</span><span class="r">{esc(q["owner"]) + " can answer" if q["owner"] else ""}'
+            f'</span></div>' for q in km)
+        n = len(km)
+        kick = f"""<section class="sec kick readonly" id="s-kickoff">
+  <div class="band row"><span class="n">—</span><div><div class="t">Kickoff workshop</div>
+  <div class="s" style="color:var(--need)">{n} question{"s" if n != 1 else ""} needed to start</div></div>
+  <div class="r"></div></div>
+  <div class="row rrow"><span class="l">Why</span><div class="span">
+  <p class="lede2">{n} key question{"s are" if n != 1 else " is"} still unanswered, so I suggest a
+  kickoff workshop to ask {"them" if n != 1 else "it"}.</p>
+  <blockquote>{esc(OPENING)}</blockquote>
+  <p class="muted" style="margin-top:12px;font-size:var(--small)">Open with this question. It ties
+  brand, product, audience and business together before anyone talks about colours or layout.</p>
+  </div></div>
+  <div class="list">{rows}</div>
+  <div class="row"><span></span><div class="span acts"><button type="button" class="btn primary"
+  id="copy-agenda">Copy the agenda</button>
+  <span class="muted">The agenda holds every open question, needed ones first. If a meeting
+  is hard to get, <code>/workshop</code> sends them as questions to answer on a phone.</span></div></div>
+  <textarea id="agenda" class="hidden" aria-hidden="true">{esc(chr(10).join(agenda))}</textarea>
+</section>"""
 
-    # ── unknowns ─────────────────────────────────────────────────────────────────────────────
+    # ── the work: other questions, plan, next steps, sources ─────────────────────────────────
+    base_n = len(brief_secs)
+
+    def band(sid, n, title, sub):
+        return (f'<section class="sec readonly" id="{sid}"><div class="band row">'
+                f'<span class="n">{n}</span><div><div class="t">{esc(title)}</div>'
+                f'<div class="s">{sub}</div></div><div class="r"></div></div>')
+
     if qs:
-        rows = []
-        for q in qs:
-            own = (f'<div class="qowner">{html.escape(q["owner"])} can answer</div>'
-                   if q["owner"] else
-                   '<div class="qowner none">no owner named — nobody can answer it</div>')
-            rows.append(f'<div class="q"><div class="qid">{html.escape(q["id"])}</div>'
-                        f'<div class="qbody"><div class="qtext">'
-                        f'{render_md(q["text"], g)}</div>{own}</div></div>')
-        inner = "".join(rows)
+        rows = "".join(
+            f'<div class="row rrow"><span class="l">{esc(q["id"])}</span>'
+            f'<div class="body">{render_md(q["text"], g)}</div>'
+            f'<span class="r{"" if q["owner"] else " need"}">'
+            f'{esc(q["owner"]) + " can answer" if q["owner"] else "Nobody named"}</span></div>'
+            for q in qs)
     else:
-        inner = ('<div class="gap">no open questions recorded — a brief this early with '
-                 'nothing unknown is a brief that has not been checked</div>')
-    secs.append(f'<div class="sec" id="s-open"><h2>Other open questions</h2>{inner}</div>')
-    nav.append(("s-open", "Other open questions",
-                ("miss", str(len(qs))) if qs else ("na", "—")))
+        rows = ('<div class="row rrow"><span class="l"></span><div class="body gapline">None '
+                'recorded. A brief this early with nothing unknown has not been checked.</div>'
+                '<span></span></div>')
+    out_secs.append(band("s-open", base_n + 1, "Other open questions",
+                         "Unknowns that are not design questions, with who can answer")
+                    + rows + '<div class="end">From brain/open-questions.md</div></section>')
 
-    # ── the plan ─────────────────────────────────────────────────────────────────────────────
     blocks = []
     for bar_entry in bars:
         cells = []
         for c in bar_entry["conds"]:
-            st = c["status"]
-            mark = {"met": "met", "partly": "partly", "not-met": "not met"}.get(st, "unknown")
+            stc = c["status"]
+            mark = {"met": "Met", "partly": "Partly", "not-met": "Not met"}.get(stc, "Unknown")
             ev = (f'<div class="ev">{render_md(c["evidence"], g)}</div>' if c.get("evidence")
                   else "")
-            cells.append(f'<div class="cond {st}"><div class="dot">{c["n"]}</div>'
-                         f'<div><div class="claim"><span class="status">{mark}</span>'
+            cells.append(f'<div class="cond {stc}"><div class="dot">{c["n"]}</div>'
+                         f'<div><div class="claim"><span class="status">{mark}</span> '
                          f'{render_md(c["claim"], g)}</div>{ev}'
                          f'<div class="more">{render_md(c["detail"], g)}</div></div></div>')
-        head = (f'{html.escape(bar_entry["label"])} · ' if bar_entry["label"] and len(bars) > 1
-                else "")
-        blocks.append(f'<h3 style="margin-top:30px">{head}'
-                      f'{html.escape(bar_entry["stage"])} — what ends it</h3>'
-                      + "".join(cells))
-    if blocks:
-        barhtml = ("".join(blocks)
-                   + '<div class="rest">Every condition above is read from the decision that '
-                     'owns it. Status is a judgment and comes from the BAR block in '
-                     'feed-items.md.</div>')
-    else:
-        barhtml = ('<h3 style="margin-top:30px">What ends the current stage</h3>'
-                   '<div class="gap">this stage has no exit bar — write it as a decision '
-                   'before the work goes further, or the stage cannot end</div>')
-    secs.append(f"""<div class="sec" id="s-plan"><h2>The plan</h2>
-      <div class="stages">{strip}</div>
-      {barhtml}</div>""")
-    nav.append(("s-plan", "The plan", ("done", "") if blocks else ("miss", "no bar")))
+        head = (f'{esc(bar_entry["label"])} · ' if bar_entry["label"] and len(bars) > 1 else "")
+        blocks.append(f'<p style="font-weight:560;margin:24px 0 8px">{head}'
+                      f'{esc(bar_entry["stage"])}: what ends it</p>' + "".join(cells))
+    planbody = ("".join(blocks) if blocks else
+                '<p class="gapline" style="color:var(--need)">This stage has no exit bar. Write it '
+                'as a decision before the work goes further, or the stage cannot end.</p>')
+    out_secs.append(band("s-plan", base_n + 2, "The plan", "The stages, and what ends this one")
+                    + f'<div class="row rrow"><span class="l"></span><div class="span">'
+                      f'<div class="stages">{strip}</div>{planbody}</div></div>'
+                    + '<div class="end">From brain/plan.md and its decisions</div></section>')
 
-    # ── next steps ───────────────────────────────────────────────────────────────────────────
     if steps:
         rows = []
         for i, s in enumerate(steps, 1):
-            tags = [f'<span class="doing">{s["status"]}</span>'] if s["status"] == "doing" else []
-            tags += [f'<span class="bar">{l}</span>' if l == "bar" else f"<span>{l}</span>"
-                     for l in s["labels"]]
-            note = f'<div class="snote">{render_md(s["note"], g)}</div>' if s["note"] else ""
-            rows.append(f'<div class="step"><div class="num">{i}</div><div>'
-                        f'<div class="stitle">{html.escape(s["title"])}</div>{note}'
-                        f'<div class="stags">{s["prio"]} · '
-                        f'{" · ".join(tags) if tags else "no label"}</div></div></div>')
+            labels = " · ".join(s["labels"]) or ""
+            note = f'<div class="sub">{render_md(s["note"], g)}</div>' if s["note"] else ""
+            rows.append(f'<div class="row rrow"><span class="l">{i}</span><div class="body">'
+                        f'<b style="font-weight:560">{esc(s["title"])}</b>{note}</div>'
+                        f'<span class="r">{s["status"].capitalize()} · {s["prio"]}'
+                        f'{" · " + esc(labels) if labels else ""}</span></div>')
         rest = ", ".join(f"{n} {st}" for st, n in sorted(counts.items())
                          if st not in ("doing", "todo"))
-        inner = "".join(rows) + (
-            f'<div class="rest">Also on the board and deliberately not shown here: {rest}. '
-            f'Full list in tasks.md.</div>' if rest else "")
+        stepbody = "".join(rows)
+        endline = (f"Also on the board, not shown: {rest}. Full list in brain/tasks.md."
+                   if rest else "From brain/tasks.md")
     else:
-        inner = ('<div class="gap">no task is `doing` or `todo` — either the work has not '
-                 'been broken down yet, or everything is waiting on someone else</div>')
-    secs.append(f'<div class="sec" id="s-next"><h2>What I would do next</h2>{inner}</div>')
-    nav.append(("s-next", "Next steps", ("na", str(len(steps))) if steps else ("miss", "none")))
+        stepbody = ('<div class="row rrow"><span class="l"></span><div class="body gapline">No '
+                    'task is doing or todo. Either the work has not been broken down, or it is '
+                    'all waiting on someone else.</div><span></span></div>')
+        endline = "From brain/tasks.md"
+    out_secs.append(band("s-next", base_n + 3, "What I would do next", "In the order to do them")
+                    + stepbody + f'<div class="end">{esc(endline)}</div></section>')
 
-    # ── sources ──────────────────────────────────────────────────────────────────────────────
     srcs = cite_list_html()
-    if srcs:
-        secs.append(f'<div class="sec" id="s-sources"><h2>Sources</h2>{srcs}</div>')
-    else:
-        secs.append('<div class="sec" id="s-sources"><h2>Sources</h2><div class="gap">nothing '
-                    'on this page is attributed — every claim about what someone said needs a '
-                    '<code>^[who · where · when]</code> tag, or the mark '
-                    '<code>^[inferred]</code></div></div>')
-    nav.append(("s-sources", "Sources", ("na", "")))
+    out_secs.append(band("s-sources", base_n + 4, "Sources",
+                         "Every claim from outside this repo")
+                    + f'<div class="row rrow"><span class="l"></span><div class="span">'
+                      + (srcs or '<p class="gapline">Nothing on this page is attributed. Every '
+                                 'claim about what someone said needs a source tag, or the mark '
+                                 'inferred.</p>')
+                    + '</div></div></section>')
 
-    navhtml = ('<nav class="nav" aria-label="Sections"><div class="navh">The brief</div><ol>'
-               + "".join(f'<li><a href="#{i}"><span>{html.escape(lbl)}</span>'
-                         f'<span class="n {c}">{html.escape(n)}</span></a></li>'
-                         for i, lbl, (c, n) in nav[:len(brief_secs)])
-               + '</ol><div class="navh">The work</div><ol>'
-               + "".join(f'<li><a href="#{i}"><span>{html.escape(lbl)}</span>'
-                         f'<span class="n {c}">{html.escape(n)}</span></a></li>'
-                         for i, lbl, (c, n) in nav[len(brief_secs):])
-               + '</ol></nav>')
+    n_open = t["missing"] + t["inferred"]
+    pct = 100 * answered / total if total else 0
+    no_q = ("" if total else
+            '<p class="how" style="color:var(--need)">This brief has no design questions yet. '
+            '<code>/brief</code> adds the ones that fit the project.</p>')
 
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Project brief — {html.escape(PROJECT_NAME)}</title>
-{FONT_LINK}<style>{CSS}{PAGE_CSS}{BRIEF_CSS}</style></head>
-<body data-project="{html.escape(PROJECT_NAME)}" data-owner="{html.escape(OWNER)}">
-<div class="wrap">
-<div class="layout">
-{navhtml}
-<div class="main">
-<div class="top">
-  <div class="kicker">{html.escape(PROJECT_NAME)} · preliminary brief</div>
-  <h1>What I understand, and what I do not</h1>
-  <div class="approval {state}">
-    <span class="state">{html.escape(words[0])}</span>
-    <span class="what">{words[1]}</span>
+<title>Project brief — {esc(PROJECT_NAME)}</title>
+{GEIST_LINK}<style>{CSS}{PAGE_CSS}</style></head>
+<body data-project="{esc(PROJECT_NAME)}" data-owner="{esc(OWNER)}" data-answered="{answered}"
+  data-total="{total}">
+<header class="bar"><div class="bar-in">
+  <span class="where">Brief · {esc(PROJECT_NAME)}</span>
+  <span class="prog"><span class="track"><i id="prog-i" style="width:{pct:.0f}%"></i></span>
+    <span class="num" id="prog-n">{answered} of {total} answered</span></span>
+  <span class="r"><button type="button" class="btn hidden" id="clear">Clear</button>
+    <button type="button" class="btn primary" id="copy" disabled>Copy replies</button></span>
+</div></header>
+<main class="wrap">
+  <div class="row head">
+    <span><b>Brief</b></span>
+    <span><b>Engagement brief</b><br><span class="muted">{esc(PROJECT_NAME)}</span></span>
+    <span class="r"><span class="state {head_state[0]}">{esc(head_state[1])}</span><br>
+      <span class="muted">Generated {long_date(now)}</span></span>
   </div>
-  {cov}
+  <div class="row"><span></span><p class="lede span">What I understand about
+    {esc(PROJECT_NAME)}, and what I still need from you.</p></div>
+  <div class="row"><span></span><div class="span">
+    <p class="how">Grey boxes are yours to fill. Dashed boxes are my guesses: keep them or change
+    them. Everything saves in this browser as you type. When you are done, press
+    <b style="font-weight:560">Copy replies</b> and paste them into the session; I file each one
+    in the brief. Approve the brief, or tell me what is wrong, in the session.</p>{no_q}
+    <div class="key"><span><i class="sw f"></i>Yours to fill</span>
+      <span><i class="sw g"></i>My guess, keep or change</span>
+      <span><i class="sw d"></i>Answered</span></div>
+  </div></div>
+
+  <div class="toc"><div class="row h"><b>Contents</b><span class="muted">{n_open} waiting on
+    you{f" · {len(t['key_missing'])} needed to start" if t["key_missing"] else ""}</span><span></span></div>
+    {"".join(toc)}
+    <div class="row"><span></span><div class="filter"><button type="button" class="btn"
+      id="only">Show only what needs you</button></div><span></span></div>
+  </div>
+
   {kick}
-  <div class="meta">for {html.escape(OWNER)} · generated {stamp} from
-    <code>brain/project-brief.md</code>, <code>brain/open-questions.md</code>,
-    <code>brain/plan.md</code> and <code>brain/tasks.md</code> — regenerate with
-    <code>python3 brain/brief.py</code>. The files are the truth; this page is a projection.</div>
-</div>
+  {"".join(out_secs)}
 
-{"".join(secs)}
-
-<div class="footnote"><b>How to read the marks.</b>
-<span class="mk answered"></span> answered from a source ·
-<span class="mk inferred"></span> inferred by me, not said by anyone: check these first ·
-<span class="mk missing"></span> not answered yet ·
-<span class="mk missing key"></span> not answered, and the work should not move far without it ·
-<span class="mk na"></span> does not apply. The small blue numbers are sources: hover one for
-who said it and when, click it for the recording, the thread or the message.</div>
-</div>
-</div>
-</div>
-<div class="tray hidden" id="tray"><div class="in">
-  <span class="count" id="tray-count"></span>
-  <span class="hint">Copy them, then paste into the session and I will file each one in the brief.</span>
-  <span class="sp"></span>
-  <button type="button" id="tray-clear">Clear</button>
-  <button type="button" class="go" id="tray-copy">Copy replies</button>
-</div></div>
+  <div class="row" style="margin-top:96px"><span></span><p class="muted span"
+    style="font-size:var(--small)">Generated from brain/project-brief.md, brain/open-questions.md,
+    brain/plan.md and brain/tasks.md. The files are the truth; this page is a projection.
+    Regenerate with python3 brain/brief.py.</p></div>
+</main>
 <div id="tip"></div>
-<script>{TIP_JS}</script><script>{FILTER_JS}</script></body></html>"""
-
+<script>{TIP_JS}</script><script>{PAGE_JS}</script></body></html>"""
 
 
 def main() -> int:
