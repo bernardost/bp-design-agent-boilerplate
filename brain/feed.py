@@ -870,7 +870,7 @@ def graph_svg(nodes: list, edges: list, g: dict) -> str:
     out.append("</svg>")
 
     counts = Counter(n["kind"] for n in nodes)
-    legend = " · ".join(f'<span class="lg {k}">{counts[k]} {k}{"s" if counts[k] != 1 else ""}</span>'
+    legend = " · ".join(f'<span class="lg is-{k}">{counts[k]} {k}{"s" if counts[k] != 1 else ""}</span>'
                         for k in ("decision", "insight", "braindump", "briefing", "tag")
                         if counts.get(k))
     links = sum(1 for e in edges if e["kind"] == "link")
@@ -919,7 +919,26 @@ def write_canvas(nodes: list, edges: list) -> int:
 # The page
 # ---------------------------------------------------------------------------------------------
 
-CSS = """
+TAG_CSS = """
+/* Status is a tag: a tint, a darker word and an icon, so what needs the owner scans at a
+   glance. One set for every page: brain/lenses/house.md, section 2.6. Defined once here;
+   review.py injects it into the review round, and brain/workshop/form.html carries a copy. */
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 7px;font-size:13px;
+  font-weight:500;line-height:1.25;letter-spacing:0;white-space:nowrap;background:rgb(241,241,239);color:#5c5c5c}
+.tag::before{content:"";width:14px;height:14px;flex:none;background:currentColor;
+  -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+.tag.t-open{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E")}
+.tag.t-need{background:#fbe7ea;color:#b00d28;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.7v4' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='1.05'/%3E%3C/svg%3E")}
+.tag.t-guess{background:#f8eedb;color:#80520e;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6' stroke-dasharray='2.4 2.1'/%3E%3C/svg%3E")}
+.tag.t-done{background:#e4f1e8;color:#17663a;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5.2 8.3l1.9 1.9 3.7-3.9' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.tag.t-na{background:none;color:#737373;padding-left:0;
+  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
+"""
+
+CSS = TAG_CSS + """
 
 *,*::before,*::after{box-sizing:border-box}
 
@@ -1000,14 +1019,6 @@ button{font:inherit;font-family:var(--sans);letter-spacing:inherit;cursor:pointe
 .top .meta{margin-top:20px;font-size:13px;line-height:1.6;color:var(--ink-3)}
 .top .meta code{color:var(--ink-3)}
 
-/* Status words carry a small square: outlined is open, filled is done, red is needed. */
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;
-  letter-spacing:0;color:var(--ink-3)}
-.pill::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
-.pill.warn{color:var(--red)}
-.pill.ok{color:var(--ink)}
-.pill.ok::before{background:var(--ink)}
-
 /* ── projects: one rail per strand, one chip per card, one filter ───── */
 .rail{margin:0 0 4px}
 .rail .stages{margin-bottom:22px}
@@ -1041,13 +1052,8 @@ button{font:inherit;font-family:var(--sans);letter-spacing:inherit;cursor:pointe
 .cond .claim:hover{text-decoration:underline;text-decoration-color:var(--rule);
   text-underline-offset:3px}
 .cond .ev{font-size:14px;color:var(--ink-3);margin-top:5px;max-width:64ch}
-.cond .status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;
-  letter-spacing:0;text-transform:none;color:var(--red);margin-right:10px}
-.cond .status::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
-.cond.met .status{color:var(--ink)}
-.cond.met .status::before{background:var(--ink)}
-.cond.partly .status{color:var(--ink-3)}
-.cond.partly .status::before{background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+.cond .ev .tag{margin-right:10px}
+.cardhead .tag{align-self:flex-start}
 .cond .more{font-size:15px;color:var(--ink);margin-top:11px;display:none;max-width:64ch;
   padding-left:14px;border-left:1px solid var(--rule)}
 .cond.open .more{display:block}
@@ -1071,11 +1077,11 @@ svg.graph a.gnode:hover text{font-weight:560}
 .legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 4px;font-size:13px;color:var(--ink-3)}
 .legend .lg{display:inline-flex;align-items:center;gap:6px}
 .legend .lg::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
-.legend .lg.decision::before{background:var(--ink)}
-.legend .lg.insight::before{background:var(--ink-3)}
-.legend .lg.braindump::before{background:var(--paper);box-shadow:inset 0 0 0 1.4px var(--ink)}
-.legend .lg.briefing::before{background:var(--soft)}
-.legend .lg.tag::before{background:var(--paper);border:1.2px solid var(--ink-3);
+.legend .lg.is-decision::before{background:var(--ink)}
+.legend .lg.is-insight::before{background:var(--ink-3)}
+.legend .lg.is-braindump::before{background:var(--paper);box-shadow:inset 0 0 0 1.4px var(--ink)}
+.legend .lg.is-briefing::before{background:var(--soft)}
+.legend .lg.is-tag::before{background:var(--paper);border:1.2px solid var(--ink-3);
   border-radius:0;transform:rotate(45deg);width:7px;height:7px}
 
 /* ── the feed: each item is a row on the grid ────────────────────────── */
@@ -1413,11 +1419,11 @@ def build() -> str:
         conds, stage = bar["conds"], bar["stage"]
         met = sum(1 for c in conds if c["status"] == "met")
         rows = []
-        words = {"met": "met", "partly": "partly", "unknown": "not met"}
+        words = {"met": ("t-done", "Met"), "partly": ("t-open", "Partly met")}
         for c in conds:
             cls = c["status"] if c["status"] in ("met", "partly") else ""
-            word = words.get(c["status"], "not met")
-            ev = (f'<span class="status">{word}</span>'
+            tcls, word = words.get(c["status"], ("t-need", "Not met"))
+            ev = (f'<span class="tag {tcls}">{word}</span>'
                   + (_inline(c["evidence"], g) if c["evidence"] else ""))
             rows.append(
                 f'<div class="cond {cls}"><div class="dot">{c["n"]}</div><div>'
@@ -1430,7 +1436,7 @@ def build() -> str:
             + (f'{html.escape(bar["label"])} · ' if bar["label"] and len(bars) > 1 else "")
             + 'What ends '
             f'{html.escape(stage.split("·")[0].strip())} '
-            f'<span class="pill {"ok" if met == len(conds) else "warn"}">{met} of {len(conds)}'
+            f'<span class="tag {"t-done" if met == len(conds) else "t-need"}">{met} of {len(conds)}'
             '</span></div>'
             '<p style="font-size:13.5px;color:var(--ink-3);margin:-2px 0 10px">'
             'Tap a condition for the full wording from the decision that owns it.</p>'
@@ -1461,8 +1467,8 @@ def build() -> str:
         opts = "".join(
             f'<button class="opt" data-opt="{html.escape(o)}">{html.escape(o)}</button>'
             for o in item["options"])
-        answered_pill = ('<span class="pill ok">Answered</span>' if item["status"] == "answered"
-                         else '<span class="pill warn">Waiting on you</span>')
+        answered_pill = ('<span class="tag t-done">Answered</span>' if item["status"] == "answered"
+                         else '<span class="tag t-need">Waiting on you</span>')
         body = render_md(item["body"], g)
         # The first paragraph is always visible; the rest folds away. Scanning is the whole point —
         # the argument has to be one click from the question, not in front of it.
@@ -1508,7 +1514,7 @@ def build() -> str:
         for i, c in enumerate(unsent):
             days = (today - date.fromisoformat(c["date"])).days
             age = ("today" if days == 0 else f"{days}d old")
-            stale = ' <span class="pill warn">Still unsent</span>' if days >= 7 else ""
+            stale = ' <span class="tag t-need">Still unsent</span>' if days >= 7 else ""
             to = (html.escape(c["to"]) if c["to"]
                   else '<span class="noone">addressed to nobody</span>')
             rows.append(

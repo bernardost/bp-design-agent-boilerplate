@@ -36,7 +36,8 @@ uppercase. Load it from Google Fonts (`family=Geist:wght@100..900`) or a local f
 **Colour.** White paper, ink `#0a0a0a`, never pure black and never tinted paper. Everything
 secondary — labels, notes, dates, sub-lines — is grey `#737373`; hierarchy comes from grey
 against black and from size, not from weight. Hairlines `#dedede`. Commit to light: no
-`prefers-color-scheme` block that flips the page dark. No other colour on a read page.
+`prefers-color-scheme` block that flips the page dark. The status tags below are the only
+other colour, on every page.
 
 **Grid.** Three columns on every row: the **label** on the left (a section number, a row
 label, a code), the **content** in the middle, the **aside** on the right (amounts, dates,
@@ -55,7 +56,15 @@ column below 760px.
 - **Total or closing row**: a black rule on top.
 
 Black rules start a section or close a sum; grey hairlines separate items inside it. No boxes,
-cards, shading, rounded corners, shadows or icons.
+cards, shading, rounded corners, shadows, or icons outside the status tags.
+
+**Status is a tag, and it looks the same on every page**: a tinted fill, a darker word and a
+small line icon. *Open* is grey with an empty circle, *Our guess* amber with a dashed circle,
+*Needed* red with an exclamation mark (*Waiting on you*, *Not met*), *Done* green with a tick
+(*Answered*, *Met*, *Live*, *Final*), *Not applicable* plain grey with a dash (*Rejected*). The
+CSS is `TAG_CSS` in `brain/feed.py`; every renderer uses it, so a status never gets a second
+look. Grey squares on one page and coloured tags on another made the owner learn two
+vocabularies for one idea. ^[owner · session · 2026-11-06]
 
 **Rhythm.** The page should look about a third empty. Where space is short, cut content
 before tightening the spacing.
@@ -88,13 +97,10 @@ page head, black rules for structure, grey for anything secondary. These change:
    closes with a black rule and one grey line saying what comes next.
 5. **A sticky top bar** shows the document name, overall progress as a thin black line with a
    count, and the one main action.
-6. **Status sits in the right column as a tag the reader can scan**: a tinted fill, a darker
-   word and a small line icon, plus who can answer. *Open* is grey with an empty circle,
-   *Our guess* amber with a dashed circle, *Needed to start* red with an exclamation mark,
-   *Answered* green with a tick, *Not applicable* plain grey with a dash. These tags are the
-   one place colour carries status; elsewhere red `#c8102e` still marks only what is needed
-   and still empty. A row of grey square markers made the owner read every line to find
-   what needed him. ^[owner · session · 2026-11-06]
+6. **Status sits in the right column as a tag** (section 1), plus who can answer. Outside
+   the tags, red `#c8102e` still marks only what is needed and still empty. A row of grey
+   square markers made the owner read every line to find what needed him.
+   ^[owner · session · 2026-11-06]
 7. **Buttons look like buttons.** Black filled for the main action, a 1px ink outline for the
    alternative, square corners. Never text links standing in for actions.
 8. **Controls match the shape of the answer**: full-width option rows for one choice, chips
@@ -130,7 +136,7 @@ columns: the owner's name, the contact line, the page count. Render with headles
 
 ## 4 · What to refuse
 
-Colour beyond the one red and the status tags on a used page, logos, icons outside those
+Colour beyond the status tags and, on a used page, the one red; logos, icons outside those
 tags, photographs, a second typeface, bold
 700, centred titles, boxes or shaded panels, all-caps labels, decorative rules, and anything
 that makes the page busier than it needs to be.

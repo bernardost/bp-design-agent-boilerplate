@@ -386,22 +386,6 @@ a{color:inherit;text-decoration:underline;text-decoration-color:var(--hair);
 .q .ans{font-size:17px;line-height:1.55}
 .q .st{text-align:right;font-size:var(--small);padding-top:3px}
 .q.na h3,.q.na .ans{color:var(--muted)}
-/* Status is a tag: a tint, a darker word and an icon, so what needs the owner scans at a
-   glance. The one place colour is allowed besides red: brain/lenses/house.md, section 2.6.
-   brain/workshop/form.html carries the same tags. */
-.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 7px;font-size:var(--small);
-  font-weight:500;line-height:1.25;letter-spacing:0;white-space:nowrap;background:var(--fill);color:#5c5c5c}
-.tag::before{content:"";width:14px;height:14px;flex:none;background:currentColor;
-  -webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
-.tag.t-open{--icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6'/%3E%3C/svg%3E")}
-.tag.t-need{background:#fbe7ea;color:#b00d28;
-  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M8 4.7v4' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='1.05'/%3E%3C/svg%3E")}
-.tag.t-guess{background:#f8eedb;color:#80520e;
-  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='none' stroke='black' stroke-width='1.6' stroke-dasharray='2.4 2.1'/%3E%3C/svg%3E")}
-.tag.t-done{background:#e4f1e8;color:#17663a;
-  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='black' stroke-width='1.6'/%3E%3Cpath d='M5.2 8.3l1.9 1.9 3.7-3.9' fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
-.tag.t-na{background:none;color:var(--muted);padding-left:0;
-  --icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8h8' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
 .who{display:block;color:var(--muted);margin-top:4px}
 
 /* a field: the fill means "write here" */
@@ -452,7 +436,7 @@ a{color:inherit;text-decoration:underline;text-decoration-color:var(--hair);
 /* the parts shared with the feed, brought into this register */
 .stages{margin:28px 0 36px}
 .stage b,.cond .dot{font-family:var(--sans)}
-.cond .status,.stage b{letter-spacing:0;text-transform:none;font-size:var(--small);
+.stage b{letter-spacing:0;text-transform:none;font-size:var(--small);
   font-weight:500}
 .cite.inferred{font-family:var(--sans);text-transform:none;letter-spacing:0;color:var(--muted);
   border:1px dashed var(--guess-line);padding:0 4px;font-size:.7em}
@@ -782,14 +766,14 @@ def build() -> str:
                 for sm in subs:
                     rows.append(f'<div class="row rrow"><span class="l">{esc(sm.group(1))}</span>'
                                 f'<div class="body">{render_md(sm.group(2).strip(), g)}</div>'
-                                f'<span class="r">Written</span></div>')
+                                f'<span class="r"><span class="tag t-done">Written</span></span></div>')
             elif sec["prose"].strip():
                 rows.append(f'<div class="row rrow"><span class="l"></span><div class="body">'
                             f'{render_md(sec["prose"], g)}</div><span></span></div>')
             for gap in sec["gaps"]:
                 rows.append(f'<div class="row rrow"><span class="l">{esc(gap)}</span>'
                             f'<div class="body gapline">Not written yet</div>'
-                            f'<span class="r">Open</span></div>')
+                            f'<span class="r"><span class="tag t-open">Not written</span></span></div>')
             body = "".join(rows)
             sub = (f'{len(sec["gaps"])} part{"s" if len(sec["gaps"]) != 1 else ""} not written'
                    if sec["gaps"] else "Written")
@@ -857,11 +841,12 @@ def build() -> str:
         cells = []
         for c in bar_entry["conds"]:
             stc = c["status"]
-            mark = {"met": "Met", "partly": "Partly", "not-met": "Not met"}.get(stc, "Unknown")
+            tcls, mark = {"met": ("t-done", "Met"), "partly": ("t-open", "Partly met"),
+                          "not-met": ("t-need", "Not met")}.get(stc, ("t-open", "Unknown"))
             ev = (f'<div class="ev">{render_md(c["evidence"], g)}</div>' if c.get("evidence")
                   else "")
             cells.append(f'<div class="cond {stc}"><div class="dot">{c["n"]}</div>'
-                         f'<div><div class="claim"><span class="status">{mark}</span> '
+                         f'<div><div class="claim"><span class="tag {tcls}">{mark}</span> '
                          f'{render_md(c["claim"], g)}</div>{ev}'
                          f'<div class="more">{render_md(c["detail"], g)}</div></div></div>')
         head = (f'{esc(bar_entry["label"])} · ' if bar_entry["label"] and len(bars) > 1 else "")

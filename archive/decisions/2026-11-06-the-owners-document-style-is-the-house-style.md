@@ -33,6 +33,8 @@ rather than read. ^[owner · session · 2026-11-06]
 ## Consequences
 
 The feed's colour coding (blue references, ochre drafts, green answers, coloured graph nodes)
-is gone; state is carried by square markers, greys and shapes instead, and red marks only what
-is waiting on the owner. A specimen inside a spread or a playground piece is the work and keeps
+is gone. Status was first carried by grey square markers; the workshop branch then brought in
+coloured status tags (grey open, amber guess, red needed, green done), and the owner asked for
+those on every page so status looks the same throughout. They are `TAG_CSS` in
+`brain/feed.py`. ^[owner · session · 2026-11-06] A specimen inside a spread or a playground piece is the work and keeps
 its own fonts.

@@ -169,14 +169,8 @@ PAGE_CSS = f"""
 
 .dir .verdict{{padding-top:11px;border-top:1.5px solid var(--ink);
   font-size:14px;line-height:1.55;color:var(--ink-3)}}
-.dir .v{{font-size:13px;font-weight:560;display:flex;align-items:center;gap:6px;
-  margin-bottom:4px;text-transform:capitalize}}
-.dir .v::before{{content:"";width:8px;height:8px;border:1.5px solid currentColor}}
-.dir.live .v{{color:var(--ink)}}
-.dir.live .v::before{{background:var(--ink)}}
-.dir.rejected .v{{color:var(--ink-3)}}
-.dir.undecided .v{{color:var(--ink-3)}}
-.dir.undecided .v::before{{border-style:dashed}}
+.dir .verdict .tag{{margin-bottom:6px}}
+.dir .reason{{display:block}}
 
 .top .brief{{grid-column:2 / 4;font-size:17px;color:var(--ink);margin:14px 0 0;max-width:64ch}}
 .facts .seed{{font-size:13px;color:var(--ink-3);word-break:break-all}}
@@ -218,14 +212,15 @@ def build(ex: dict, g: dict) -> str:
     cards = []
     for d in ex["directions"]:
         state = d["verdict"] or "undecided"
-        label = {"live": "live", "rejected": "rejected"}.get(d["verdict"], "no verdict yet")
+        tcls, label = {"live": ("t-done", "Live"), "rejected": ("t-na", "Rejected")}.get(
+            d["verdict"], ("t-open", "No verdict yet"))
         reason = html.escape(d["reason"]) if d["reason"] else ""
         cards.append(f"""<div class="dir {state}">
 {specimen_frame(d)}
   <div class="letter">{html.escape(d["letter"])}</div>
   <h3>{html.escape(d["name"])}</h3>
   <div class="pitch">{render_md(d["pitch"], g) if d["pitch"] else ""}</div>
-  <div class="verdict"><span class="v">{label}</span>{reason}</div>
+  <div class="verdict"><span class="tag {tcls}">{label}</span><span class="reason">{reason}</span></div>
 </div>""")
 
     went = ex["went"] or ("Nothing picked yet. Picking one produces exactly one numbered "

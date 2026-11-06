@@ -302,7 +302,7 @@ for a client. They are kept here because Codex and Cursor never load the `stop-s
 
 **How it looks** is `brain/lenses/house.md`, taken from the owner's own business documents:
 Geist at two weights, black on white, a three-column grid, black rules and grey hairlines, no
-colour, boxes or icons. A page he has to fill in — the brief, a workshop, a review round —
+boxes or icons. The one colour is the status tag, which looks the same on every page. A page he has to fill in — the brief, a workshop, a review round —
 adds its section 2: a grey fill means "write here", a dashed outline means "my guess", and
 red marks only what is needed and still empty. It governs the owner's pages only, never the
 project's own work.

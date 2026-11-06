@@ -40,8 +40,8 @@ body{font:15px/1.5 Geist,'Helvetica Neue',Arial,sans-serif;letter-spacing:-0.012
 .rbody{flex:1;overflow:auto;padding:22px 20px 16px}
 .pos{display:flex;justify-content:space-between;align-items:baseline}
 h1{font-size:20px;line-height:1.35;letter-spacing:-.015em;margin:8px 0 10px;font-weight:520}
-.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-bottom:10px}
-.tag::before{content:"";width:8px;height:8px;background:var(--ink)}
+/*TAGS*/
+#tag .tag{margin-bottom:10px}
 .note{font-size:14px;color:var(--muted);margin:0 0 18px}
 .react{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .chip{font:inherit;font-size:15px;font-weight:400;border:0;background:var(--fill);min-height:48px;padding:0 14px;cursor:pointer;color:var(--ink);text-align:left;display:flex;align-items:center;justify-content:space-between}
@@ -125,7 +125,7 @@ function show(i) {
   $('piece').textContent = `${a.p.title} · ${a.n} of ${n2(a.p.cases.length)}`;
   $('open').href = src(a.p) + '#case-' + a.n;
   $('name').textContent = a.c.name;
-  $('tag').innerHTML = (a.p.recn||[]).includes(a.ci+1) ? '<span class="tag">Recommended</span>' : '';
+  $('tag').innerHTML = (a.p.recn||[]).includes(a.ci+1) ? '<span class="tag t-guess">Recommended</span>' : '';
   $('note').textContent = a.c.note;
   $('cnote').value = S['note-'+a.k] || '';
   $('wlbl').textContent = `About ${a.p.title} as a whole`;

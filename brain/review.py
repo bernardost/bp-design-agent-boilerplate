@@ -45,6 +45,7 @@ BRAIN = Path(__file__).resolve().parent
 sys.path.insert(0, str(BRAIN))
 
 import playground  # noqa: E402
+from feed import TAG_CSS  # noqa: E402
 
 TEMPLATE = BRAIN / "playground" / "_template" / "review.html"
 ROUND_NAME = re.compile(r"^[a-z0-9][a-z0-9-]*$")
@@ -122,7 +123,8 @@ def render(round_name: str, title: str, data: list[dict]) -> str:
     round_js = json.dumps({"key": f"review-{round_name}", "title": title}, ensure_ascii=False)
     # `</` inside a JSON string would close the script element early.
     pieces_js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    for marker, value in (("/*ROUND*/{key:'round',title:'Review'}", round_js), ("/*PIECES*/[]", pieces_js)):
+    for marker, value in (("/*ROUND*/{key:'round',title:'Review'}", round_js), ("/*PIECES*/[]", pieces_js),
+                          ("/*TAGS*/", TAG_CSS)):
         if marker not in page:
             raise SystemExit(f"template is missing {marker!r}; brain/playground/_template/review.html was edited")
         page = page.replace(marker, value, 1)

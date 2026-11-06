@@ -116,10 +116,7 @@ PAGE_CSS = """
 .piece .brief{font-size:14px;color:var(--ink-3);margin:0 0 8px;max-width:48ch}
 .piece .facts{font-size:13px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 14px;border:0;padding:0;margin:0}
 .piece .facts a{color:var(--ink)}
-.status{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-bottom:10px;color:var(--ink-3);text-transform:capitalize}
-.status::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
-.status[data-s="final"],.status[data-s="shipped"]{color:var(--ink)}
-.status[data-s="final"]::before,.status[data-s="shipped"]::before{background:var(--ink)}
+.piece .tag{margin-bottom:10px}
 .versions{list-style:none;margin:0;padding:0;font-size:14px}
 .versions li{display:grid;grid-template-columns:150px 120px 1fr;gap:16px;padding:9px 0;border-bottom:1px solid var(--rule);align-items:baseline}
 .versions li:last-child{border-bottom:0}
@@ -172,7 +169,7 @@ def piece_html(p: dict) -> str:
     versions = f'<ul class="versions">{"".join(rows)}</ul>' if rows else '<p class="empty">no versions yet</p>'
     return f"""<div class="piece" id="{html.escape(p["slug"])}">
   <div>
-    <div class="status" data-s="{html.escape(p["status"])}">{html.escape(p["status"])}</div>
+    <div><span class="tag {"t-done" if p["status"] in ("final", "shipped") else "t-open"}">{html.escape(p["status"].capitalize())}</span></div>
     <h3>{html.escape(p["title"])}</h3>
     {f'<p class="brief">{html.escape(p["brief"])}</p>' if p["brief"] else ""}
     <div class="facts">{" · ".join(facts)}</div>
