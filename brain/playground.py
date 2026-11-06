@@ -109,30 +109,38 @@ def versions_js(p: dict) -> str:
 
 
 PAGE_CSS = """
-.wrap{max-width:980px}
-.piece{display:grid;grid-template-columns:1fr 2fr;gap:12px 40px;padding:26px 0;border-top:1px solid var(--rule)}
-.piece h3{margin:0 0 4px;font-size:20px}
-.piece .brief{font-size:15px;color:var(--ink-2);margin:0 0 8px;max-width:48ch}
-.piece .facts{font-size:12px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 14px}
-.piece .facts a{color:var(--blue);text-decoration:none}
-.status{font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;margin-bottom:10px;color:var(--ink-3)}
-.status[data-s="final"]{color:var(--ink)}.status[data-s="shipped"]{color:var(--green)}
-.status[data-s="current"]{color:var(--ochre)}
+.wrap{max-width:var(--max)}
+.piece{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap);row-gap:12px;padding:26px 0;border-top:1px solid var(--rule)}
+.piece>div:last-child{grid-column:2 / 4;min-width:0}
+.piece h3{margin:0 0 4px;font-size:20px;font-weight:520}
+.piece .brief{font-size:14px;color:var(--ink-3);margin:0 0 8px;max-width:48ch}
+.piece .facts{font-size:13px;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:4px 14px;border:0;padding:0;margin:0}
+.piece .facts a{color:var(--ink)}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin-bottom:10px;color:var(--ink-3);text-transform:capitalize}
+.status::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
+.status[data-s="final"],.status[data-s="shipped"]{color:var(--ink)}
+.status[data-s="final"]::before,.status[data-s="shipped"]::before{background:var(--ink)}
 .versions{list-style:none;margin:0;padding:0;font-size:14px}
-.versions li{display:grid;grid-template-columns:150px 92px 1fr;gap:16px;padding:7px 0;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+.versions li{display:grid;grid-template-columns:150px 120px 1fr;gap:16px;padding:9px 0;border-bottom:1px solid var(--rule);align-items:baseline}
 .versions li:last-child{border-bottom:0}
 .versions a{color:var(--ink);text-decoration:none;font-weight:500;font-variant-numeric:tabular-nums}
 .versions a:hover{text-decoration:underline}
 .versions .date{color:var(--ink-3);font-size:13px;font-variant-numeric:tabular-nums}
-.versions .note{color:var(--ink-2);font-size:14px;line-height:1.5}
-.versions li.final a::after{content:"final";margin-left:8px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
-.versions li.shipped a{color:var(--green)}
+.versions .note{color:var(--ink);font-size:14px;line-height:1.5}
+.versions li.final a::after{content:"· final";margin-left:6px;font-size:13px;font-weight:400;color:var(--ink-3)}
+.versions li.shipped a::after{content:"· shipped";margin-left:6px;font-size:13px;font-weight:400;color:var(--ink-3)}
 .empty{color:var(--ink-3);font-size:15px}
 .spreads{list-style:none;margin:0;padding:0;font-size:15px}
-.spreads li{padding:8px 0;border-bottom:1px solid var(--rule-soft)}
+.spreads li{padding:9px 0;border-bottom:1px solid var(--rule)}
 .spreads a{color:var(--ink);text-decoration:none}.spreads a:hover{text-decoration:underline}
 .spreads .date{color:var(--ink-3);font-size:13px;margin-right:12px;font-variant-numeric:tabular-nums}
-.warn{color:var(--ochre)}
+.warn{color:var(--red)}
+@media (max-width:760px){
+  .piece{grid-template-columns:1fr}
+  .piece>div:last-child{grid-column:1}
+  .versions li{grid-template-columns:1fr auto;gap:2px 12px}
+  .versions .note{grid-column:1 / -1}
+}
 """
 
 
@@ -182,7 +190,7 @@ def spreads_html() -> str:
         m = re.match(r"(\d{4}-\d{2}-\d{2})-(.+)", pg.stem)
         date, name = (m.group(1), m.group(2).replace("-", " ")) if m else ("", pg.stem)
         items.append(f'<li><span class="date">{date}</span><a href="../explorations/{pg.name}">{html.escape(name)}</a></li>')
-    return (f'<div class="panel"><div class="kicker">Explorations · the spreads, one click away</div>'
+    return (f'<div class="panel"><div class="kicker">Explorations</div>'
             f'<ul class="spreads">{"".join(items)}</ul></div>')
 
 
@@ -207,8 +215,8 @@ def build(ps: list[dict]) -> str:
 {FONT_LINK}<style>{CSS}{PAGE_CSS}</style></head><body>
 <div class="wrap">
 <div class="top">
-  <div class="kicker">{html.escape(PROJECT_NAME)} · playground</div>
-  <h1>Every piece, every version, nothing lost.</h1>
+  <div class="kicker">Playground</div>
+  <h1>Every piece in the {html.escape(PROJECT_NAME)} playground, with every version kept</h1>
   <div class="meta">generated {stamp} from <code>brain/playground/*/piece.md</code> and the files
     beside them — regenerate with <code>python3 brain/playground.py</code></div>
 </div>

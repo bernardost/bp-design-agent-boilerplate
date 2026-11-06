@@ -790,7 +790,7 @@ def report_explorations():
         print(f"               no verdicts yet: {f} — every direction needs live|rejected")
     for f in unlanded:
         print(f"               live direction, no decision cites it: {f}\n"
-              f"               → picking one means a numbered decision that links back")
+              f"               → picking one means a decision that links back")
     for f, missing, total in thin:
         print(f"               {missing} of {total} directions have no specimen: {f}")
     for f in stale:

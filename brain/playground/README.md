@@ -69,8 +69,8 @@ and `versions.js` are regenerated from them and are not.
 - **The panel is hidden until asked for.** `C` or the corner tab opens it; it overlays the
   page rather than taking a strip off it. That is the fix for the last playground's chrome,
   which took a band of every screen for controls nobody was using at that moment. The panel
-  is dark and set in the house language — Inter, hairlines, kickers, a monospace for values
-  — so it reads as this workspace's tooling against any design, and holds the version menu,
+  is dark and set in the house language — Geist, hairlines, sentence-case labels, square
+  corners — so it reads as this workspace's tooling against any design, and holds the version menu,
   the state chips and the case list above the controls.
 - **Copy settings is the handoff.** The owner tunes, copies, pastes the JSON back. The agent
   bakes those values into the defaults of the next version and logs the pick as a decision

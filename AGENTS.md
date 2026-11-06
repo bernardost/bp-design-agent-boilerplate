@@ -89,7 +89,9 @@ and deal with it first; a pull onto work in progress is how a session loses it.
   ahead.
 - **Write the brief before the work.** When the first real context lands — a kickoff, a
   thread, a folder of client material, a long braindump — run `/brief`: what I understood,
-  what I still do not know, the shape of the work, what I would do next. Do not start stage-1
+  what I still do not know, the shape of the work, what I would do next. It answers the design
+  questions too — why now, for whom, what the brand should feel like, what is in scope, who
+  decides — and proposes a kickoff workshop when key ones are missing. Do not start stage-1
   work off a brief the owner has not approved; a project moving on your private reading of it
   only shows the error once a deliverable is aimed at the wrong thing.
 - **Keep everything for the owner in the repo, never in a scratch or temp directory.** Messages
@@ -298,9 +300,12 @@ for a client. They are kept here because Codex and Cursor never load the `stop-s
 
 ## What you generate for the owner to read
 
-**How it looks** is `brain/lenses/house.md`: Inter, white paper, black ink, no dark-mode flip,
-hairline rules instead of cards and shadows, colour only where it carries intent. It governs
-the owner's pages only, never the project's own work.
+**How it looks** is `brain/lenses/house.md`, taken from the owner's own business documents:
+Geist at two weights, black on white, a three-column grid, black rules and grey hairlines, no
+colour, boxes or icons. A page he has to fill in — the brief, a workshop, a review round —
+adds its section 2: a grey fill means "write here", a dashed outline means "my guess", and
+red marks only what is needed and still empty. It governs the owner's pages only, never the
+project's own work.
 
 **How it reads:**
 

@@ -1,10 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 /* canvas.css — the playground's chrome: the panel, the case labels, and optionally a canvas.
 
    This is NOT the design. The chrome is dark on purpose — the work is almost always light, and
    a dark panel reads as tooling against it — and it borrows the house language from
-   brain/lenses/house.md so it looks like the rest of this workspace: Inter, hairlines instead
-   of boxes, letterspaced kickers naming sections, a monospace only for values, and no colour
-   except the one that carries intent. Every selector here is prefixed `pg-`; a piece's CSS
+   brain/lenses/house.md so it reads as part of this workspace: Geist at two weights, sentence-
+   case labels, hairlines instead of boxes, square corners, and no colour except the one that
+   carries intent. It stays dark, the one place the house style does: it sits on top of the
+   work, and the work is usually white. Every selector here is prefixed `pg-`; a piece's CSS
    never uses that prefix, and this file never styles the design.
 
    Two modes, chosen by whether the piece declares `boards`:
@@ -24,8 +26,8 @@
 .pg-root{--pg-bg:#0f0f10;--pg-bg-2:#161617;--pg-ink:#ededea;--pg-ink-2:#9b9b97;--pg-ink-3:#66666a;
   --pg-line:rgba(255,255,255,.1);--pg-line-2:rgba(255,255,255,.06);--pg-fill:rgba(255,255,255,.06);
   --pg-canvas:#e9e9e6;--pg-canvas-line:#cfcfcb;
-  --pg-sans:"Inter","Inter var",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-  --pg-mono:"IBM Plex Mono","JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --pg-sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --pg-mono:var(--pg-sans);
   --pg-bar:40px;--pg-panel-w:312px;--pg-ease:cubic-bezier(.22,.61,.36,1)}
 
 /* Shared chrome type. Reset against whatever the design sets on html/body. */
@@ -33,23 +35,23 @@
   font:12px/1.45 var(--pg-sans);color:var(--pg-ink);letter-spacing:0;text-transform:none;
   font-feature-settings:"kern" 1,"tnum" 1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 .pg-bar *,.pg-panel *,.pg-tab *,.pg-case-label *{box-sizing:border-box}
-.pg-kicker{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pg-ink-3)}
+.pg-kicker{font-size:12px;font-weight:560;letter-spacing:0;text-transform:none;color:var(--pg-ink-2)}
 
 /* ── the tab: page mode's only visible chrome ─────────────────────── */
 .pg-tab{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;align-items:center;gap:10px;
-  height:30px;padding:0 12px 0 14px;border:0;border-radius:999px;background:var(--pg-bg);color:var(--pg-ink);
-  cursor:pointer;opacity:.78;box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 6px 20px rgba(0,0,0,.18);
+  height:32px;padding:0 12px 0 14px;border:0;border-radius:0;background:var(--pg-bg);color:var(--pg-ink);
+  cursor:pointer;opacity:.85;box-shadow:none;
   transition:opacity .15s,right .22s var(--pg-ease)}
 .pg-tab:hover,.pg-tab[aria-pressed="true"]{opacity:1}
-.pg-tab b{font-weight:600}
-.pg-tab kbd{font:10px/1 var(--pg-mono);color:var(--pg-ink-3);border:1px solid var(--pg-line);border-radius:3px;padding:3px 4px 2px}
+.pg-tab b{font-weight:560}
+.pg-tab kbd{font:10px/1 var(--pg-mono);color:var(--pg-ink-3);border:1px solid var(--pg-line);border-radius:0;padding:3px 4px 2px}
 .pg-root[data-pg-panel="open"] .pg-tab{right:calc(var(--pg-panel-w) + 16px)}
 
 /* ── case labels: a rule with a name, between stacked cases ───────── */
 .pg-case-label{display:flex;align-items:baseline;gap:12px;padding:10px 24px 9px;
   background:var(--pg-bg);color:var(--pg-ink);border-top:1px solid var(--pg-line);scroll-margin-top:0}
 .pg-case-label .pg-n{font:11px/1 var(--pg-mono);color:var(--pg-ink-3)}
-.pg-case-label .pg-name{font-weight:600;font-size:12px}
+.pg-case-label .pg-name{font-weight:560;font-size:12px}
 .pg-case-label .pg-note{color:var(--pg-ink-2);font-size:12px}
 .pg-case-label .pg-note::before{content:"—";margin-right:12px;color:var(--pg-ink-3)}
 .pg-case-label:first-child{border-top:0}
@@ -64,7 +66,7 @@
 
 .pg-panel-head{padding:22px 22px 18px;border-bottom:1px solid var(--pg-line);display:grid;gap:14px}
 .pg-panel-head .pg-title{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.pg-panel-head .pg-title b{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.pg-panel-head .pg-title b{font-size:14px;font-weight:560;letter-spacing:-.01em}
 .pg-panel-head .pg-title a{color:var(--pg-ink-3);text-decoration:none;font-size:11px;white-space:nowrap}
 .pg-panel-head .pg-title a:hover{color:var(--pg-ink)}
 .pg-panel-head .pg-field{display:grid;gap:6px}
@@ -80,7 +82,7 @@
 .pg-section{padding:16px 22px 10px}
 .pg-section + .pg-section{border-top:1px solid var(--pg-line)}
 .pg-section h3{margin:0 0 8px;font:inherit}
-.pg-section h3 span{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--pg-ink-3)}
+.pg-section h3 span{font-size:12px;font-weight:560;letter-spacing:0;text-transform:none;color:var(--pg-ink-2)}
 
 /* One control per row: the name and its current value on one line, the input beneath, so a
    slider gets the full width and the eye runs down one column of names. */
@@ -95,29 +97,29 @@
 .pg-row input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:16px;margin:0;background:none;cursor:pointer}
 .pg-row input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--pg-line)}
 .pg-row input[type=range]::-moz-range-track{height:1px;background:var(--pg-line)}
-.pg-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+.pg-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:0;
   background:var(--pg-ink);margin-top:-5.5px;border:0}
-.pg-row input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--pg-ink);border:0}
+.pg-row input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:0;background:var(--pg-ink);border:0}
 .pg-row input[type=range]:focus-visible{outline:0}
 .pg-row input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px rgba(255,255,255,.2)}
 
 /* text and select */
 .pg-root .pg-input,.pg-root .pg-select{font:12px/1 var(--pg-sans);color:var(--pg-ink);width:100%;height:30px;margin:0;
-  padding:0 10px;border:1px solid var(--pg-line);border-radius:6px;background:var(--pg-bg-2);appearance:none}
+  padding:0 10px;border:1px solid var(--pg-line);border-radius:0;background:var(--pg-bg-2);appearance:none}
 .pg-root .pg-select{padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%239b9b97'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
 .pg-root .pg-input:focus-visible,.pg-root .pg-select:focus-visible{outline:0;border-color:var(--pg-ink-2)}
 
 /* segmented */
-.pg-seg{display:flex;padding:2px;gap:2px;border-radius:7px;background:var(--pg-fill)}
-.pg-seg button{flex:1 1 0;min-width:0;font:12px/1 var(--pg-sans);height:24px;padding:0 6px;border:0;border-radius:5px;
+.pg-seg{display:flex;padding:2px;gap:2px;border-radius:0;background:var(--pg-fill)}
+.pg-seg button{flex:1 1 0;min-width:0;font:12px/1 var(--pg-sans);height:24px;padding:0 6px;border:0;border-radius:0;
   background:none;color:var(--pg-ink-2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   transition:color .12s,background .12s}
 .pg-seg button:hover{color:var(--pg-ink)}
 .pg-seg button[aria-pressed="true"]{background:var(--pg-ink);color:#0f0f10;font-weight:500}
 
 /* chips (states) */
-.pg-chip{font:12px/1 var(--pg-sans);height:26px;padding:0 10px;border:1px solid var(--pg-line);border-radius:999px;
+.pg-chip{font:12px/1 var(--pg-sans);height:26px;padding:0 10px;border:1px solid var(--pg-line);border-radius:0;
   background:none;color:var(--pg-ink-2);cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s,background .12s}
 .pg-chip:hover{color:var(--pg-ink);border-color:var(--pg-ink-3)}
 .pg-chip[aria-pressed="true"]{background:var(--pg-ink);border-color:var(--pg-ink);color:#0f0f10;font-weight:500}
@@ -135,15 +137,15 @@
 /* toggle: a switch, not a checkbox */
 .pg-switch{position:relative;width:30px;height:18px;display:inline-block}
 .pg-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
-.pg-switch i{position:absolute;inset:0;border-radius:999px;background:var(--pg-fill);box-shadow:0 0 0 1px var(--pg-line) inset;transition:background .15s}
-.pg-switch i::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--pg-ink-2);transition:transform .18s var(--pg-ease),background .15s}
+.pg-switch i{position:absolute;inset:0;border-radius:0;background:var(--pg-fill);box-shadow:0 0 0 1px var(--pg-line) inset;transition:background .15s}
+.pg-switch i::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:0;background:var(--pg-ink-2);transition:transform .18s var(--pg-ease),background .15s}
 .pg-switch input:checked + i{background:var(--pg-ink)}
 .pg-switch input:checked + i::after{transform:translateX(12px);background:#0f0f10}
 .pg-switch input:focus-visible + i{box-shadow:0 0 0 1px var(--pg-ink-2) inset}
 
 /* actions */
 .pg-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 22px 18px;border-top:1px solid var(--pg-line)}
-.pg-actions button{font:12px/1 var(--pg-sans);height:32px;padding:0 10px;border:1px solid var(--pg-line);border-radius:6px;
+.pg-actions button{font:12px/1 var(--pg-sans);height:32px;padding:0 10px;border:1px solid var(--pg-line);border-radius:0;
   background:none;color:var(--pg-ink);cursor:pointer;white-space:nowrap;transition:border-color .12s,background .12s}
 .pg-actions button:hover{border-color:var(--pg-ink-3)}
 .pg-actions button kbd{font:10px/1 var(--pg-mono);color:var(--pg-ink-3);margin-left:6px}
@@ -151,7 +153,7 @@
 .pg-actions button.pg-primary:hover{background:#fff}
 
 .pg-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(6px);z-index:60;
-  background:var(--pg-ink);color:#0f0f10;padding:9px 14px;border-radius:6px;opacity:0;font-weight:500;
+  background:var(--pg-ink);color:#0f0f10;padding:9px 14px;border-radius:0;opacity:0;font-weight:500;
   transition:opacity .18s,transform .18s var(--pg-ease);pointer-events:none}
 .pg-toast[data-on]{opacity:1;transform:translateX(-50%)}
 
@@ -163,7 +165,7 @@
 .pg-bar a{color:inherit;text-decoration:none}
 .pg-bar .pg-home{color:var(--pg-ink-3);padding:0 4px;font-size:14px}
 .pg-bar .pg-home:hover{color:var(--pg-ink)}
-.pg-bar .pg-title{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-bar .pg-title{font-weight:560;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pg-bar .pg-title small{font-weight:400;color:var(--pg-ink-2);margin-left:10px;font-size:12px}
 .pg-bar .pg-spacer{flex:1}
 .pg-bar .pg-group{display:flex;align-items:center;gap:6px}
@@ -174,7 +176,7 @@
 .pg-board{flex:none;width:var(--pg-w,1440px)}
 .pg-board[hidden]{display:none}
 .pg-board-label{display:flex;justify-content:space-between;color:#6b6b6b;margin:0 0 8px 1px;font-size:11px}
-.pg-board-label b{font-weight:600;color:#1a1a1a}
+.pg-board-label b{font-weight:560;color:#1a1a1a}
 /* The artboard. `container-type` lets the design's breakpoints fire inside a 390px box on a
    wide screen, and contains `position:fixed` descendants inside their artboard. */
 .pg-screen{container:screen / inline-size;position:relative;width:100%;min-height:var(--pg-h,0);background:#fff;overflow:clip;

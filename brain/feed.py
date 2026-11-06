@@ -59,8 +59,7 @@ FONT_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
     '<link rel="stylesheet" referrerpolicy="no-referrer" '
-    'href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&'
-    'family=IBM+Plex+Mono:wght@400;500&display=swap">'
+    'href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">'
 )
 
 SOURCES = ("now.md", "plan.md", "tasks.md", "feed-items.md", "open-questions.md",
@@ -511,7 +510,7 @@ def project_filter() -> str:
     buttons = ['<button class="pf on" data-pf="*">everything</button>']
     buttons += [f'<button class="pf" data-pf="{html.escape(k)}">'
                 f'{html.escape(PROJECT_LABEL[k])}</button>' for k in PROJECT_KEYS]
-    return ('<div class="filter"><span class="flabel">project</span>'
+    return ('<div class="filter"><span class="flabel">Project</span>'
             + "".join(buttons) + '</div>')
 
 
@@ -924,306 +923,294 @@ CSS = """
 
 *,*::before,*::after{box-sizing:border-box}
 
-/* One deliberate look: white paper, black ink. There is no dark-mode block, and that is a
-   decision rather than an omission — a page that flips to a dark dashboard at the whim of an
-   OS setting is the thing this design exists to not be. */
+/* The house style, brain/lenses/house.md: Geist at two weights, ink on white, grey for
+   anything secondary, a three-column grid, black rules that start a section and grey hairlines
+   that separate items inside it. No colour except one red for "needed and still empty", no
+   boxes, no icons, no dark-mode flip. The feed is used as well as read — the owner answers
+   items here — so the places he writes carry the fill (section 2 of the lens), at a compact
+   density because each answer is a pick or a line. Other pages import this stylesheet and
+   these tokens. */
 :root{
   --paper:#ffffff;
-  --ink:#0d0d0e;
-  --ink-2:#3a3a3e;      /* secondary prose */
-  --ink-3:#6e6e75;      /* metadata */
-  --ink-4:#9a9aa1;      /* faintest legible */
-  --rule:rgba(13,13,14,.13);
-  --rule-soft:rgba(13,13,14,.07);
-  --wash:#f6f5f2;       /* warm paper tint for insets */
-  --blue:#12408f;       /* references, links: the one habitual colour */
-  --blue-wash:#eaf0fb;
-  --ochre:#8a5a12;      /* awaiting, unsent, draft */
-  --ochre-wash:#fbf3e4;
-  --green:#1f6640;      /* met, answered, inbound */
-  --green-wash:#eaf3ed;
-  --red:#a52218;        /* destructive only */
-  --sans:"Inter","Inter var",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-  --mono:"IBM Plex Mono","JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  --ink:#0a0a0a;
+  --ink-2:#0a0a0a;      /* secondary prose: still ink; hierarchy comes from size */
+  --ink-3:#737373;      /* everything secondary */
+  --ink-4:#9b9b9b;      /* faintest legible */
+  --rule:#dedede;       /* hairline between items */
+  --rule-soft:#dedede;
+  --wash:rgb(241,241,239);      /* the fill: "write here", and nothing else */
+  --fill-hover:rgb(235,235,232);
+  --field-line:#8a8a8a;
+  --guess-line:#9a9a9a;
+  --soft:#d4d4d4;       /* someone else's turn, in a diagram */
+  --red:#c8102e;        /* needed and still empty; the only colour */
+  /* Older names, kept so every renderer resolves them; all of them are ink or grey now. */
+  --blue:#0a0a0a; --blue-wash:rgb(241,241,239);
+  --ochre:#737373; --ochre-wash:#dedede;
+  --green:#0a0a0a; --green-wash:rgb(241,241,239);
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --mono:var(--sans);
+  --track:-0.012em;
+  --cols:180px minmax(0,1fr) 170px; --gap:48px; --side:56px; --max:1200px;
 }
 
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);
-  font-family:var(--sans);font-size:17px;line-height:1.72;
-  font-feature-settings:"kern" 1,"liga" 1,"calt" 1;
+  font-family:var(--sans);font-size:16px;line-height:1.55;letter-spacing:var(--track);
+  font-variant-numeric:tabular-nums;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-.wrap{max-width:812px;margin:0 auto;padding:72px 28px 160px}
+.wrap{max-width:var(--max);margin:0 auto;padding:72px var(--side) 160px}
 
-h1,h2,h3,h4,h5{font-family:var(--sans);margin:0 0 .45em;font-weight:600}
-h1{font-size:clamp(32px,4.4vw,45px);line-height:1.08;letter-spacing:-.033em;
+h1,h2,h3,h4,h5{font-family:var(--sans);margin:0 0 .45em;font-weight:500}
+h1{font-size:clamp(28px,3.4vw,38px);line-height:1.15;letter-spacing:-.03em;
   text-wrap:balance;margin-bottom:.3em}
-h3{font-size:23px;line-height:1.26;letter-spacing:-.021em;text-wrap:balance}
-h4{font-size:18px;letter-spacing:-.012em}
-h5{font-size:15px;color:var(--ink-3)}
-p{margin:0 0 1.05em;max-width:68ch}
-ul,ol{margin:0 0 1.05em;padding-left:1.35em}
-li{margin:.34em 0;max-width:66ch}
-strong,b{font-weight:600}
-em,i{font-style:italic}
-a{color:inherit}
-code{font-family:var(--mono);font-size:.855em;background:var(--wash);
-  padding:.1em .36em;border-radius:3px;word-break:break-word;
-  font-feature-settings:"kern" 1}
+h3{font-size:20px;line-height:1.35;letter-spacing:-.015em;font-weight:520;text-wrap:balance}
+h4{font-size:17px;letter-spacing:-.012em;font-weight:560}
+h5{font-size:13px;color:var(--ink-3);font-weight:560}
+p{margin:0 0 .9em;max-width:68ch}
+ul,ol{margin:0 0 .9em;padding-left:1.25em}
+li{margin:.3em 0;max-width:66ch}
+strong,b{font-weight:560}
+em,i{font-style:normal;color:var(--ink-3)}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--rule);
+  text-underline-offset:3px}
+code{font-family:var(--sans);font-size:.92em;background:none;padding:0;color:var(--ink-3);
+  word-break:break-word}
 hr{border:0;border-top:1px solid var(--rule);margin:2.4em 0}
-button{font:inherit;font-family:var(--sans);cursor:pointer}
+button{font:inherit;font-family:var(--sans);letter-spacing:inherit;cursor:pointer}
 
-/* Small letterspaced label. The structural device of the whole page: it names a section
-   without needing a box drawn around it. */
-.kicker{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-3);margin:0 0 18px}
+/* The label in the left column. Sentence case, 13px, weight 560: it names a section without a
+   box drawn around it. */
+.kicker{font-size:13px;font-weight:560;letter-spacing:0;color:var(--ink);margin:0 0 18px}
 
-/* Sections are separated by air and a hairline, never by a rounded card with a shadow. */
-.panel{padding:0;margin:0 0 58px;border-top:1px solid var(--rule);padding-top:30px}
-.panel.tight{margin-bottom:38px}
+/* A section: a black rule, the label on the left, everything else in the middle and right. */
+.panel{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap);margin:0 0 96px;
+  border-top:1.5px solid var(--ink);padding-top:12px}
+.panel>*{grid-column:2 / 4;min-width:0}
+.panel>.kicker{grid-column:1;grid-row:1 / span 40;margin:0}
+.panel.tight{margin-bottom:64px}
 
-/* ── masthead ────────────────────────────────────────────────────────── */
-.top{margin:0 0 46px}
-.top .kicker{margin-bottom:22px}
-.top .meta{margin-top:20px;font-size:13px;line-height:1.6;color:var(--ink-4);
-  font-variant-numeric:tabular-nums}
-.top .meta code{background:none;padding:0;color:var(--ink-3)}
+/* ── head ────────────────────────────────────────────────────────────── */
+.top{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap);margin:0 0 96px;
+  border-top:1.5px solid var(--ink);padding-top:12px}
+.top>div:first-child:not(.kicker){display:contents}
+.top>*{grid-column:2 / 4;min-width:0}
+.top .kicker{grid-column:1;grid-row:1 / span 6;margin:0;font-size:13px}
+.top h1{margin:72px 0 0;max-width:760px}
+.top .meta{margin-top:20px;font-size:13px;line-height:1.6;color:var(--ink-3)}
+.top .meta code{color:var(--ink-3)}
 
-.pill{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.11em;
-  text-transform:uppercase;padding:0;color:var(--ink-3);background:none}
-.pill.warn{color:var(--ochre)}
-.pill.ok{color:var(--green)}
-.pill.warn::before,.pill.ok::before{content:"";display:inline-block;width:5px;height:5px;
-  border-radius:50%;margin-right:6px;vertical-align:.14em}
-.pill.warn::before{background:var(--ochre)}
-.pill.ok::before{background:var(--green)}
+/* Status words carry a small square: outlined is open, filled is done, red is needed. */
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;
+  letter-spacing:0;color:var(--ink-3)}
+.pill::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
+.pill.warn{color:var(--red)}
+.pill.ok{color:var(--ink)}
+.pill.ok::before{background:var(--ink)}
 
-/* ── projects: one rail per strand, one chip per card, one filter ─────
-   Monochrome by design. Colour on this page carries intent — committing, discarding, a
-   reference — and which strand of work a card belongs to is metadata, not intent. */
+/* ── projects: one rail per strand, one chip per card, one filter ───── */
 .rail{margin:0 0 4px}
 .rail .stages{margin-bottom:22px}
-.raillabel{font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-3);margin:0 0 8px}
-.filter{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:10px 0 44px;
-  padding:0 0 15px;border-bottom:1px solid var(--rule)}
-.flabel{font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-4);margin-right:3px}
-.pf{font-family:var(--sans);font-size:12.5px;font-weight:500;color:var(--ink-3);
-  background:none;border:1px solid var(--rule);border-radius:2px;padding:5px 11px;
-  cursor:pointer}
-.pf:hover{color:var(--ink);border-color:var(--ink-4)}
-.pf.on{color:var(--paper);background:var(--ink);border-color:var(--ink)}
-.chip{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--ink-3);border:1px solid var(--rule);border-radius:2px;padding:3px 7px}
+.raillabel{font-size:13px;font-weight:560;color:var(--ink);margin:0 0 8px}
+.filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 64px;
+  padding:0 0 16px;border-bottom:1px solid var(--rule)}
+.flabel{font-size:13px;color:var(--ink-3);margin-right:6px}
+.pf{font-size:13px;font-weight:500;color:var(--ink);background:var(--paper);
+  border:1px solid var(--ink);border-radius:0;min-height:36px;padding:0 14px}
+.pf:hover{background:var(--wash)}
+.pf.on{color:var(--paper);background:var(--ink)}
+.chip{font-size:13px;color:var(--ink-3)}
 [hidden]{display:none!important}
 
 /* ── stage strip ─────────────────────────────────────────────────────── */
-.stages{display:flex;gap:0;margin:0 0 52px;flex-wrap:wrap;
-  border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
-.stage{flex:1 1 130px;min-width:130px;padding:13px 4px 12px;font-size:12.5px;
-  color:var(--ink-4);border-right:1px solid var(--rule-soft)}
-.stage:last-child{border-right:0}
-.stage b{display:block;font-family:var(--mono);font-size:11px;font-weight:500;
-  letter-spacing:.04em;margin-bottom:2px}
+.stages{display:flex;gap:0;margin:0 0 64px;flex-wrap:wrap;
+  border-top:1.5px solid var(--ink);border-bottom:1px solid var(--rule)}
+.stage{flex:1 1 130px;min-width:130px;padding:12px 8px 14px 0;font-size:13px;
+  color:var(--ink-3)}
+.stage b{display:block;font-size:13px;font-weight:400;margin-bottom:2px;color:var(--ink-4)}
 .stage.done{color:var(--ink-3)}
-.stage.here{color:var(--ink);font-weight:600}
-.stage.here b{color:var(--blue)}
+.stage.here{color:var(--ink);font-weight:560;box-shadow:inset 0 2px 0 var(--ink)}
+.stage.here b{color:var(--ink)}
 
 /* ── exit conditions ─────────────────────────────────────────────────── */
-.cond{display:flex;gap:20px;padding:17px 0;border-top:1px solid var(--rule-soft);
+.cond{display:flex;gap:20px;padding:16px 0;border-top:1px solid var(--rule);
   align-items:baseline}
 .cond:first-of-type{border-top:0;padding-top:4px}
-.cond .dot{flex:0 0 auto;width:auto;min-width:22px;font-family:var(--mono);font-size:15px;
-  font-weight:400;color:var(--ink-4);text-align:left}
-.cond.met .dot{color:var(--green)}
-.cond.partly .dot{color:var(--ochre)}
+.cond .dot{flex:0 0 auto;min-width:22px;font-size:13px;color:var(--ink-3);text-align:left}
 .cond .claim{font-size:17px;cursor:pointer;max-width:62ch}
-.cond .claim:hover{color:var(--blue)}
+.cond .claim:hover{text-decoration:underline;text-decoration-color:var(--rule);
+  text-underline-offset:3px}
 .cond .ev{font-size:14px;color:var(--ink-3);margin-top:5px;max-width:64ch}
-.cond .status{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--ink-4);margin-right:9px}
-.cond.met .status{color:var(--green)}
-.cond.partly .status{color:var(--ochre)}
-.cond:not(.met):not(.partly) .status{color:var(--red)}
-.cond .more{font-size:15.5px;color:var(--ink-2);margin-top:11px;display:none;max-width:64ch;
-  padding-left:14px;border-left:2px solid var(--rule)}
+.cond .status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:400;
+  letter-spacing:0;text-transform:none;color:var(--red);margin-right:10px}
+.cond .status::before{content:"";width:8px;height:8px;border:1.5px solid currentColor}
+.cond.met .status{color:var(--ink)}
+.cond.met .status::before{background:var(--ink)}
+.cond.partly .status{color:var(--ink-3)}
+.cond.partly .status::before{background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+.cond .more{font-size:15px;color:var(--ink);margin-top:11px;display:none;max-width:64ch;
+  padding-left:14px;border-left:1px solid var(--rule)}
 .cond.open .more{display:block}
 
-/* ── the graph ───────────────────────────────────────────────────────── */
+/* ── the graph: shapes and greys, not hues ───────────────────────────── */
 svg.graph{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y;
   margin:6px 0 2px}
-svg.graph line.e-link{stroke:var(--ink-4);stroke-width:1.1;opacity:.62}
-svg.graph line.e-tag{stroke:var(--blue);stroke-width:1;stroke-dasharray:1.5 4;opacity:.4}
-svg.graph .n-decision{fill:var(--blue)}
-svg.graph .n-insight{fill:var(--green)}
-svg.graph .n-braindump{fill:var(--ochre)}
-svg.graph .n-briefing{fill:var(--ink-4)}
-svg.graph .n-tag{fill:var(--paper);stroke:var(--ink-3);stroke-width:1.3}
-svg.graph text{font-family:var(--sans);font-size:9.5px;font-weight:450;
-  text-anchor:middle;fill:var(--ink-2);pointer-events:none}
-svg.graph text.l-tag{fill:var(--ink-4);font-size:8.5px;font-weight:600;letter-spacing:.09em;
-  text-transform:uppercase}
+svg.graph line.e-link{stroke:var(--ink-4);stroke-width:1}
+svg.graph line.e-tag{stroke:var(--ink-4);stroke-width:1;stroke-dasharray:1.5 4;opacity:.7}
+svg.graph .n-decision{fill:var(--ink)}
+svg.graph .n-insight{fill:var(--ink-3)}
+svg.graph .n-braindump{fill:var(--paper);stroke:var(--ink);stroke-width:1.4}
+svg.graph .n-briefing{fill:var(--soft)}
+svg.graph .n-tag{fill:var(--paper);stroke:var(--ink-3);stroke-width:1.2}
+svg.graph text{font-family:var(--sans);font-size:9.5px;font-weight:400;
+  text-anchor:middle;fill:var(--ink);pointer-events:none}
+svg.graph text.l-tag{fill:var(--ink-3);font-size:9px}
 svg.graph a.gnode{cursor:pointer}
 svg.graph a.gnode:hover circle,svg.graph a.gnode:hover rect{stroke:var(--ink);stroke-width:2}
-svg.graph a.gnode:hover text{fill:var(--ink);font-weight:600}
-.legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 4px;font-size:12px;color:var(--ink-3)}
+svg.graph a.gnode:hover text{font-weight:560}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 4px;font-size:13px;color:var(--ink-3)}
 .legend .lg{display:inline-flex;align-items:center;gap:6px}
-.legend .lg::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink-4)}
-.legend .lg.decision::before{background:var(--blue)}
-.legend .lg.insight::before{background:var(--green)}
-.legend .lg.braindump::before{background:var(--ochre)}
-.legend .lg.briefing::before{background:var(--ink-4)}
-.legend .lg.tag::before{background:var(--paper);border:1.3px solid var(--ink-3);
-  border-radius:1px;transform:rotate(45deg);width:6px;height:6px}
+.legend .lg::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
+.legend .lg.decision::before{background:var(--ink)}
+.legend .lg.insight::before{background:var(--ink-3)}
+.legend .lg.braindump::before{background:var(--paper);box-shadow:inset 0 0 0 1.4px var(--ink)}
+.legend .lg.briefing::before{background:var(--soft)}
+.legend .lg.tag::before{background:var(--paper);border:1.2px solid var(--ink-3);
+  border-radius:0;transform:rotate(45deg);width:7px;height:7px}
 
-/* ── the feed ────────────────────────────────────────────────────────── */
-.card{padding:34px 0 4px;margin:0;border-top:1px solid var(--rule);position:relative}
-.card.answered{opacity:.55;transition:opacity .18s}
-.card.answered:hover{opacity:1}
-.card .cardhead{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
-.card .idtag{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--ink-4)}
-.card h3{margin:0 0 16px}
+/* ── the feed: each item is a row on the grid ────────────────────────── */
+.card{display:grid;grid-template-columns:var(--cols);column-gap:var(--gap);
+  padding:28px 0 32px;margin:0;border-top:1px solid var(--rule);position:relative}
+.card>*{grid-column:2 / 4;min-width:0}
+.card .cardhead{grid-column:1;grid-row:1 / span 3;display:flex;flex-direction:column;gap:4px;
+  margin:0;font-size:13px}
+.card .idtag{font-size:13px;color:var(--ink-3)}
+.card h3{margin:0 0 10px;max-width:600px}
+.card.answered h3{color:var(--ink-3)}
 
-.facts{display:flex;flex-wrap:wrap;gap:0 26px;margin:0 0 20px;padding:12px 0;
-  border-top:1px solid var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
-.fact{font-size:13px;color:var(--ink-3);background:none;border:0;padding:0}
-.fact b{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-4);margin-bottom:1px}
-.body{font-size:17px;color:var(--ink-2)}
+.facts{display:flex;flex-wrap:wrap;gap:6px 32px;margin:0 0 18px;padding:10px 0;
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.fact{font-size:14px;color:var(--ink);background:none;border:0;padding:0}
+.fact b{display:block;font-size:13px;font-weight:400;color:var(--ink-3);margin-bottom:1px}
+.fact b::first-letter,.top .meta::first-letter{text-transform:uppercase}
+.body{font-size:16px;color:var(--ink);max-width:640px}
 .body p:last-child{margin-bottom:0}
-.body strong{color:var(--ink)}
 
 /* Disclosure: a quiet line of type, not a widget. */
 details.fold>summary,details.body-more>summary{font-size:13px;color:var(--ink-3);
-  cursor:pointer;list-style:none;padding:4px 0;font-weight:500;letter-spacing:.005em}
+  cursor:pointer;list-style:none;padding:4px 0;font-weight:400}
 details.fold>summary::-webkit-details-marker,
 details.body-more>summary::-webkit-details-marker{display:none}
 details.fold>summary::before,details.body-more>summary::before{content:"+";
-  font-family:var(--mono);color:var(--blue);margin-right:9px;font-size:12px}
+  color:var(--ink);margin-right:9px}
 details.fold[open]>summary::before,details.body-more[open]>summary::before{content:"–"}
 details.fold>summary:hover,details.body-more>summary:hover{color:var(--ink)}
-details.fold[open]>summary{color:var(--ink-4)}
 details.body-more{margin-top:6px}
 
-/* ── answering ───────────────────────────────────────────────────────── */
-.answer{margin-top:26px;padding-top:20px;border-top:1px solid var(--rule)}
-.opts{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:13px}
-/* An option is a considered choice, so it reads as type in a hairline frame until picked,
-   then commits to ink. */
-.opt{border:1px solid var(--rule);background:var(--paper);color:var(--ink);
-  border-radius:2px;padding:9px 15px;font-size:14.5px;transition:.14s ease}
-.opt:hover{border-color:var(--ink);}
-.opt.picked{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:500}
-textarea{width:100%;min-height:64px;resize:vertical;
-  font:16px/1.6 var(--sans);color:var(--ink);background:var(--wash);
-  border:1px solid transparent;border-radius:2px;padding:13px 15px}
-textarea::placeholder{color:var(--ink-4)}
-textarea:focus{outline:none;background:var(--paper);border-color:var(--ink)}
-.saved{font-size:12px;color:var(--green);margin-top:8px;height:16px;letter-spacing:.02em}
+/* ── answering: the fill means "write here" ──────────────────────────── */
+.answer{margin-top:24px;max-width:600px}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.opt{border:0;background:var(--wash);color:var(--ink);border-radius:0;min-height:44px;
+  padding:0 16px;font-size:15px;text-align:left}
+.opt:hover{background:var(--fill-hover)}
+.opt.picked{background:var(--ink);color:var(--paper)}
+textarea{display:block;width:100%;min-height:72px;resize:vertical;
+  font:16px/1.5 var(--sans);letter-spacing:var(--track);color:var(--ink);
+  background:var(--wash);border:0;border-bottom:1.5px solid var(--field-line);
+  border-radius:0;padding:14px}
+textarea::placeholder{color:#9b9b9b}
+textarea:hover{background:var(--fill-hover)}
+textarea:not(:placeholder-shown){background:var(--paper);border-bottom-color:var(--ink)}
+textarea:focus{outline:none;background:var(--paper);border-bottom:2px solid var(--ink);
+  box-shadow:inset 0 0 0 1px var(--ink)}
+.saved{font-size:13px;color:var(--ink-3);margin-top:6px;height:18px}
 
 /* ── references and their tooltips ───────────────────────────────────── */
-a.ref{color:var(--blue);text-decoration:none;
-  border-bottom:1px solid rgba(18,64,143,.32);cursor:help}
-a.ref:hover{background:var(--blue-wash);border-bottom-color:var(--blue)}
-span.ref.dead{color:var(--ink-4);border-bottom:1px dotted var(--ink-4)}
+a.ref{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink-4);cursor:help}
+a.ref:hover{background:var(--wash);border-bottom-color:var(--ink)}
+span.ref.dead{color:var(--ink-3);border-bottom:1px dotted var(--ink-4)}
 
-/* Citations. Small, faint, blue: present for anyone who wants to check a claim, invisible to
-   anyone reading the argument. The rule this implements is in `brain/sources.md` — a claim
-   about what a client said carries who said it, and a brief that carries it inline is a brief
-   nobody finishes. Deliberately no background and no underline, unlike a.ref, because a
-   marker that highlights on hover next to every second sentence turns the page into a rash. */
-a.ref.cite{font-family:var(--mono);font-size:.6em;font-weight:500;vertical-align:.45em;
-  color:var(--blue);opacity:.6;border:0;background:none;padding:0 .06em;margin-left:.1em;
-  text-decoration:none;transition:opacity .14s}
-a.ref.cite:hover{opacity:1;background:none;border:0}
-.cite.inferred{font-family:var(--mono);font-size:.64em;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--ochre);vertical-align:.35em;margin-left:.28em;
-  cursor:help;border-bottom:1px dotted var(--ochre)}
+/* Citations: a small grey numeral, one hover from the source. `brain/sources.md` owns the rule. */
+a.ref.cite{font-size:.62em;font-weight:500;vertical-align:.45em;color:var(--ink-3);border:0;
+  background:none;padding:0 .06em;margin-left:.1em;text-decoration:none}
+a.ref.cite:hover{color:var(--ink);background:none;border:0}
+.cite.inferred{font-size:.62em;letter-spacing:0;text-transform:none;color:var(--ink-3);
+  vertical-align:.3em;margin-left:.3em;padding:0 4px;border:1px dashed var(--guess-line);
+  cursor:help}
 
-ol.srclist{list-style:none;padding:0;margin:0;counter-reset:none}
-ol.srclist li{display:flex;gap:14px;padding:9px 0;border-top:1px solid var(--rule-soft);
-  font-size:13.5px;line-height:1.55;color:var(--ink-2)}
+ol.srclist{list-style:none;padding:0;margin:0}
+ol.srclist li{display:flex;gap:14px;padding:9px 0;border-top:1px solid var(--rule);
+  font-size:13.5px;line-height:1.55;color:var(--ink)}
 ol.srclist li:first-child{border-top:0}
-ol.srclist .n{flex:0 0 22px;font-family:var(--mono);font-size:11.5px;color:var(--ink-4);
-  padding-top:2px}
-ol.srclist .nolink{color:var(--ink-4);font-size:12px;margin-left:6px}
-a.path{color:var(--blue);text-decoration:none}
-a.path:hover code{background:var(--blue-wash)}
+ol.srclist .n{flex:0 0 22px;font-size:13px;color:var(--ink-3);padding-top:1px}
+ol.srclist .nolink{color:var(--ink-3);font-size:13px;margin-left:6px}
+a.path{color:var(--ink);text-decoration:none}
+a.path:hover code{color:var(--ink)}
 #tip{position:fixed;z-index:99;max-width:392px;background:var(--paper);color:var(--ink);
-  border:1px solid var(--rule);border-radius:3px;padding:16px 18px;
-  box-shadow:0 1px 2px rgba(13,13,14,.05),0 14px 40px rgba(13,13,14,.13);
-  font-size:14px;line-height:1.6;display:none;pointer-events:none}
-#tip .k{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--blue);margin-bottom:5px}
-#tip .t{font-weight:600;margin-bottom:7px;font-size:16px;letter-spacing:-.012em;
-  line-height:1.32}
-#tip .n{font-size:12px;color:var(--ink-4);margin-bottom:8px}
-#tip .g{color:var(--ink-2)}
-#tip .open{margin-top:11px;padding-top:9px;border-top:1px solid var(--rule-soft);
-  font-size:11.5px;color:var(--ink-4)}
+  border:1px solid var(--ink);border-radius:0;padding:16px 18px;box-shadow:none;
+  font-size:14px;line-height:1.55;display:none;pointer-events:none}
+#tip .k{font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;
+  color:var(--ink-3);margin-bottom:4px}
+#tip .t{font-weight:560;margin-bottom:6px;font-size:16px;line-height:1.32}
+#tip .n{font-size:13px;color:var(--ink-3);margin-bottom:8px}
+#tip .g{color:var(--ink)}
+#tip .open{margin-top:11px;padding-top:9px;border-top:1px solid var(--rule);
+  font-size:13px;color:var(--ink-3)}
 
 /* ── drafts waiting to be sent ───────────────────────────────────────── */
-.draft{padding:19px 0 21px;border-top:1px solid var(--rule)}
+.draft{padding:20px 0 22px;border-top:1px solid var(--rule)}
 .draft:first-of-type{border-top:0}
-.draft .dmeta{font-family:var(--mono);font-size:11px;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
-.draft .dmeta .noone{color:var(--red);text-transform:none;letter-spacing:0}
-.draft .dsubject{font-size:18px;font-weight:500;letter-spacing:-.012em;margin-bottom:7px}
-.draft .dpeek{font-size:14.5px;line-height:1.6;color:var(--ink-3);max-width:66ch;
-  margin-bottom:13px}
+.draft .dmeta{font-size:13px;color:var(--ink-3);margin-bottom:6px}
+.draft .dmeta .noone{color:var(--red)}
+.draft .dsubject{font-size:18px;font-weight:500;letter-spacing:-.015em;margin-bottom:6px}
+.draft .dpeek{font-size:15px;line-height:1.55;color:var(--ink-3);max-width:640px;
+  margin-bottom:14px}
 .draft .dact{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.draft .dact button{font-family:var(--sans);font-size:13px;padding:7px 13px;
-  border:1px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer}
-.draft .dact button:hover{background:var(--ink);color:var(--paper)}
-.draft .dact button.done{border-color:var(--blue);color:var(--blue);background:var(--paper)}
-.draft .dact .path{font-size:12.5px;color:var(--ink-3)}
+.draft .dact button{font-size:13px;font-weight:500;min-height:40px;padding:0 16px;
+  border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:0}
+.draft .dact button.done{background:var(--paper);color:var(--ink)}
+.draft .dact .path{font-size:13px;color:var(--ink-3)}
 
 /* ── the thread ──────────────────────────────────────────────────────── */
-.thread{display:flex;gap:18px;padding:13px 0;border-top:1px solid var(--rule-soft);
+.thread{display:flex;gap:18px;padding:12px 0;border-top:1px solid var(--rule);
   font-size:15px;align-items:baseline}
 .thread:first-of-type{border-top:0}
-.thread .d{flex:0 0 84px;color:var(--ink-4);font-family:var(--mono);font-size:12px;
-  font-variant-numeric:tabular-nums}
-.thread .dir{flex:0 0 44px;font-size:10px;font-weight:600;letter-spacing:.13em;
-  text-transform:uppercase}
-.thread .dir.out{color:var(--blue)}
-.thread .dir.in{color:var(--green)}
+.thread .d{flex:0 0 96px;color:var(--ink-3);font-size:13px}
+.thread .dir{flex:0 0 44px;font-size:13px;color:var(--ink-3)}
 .thread a{text-decoration:none;border-bottom:1px solid var(--rule)}
 .thread a:hover{border-bottom-color:var(--ink)}
 
-/* ── the dock ────────────────────────────────────────────────────────── */
-.dock{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);
-  backdrop-filter:saturate(1.4) blur(8px);
-  border-top:1px solid var(--rule);padding:14px 22px;display:flex;gap:16px;
-  align-items:center;justify-content:center;flex-wrap:wrap}
-.dock .count{font-size:13.5px;color:var(--ink-3)}
-/* Intent, in the colour: committing is ink, discarding is the only red on the page. */
-.dock button{border-radius:2px;padding:10px 18px;font-size:14px;
-  border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);transition:.14s}
-.dock button:hover{border-color:var(--ink);color:var(--ink)}
-.dock button.primary{background:var(--ink);border-color:var(--ink);color:var(--paper);
-  font-weight:500}
-.dock button.primary:hover{background:#000}
-.dock #clear{border-color:transparent;color:var(--ink-4)}
-.dock #clear:hover{color:var(--red);border-color:rgba(165,34,24,.4)}
-.dock button:disabled{opacity:.36;cursor:not-allowed}
-.dock button.primary:disabled:hover{background:var(--ink)}
+/* ── the bar at the foot: the one action ─────────────────────────────── */
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--paper);
+  border-top:1px solid var(--rule);display:flex;gap:10px;
+  padding:14px max(var(--side), calc((100% - var(--max)) / 2 + var(--side)));
+  align-items:center;justify-content:flex-end;flex-wrap:nowrap}
+.dock .count{font-size:13px;color:var(--ink-3);margin-right:auto;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.dock button{white-space:nowrap}
+.dock button{border-radius:0;min-height:44px;padding:0 20px;font-size:13px;font-weight:500;
+  border:1px solid var(--ink);background:var(--paper);color:var(--ink)}
+.dock button.primary{background:var(--ink);color:var(--paper)}
+.dock button:disabled{opacity:.35;cursor:default}
 
 /* ── now.md ──────────────────────────────────────────────────────────── */
-.nowbody{font-size:18px;line-height:1.7}
+.nowbody{font-size:17px;line-height:1.6;max-width:680px}
 .nowbody p{max-width:64ch}
-.nowbody h2,.nowbody h3{font-size:11px;font-weight:600;text-transform:uppercase;
-  letter-spacing:.15em;color:var(--ink-4);margin:1.9em 0 .55em;letter-spacing:.15em}
+.nowbody h2,.nowbody h3{font-size:13px;font-weight:560;text-transform:none;letter-spacing:0;
+  color:var(--ink);margin:1.9em 0 .4em;padding-top:10px;border-top:1px solid var(--rule)}
 .nowbody>*:first-child{margin-top:0}
-.nowbody em{color:var(--ink-3)}
 
-@media (max-width:640px){
-  .wrap{padding:44px 20px 150px}
-  body{font-size:16.5px}
-  .nowbody{font-size:17px}
-  .thread .d{flex-basis:72px}
+@media (max-width:760px){
+  :root{--side:20px;--gap:0px}
+  .wrap{padding:44px var(--side) 150px}
+  .panel,.top,.card{grid-template-columns:1fr}
+  .panel>*,.panel>.kicker,.top>*,.top .kicker,.card>*,.card .cardhead{
+    grid-column:1;grid-row:auto}
+  .panel>.kicker{margin-bottom:16px}
+  .top h1{margin-top:40px}
+  .card .cardhead{flex-direction:row;gap:12px;margin-bottom:8px}
   .stage{flex-basis:50%;min-width:50%}
-  .facts{gap:0 18px}
+  .thread .d{flex-basis:80px}
 }
 """
 
@@ -1252,7 +1239,7 @@ document.querySelectorAll('.card[data-id]').forEach(card=>{
 });
 function flash(card){
   const s=card.querySelector('.saved'); if(!s) return;
-  s.textContent='saved in this browser'; setTimeout(()=>s.textContent='',1600);
+  s.textContent='Saved'; setTimeout(()=>s.textContent='',1600);
 }
 function answered(){
   return Object.entries(store).filter(([k,v])=>v&&(v.pick||(v.note||'').trim()));
@@ -1260,7 +1247,7 @@ function answered(){
 function tally(){
   const n=answered().length;
   document.getElementById('count').textContent =
-    n? `${n} answered — not sent yet` : 'nothing answered yet';
+    n? `${n} answered, not sent yet` : 'Nothing answered yet';
   document.getElementById('copy').disabled = n===0;
 }
 document.getElementById('copy').addEventListener('click',async()=>{
@@ -1277,7 +1264,7 @@ document.getElementById('copy').addEventListener('click',async()=>{
   catch(e){ const t=document.createElement('textarea');t.value=text;document.body.append(t);
             t.select();document.execCommand('copy');t.remove(); }
   const b=document.getElementById('copy'); const old=b.textContent;
-  b.textContent='copied — paste it to me'; setTimeout(()=>b.textContent=old,2200);
+  b.textContent='Copied. Paste it into the session'; setTimeout(()=>b.textContent=old,2200);
 });
 document.getElementById('clear').addEventListener('click',()=>{
   if(!confirm('Clear every answer stored in this browser?'))return;
@@ -1294,7 +1281,7 @@ document.querySelectorAll('.draft').forEach(d=>{
     try{ await navigator.clipboard.writeText(text); }
     catch(e){ const t=document.createElement('textarea');t.value=text;document.body.append(t);
               t.select();document.execCommand('copy');t.remove(); }
-    const old=b.textContent; b.textContent='copied — paste it and send';
+    const old=b.textContent; b.textContent='Copied. Paste it and send';
     b.classList.add('done');
     setTimeout(()=>{b.textContent=old;b.classList.remove('done');},2400);
   });
@@ -1407,9 +1394,9 @@ def build() -> str:
 <div id="tip"></div>
 <div class="wrap">
 <div class="top">
-  <div><div class="kicker">{PROJECT_NAME} · decision feed</div>
-       <h1>Where we are, and what is waiting on you</h1></div>
-  <div class="meta">generated {stamp}<br>from brain/*.md — regenerate with
+  <div><div class="kicker">Feed</div>
+       <h1>Where {PROJECT_NAME} stands, and what is waiting on you</h1></div>
+  <div class="meta">Generated {stamp} from brain/*.md. Regenerate with
     <code>python3 brain/feed.py</code></div>
 </div>
 
@@ -1418,7 +1405,7 @@ def build() -> str:
 """]
 
     # ── now ──────────────────────────────────────────────────────────────────────────────────
-    out.append('<div class="panel"><div class="kicker">now.md · the one-screen state</div>'
+    out.append('<div class="panel"><div class="kicker">Now</div>'
                f'<div class="nowbody">{render_md(now_md, g)}</div></div>')
 
     # ── the bar ──────────────────────────────────────────────────────────────────────────────
@@ -1441,7 +1428,7 @@ def build() -> str:
             f'<div class="panel" data-project="{html.escape(bar["project"] or "all")}">'
             '<div class="kicker">'
             + (f'{html.escape(bar["label"])} · ' if bar["label"] and len(bars) > 1 else "")
-            + 'what has to be true to leave '
+            + 'What ends '
             f'{html.escape(stage.split("·")[0].strip())} '
             f'<span class="pill {"ok" if met == len(conds) else "warn"}">{met} of {len(conds)}'
             '</span></div>'
@@ -1453,45 +1440,45 @@ def build() -> str:
     gnodes, gedges = graph_data()
     layout(gnodes, gedges)          # once; graph_svg and write_canvas share the result
     write_canvas(gnodes, gedges)
-    out.append('<div class="panel"><div class="kicker">the brain · '
-               f'{len(gnodes)} note(s) and tag(s), how they connect</div>'
+    out.append('<div class="panel"><div class="kicker">The brain</div>'
+               f'<p style="margin:0 0 4px">{len(gnodes)} notes and tags, and how they connect.</p>'
                '<p style="font-size:13.5px;color:var(--ink-3);margin:-2px 0 10px">'
                'Solid lines are links between notes; dashed lines are a shared tag. '
                'Hover a node for what it says, click to open the file.</p>'
                + graph_svg(gnodes, gedges, g) + '</div>')
 
     # ── the feed ─────────────────────────────────────────────────────────────────────────────
-    out.append(f'<div class="kicker" style="margin:30px 0 12px">the feed · '
-               f'{len(waiting)} waiting on you</div>')
+    out.append(f'<div class="panel tight" style="margin-bottom:0"><div class="kicker">Decisions</div>'
+               f'<p style="margin:0">{len(waiting)} waiting on you.</p></div>')
     for item in items:
         k = item["keys"]
         facts = []
         if k.get("blocks"):
-            facts.append(f'<span class="fact"><b>blocks</b> {_inline(k["blocks"], g)}</span>')
+            facts.append(f'<span class="fact"><b>Blocks</b> {_inline(k["blocks"], g)}</span>')
         if k.get("cost"):
-            facts.append(f'<span class="fact"><b>costs you</b> {_inline(k["cost"], g)}</span>')
-        facts.append(f'<span class="fact"><b>raised</b> {item["date"]}</span>')
+            facts.append(f'<span class="fact"><b>Costs you</b> {_inline(k["cost"], g)}</span>')
+        facts.append(f'<span class="fact"><b>Raised</b> {item["date"]}</span>')
         opts = "".join(
             f'<button class="opt" data-opt="{html.escape(o)}">{html.escape(o)}</button>'
             for o in item["options"])
-        answered_pill = ('<span class="pill ok">answered</span>' if item["status"] == "answered"
-                         else '<span class="pill warn">awaiting you</span>')
+        answered_pill = ('<span class="pill ok">Answered</span>' if item["status"] == "answered"
+                         else '<span class="pill warn">Waiting on you</span>')
         body = render_md(item["body"], g)
         # The first paragraph is always visible; the rest folds away. Scanning is the whole point —
         # the argument has to be one click from the question, not in front of it.
         first, _, rest = body.partition("</p>")
         lead = first + "</p>" if rest else body
-        more = (f'<details class="body-more"><summary>the reasoning</summary>{rest}</details>'
+        more = (f'<details class="body-more"><summary>The reasoning</summary>{rest}</details>'
                 if rest.strip() else "")
         # A whole settled item folds too, and starts folded. What is waiting on the owner is
         # the only thing the page opens by itself — everything else is history, and history
         # that is open by default pushes the live question below the fold.
         live = item["status"] == "awaiting-you"
         if live:
-            fold_label = "hide"
+            fold_label = "Hide"
         else:
             given = k.get("answered", "").strip()
-            fold_label = (f"you said: {given}" if given
+            fold_label = (f"You said: {given}" if given
                           else f"{item['status']} · open it")
         out.append(f"""<div class="card{'' if live else ' answered'}"
   data-id="{item['id']}" data-project="{html.escape(item['project'])}"
@@ -1521,7 +1508,7 @@ def build() -> str:
         for i, c in enumerate(unsent):
             days = (today - date.fromisoformat(c["date"])).days
             age = ("today" if days == 0 else f"{days}d old")
-            stale = ' <span class="pill warn">still unsent</span>' if days >= 7 else ""
+            stale = ' <span class="pill warn">Still unsent</span>' if days >= 7 else ""
             to = (html.escape(c["to"]) if c["to"]
                   else '<span class="noone">addressed to nobody</span>')
             rows.append(
@@ -1543,8 +1530,7 @@ def build() -> str:
                 f'{html.escape(c["subject"])}</a>'
                 f' <span style="color:var(--ink-4)">· {html.escape(c["channel"])}'
                 f'{" · to " + html.escape(c["to"]) if c["to"] else ""}</span></div></div>')
-        kicker = (f"waiting for you to send · {len(unsent)}" if unsent
-                  else "messages · all sent")
+        kicker = ("To send" if unsent else "Messages")
         out.append(f'<div class="panel"><div class="kicker">{kicker}</div>'
                    + "".join(rows) + '</div>')
 

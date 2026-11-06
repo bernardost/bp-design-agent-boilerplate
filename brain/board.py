@@ -238,33 +238,36 @@ def parse(path: Path) -> dict:
 
 CSS = """
 :root{
-  --desk:#f4f4f2; --paper:#ffffff; --ink:#0d0d0e; --ink-2:#333336; --muted:#6b6b70;
-  --faint:#a3a3a8; --rule:#e2e2df; --wash:#fbfbf9; --blue:#12408f; --red:#a52218;
-  --sans:"Inter","Inter var",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* brain/lenses/house.md: Geist, ink and grey, square corners, one red for what is missing.
+     The desk is white so that the fill keeps its one meaning: the drawer's field. */
+  --desk:#ffffff; --paper:#ffffff; --ink:#0a0a0a; --ink-2:#0a0a0a; --muted:#737373;
+  --faint:#9b9b9b; --rule:#dedede; --wash:rgb(241,241,239); --blue:#0a0a0a; --red:#c8102e;
+  --field-line:#8a8a8a;
+  --sans:"Geist","Helvetica Neue",Arial,sans-serif;
+  --mono:var(--sans);
 }
 *,*::before,*::after{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{background:var(--desk);color:var(--ink);overflow:hidden;
-  font:400 15px/1.5 var(--sans);-webkit-font-smoothing:antialiased;
+  font:400 15px/1.5 var(--sans);letter-spacing:-0.012em;-webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
 button{font:inherit;color:inherit}
-a{color:var(--blue);text-decoration:none}
-a:hover{text-decoration:underline}
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
 /* ── the bar: where you are, and the way to everywhere else ─────────── */
 .bar{position:fixed;top:0;left:0;right:0;height:52px;z-index:40;display:flex;
-  align-items:center;gap:14px;padding:0 18px;background:rgba(255,255,255,.93);
-  backdrop-filter:blur(6px);border-bottom:1px solid var(--rule)}
-.bar .title{font-weight:600;letter-spacing:-.012em;white-space:nowrap}
+  align-items:center;gap:14px;padding:0 18px;background:var(--paper);
+  border-bottom:1px solid var(--rule)}
+.bar .title{font-weight:560;white-space:nowrap}
 .bar .sub{color:var(--muted);font-size:13.5px;white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis}
 .bar .idx{display:flex;gap:2px;margin-left:auto}
 .bar .idx button,.bar .zoom button{appearance:none;background:none;border:0;padding:7px 10px;
-  border-radius:3px;cursor:pointer;color:var(--muted);font-size:13.5px;white-space:nowrap}
-.bar .idx button:hover,.bar .zoom button:hover{background:#f0f0ee;color:var(--ink)}
-.bar .idx button.on{color:var(--ink);font-weight:600}
+  border-radius:0;cursor:pointer;color:var(--muted);font-size:13px;white-space:nowrap}
+.bar .idx button:hover,.bar .zoom button:hover{color:var(--ink)}
+.bar .idx button.on{color:var(--ink);font-weight:560;box-shadow:inset 0 -1.5px 0 var(--ink)}
 .bar .zoom{display:flex;gap:2px;border-left:1px solid var(--rule);padding-left:10px}
 .bar .zoom .pct{color:var(--muted);font-size:13px;min-width:44px;text-align:center;
   align-self:center;font-variant-numeric:tabular-nums}
@@ -276,57 +279,57 @@ a:hover{text-decoration:underline}
 .canvas.anim{transition:transform .55s cubic-bezier(.2,.7,.2,1)}
 .wires{position:absolute;left:0;top:0;pointer-events:none;z-index:0}
 .card,.lenshead{z-index:1}
-.wires path{fill:none;stroke:#d6d6d2;stroke-width:1.5;transition:stroke .15s,opacity .15s}
+.wires path{fill:none;stroke:#d4d4d4;stroke-width:1.5;transition:stroke .15s,opacity .15s}
 .wires path.on{stroke:var(--ink)}
 .wires.focus path:not(.on){opacity:.12}
 
 .card{position:absolute;background:var(--paper);border:1px solid var(--rule);
-  border-radius:2px;transition:opacity .15s,border-color .15s}
+  border-radius:0;transition:opacity .15s,border-color .15s}
 .canvas.focus .card:not(.on){opacity:.3}
 .card.on{border-color:var(--ink)}
 
 .brief{padding:34px 36px 30px}
-.brief h1{font:600 33px/1.12 var(--sans);letter-spacing:-.028em;margin:0 0 14px;max-width:17ch}
+.brief h1{font:500 30px/1.15 var(--sans);letter-spacing:-.03em;margin:0 0 14px;max-width:17ch}
 .brief p{margin:0 0 14px;max-width:62ch;color:var(--ink-2)}
-.brief .facts{margin:22px 0 0;border-top:1px solid var(--rule)}
+.brief .facts{margin:22px 0 0;border-top:1.5px solid var(--ink)}
 .brief .fact{display:grid;grid-template-columns:132px 1fr;gap:16px;padding:11px 0;
   border-bottom:1px solid var(--rule);font-size:14px}
-.brief .fact b{font-weight:600}
+.brief .fact b{font-weight:560}
 .brief .fact span{color:var(--ink-2)}
 .brief .fact small{display:block;color:var(--faint);font-size:12px;margin-top:2px}
 .brief .howto{margin:22px 0 0;color:var(--muted);font-size:13.5px;max-width:60ch}
 
 /* ── ideas, in a column per lens ─────────────────────────────────────── */
 .lenshead{position:absolute}
-.lenshead h2{font:600 18px/1.2 var(--sans);letter-spacing:-.012em;margin:0 0 4px}
+.lenshead h2{font:560 18px/1.2 var(--sans);letter-spacing:-.015em;margin:0 0 4px}
 .lenshead p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.45}
 .idea{padding:16px 18px 14px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
-.idea:hover{border-color:#bdbdb8}
-.idea h3{font:600 17px/1.25 var(--sans);letter-spacing:-.014em;margin:0}
+.idea:hover{border-color:var(--ink)}
+.idea h3{font:520 17px/1.3 var(--sans);letter-spacing:-.015em;margin:0}
 .idea p{margin:0;font-size:14px;line-height:1.45;color:var(--ink-2)}
 .idea .foot{display:flex;align-items:center;gap:6px;margin-top:2px;min-height:14px}
-.idea .foot i{display:block;width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.idea .foot i{display:block;width:8px;height:8px;background:var(--ink)}
 .idea .foot em{font-style:normal;color:var(--faint);font-size:12px;margin-left:auto}
 /* An idea every vision shares is the brand whichever way this goes. It is stated, not
    drawn louder: the desk's job is to show what differs. */
-.idea.constant{background:var(--wash)}
+.idea.constant{box-shadow:inset 0 1.5px 0 var(--ink)}
 .idea.constant h3::after{content:" — constant";font-weight:400;color:var(--faint);
   font-size:13px}
 .idea.orphan h3::after{content:" — in no vision";font-weight:400;color:var(--red);
   font-size:13px}
 
 .side,.legend{padding:26px 28px}
-.side h2,.legend h2{font:600 18px/1.2 var(--sans);letter-spacing:-.012em;margin:0 0 12px}
+.side h2,.legend h2{font:560 18px/1.2 var(--sans);letter-spacing:-.015em;margin:0 0 12px}
 .side .row{display:grid;grid-template-columns:118px 1fr;gap:14px;padding:9px 0;
   border-top:1px solid var(--rule);font-size:14px}
-.side .row b{font-weight:600}
+.side .row b{font-weight:560}
 .side .row span{color:var(--ink-2)}
 .side .row .who{color:var(--faint);font-size:12.5px;display:block}
 .legend p{margin:0 0 10px;font-size:14px;color:var(--ink-2)}
 .legend .k{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted);
   margin:6px 0}
-.legend .k i{width:9px;height:9px;border-radius:50%;background:var(--ink);display:inline-block}
-.legend .k s{width:36px;height:0;border-top:1.5px solid #d6d6d2;display:inline-block;
+.legend .k i{width:8px;height:8px;background:var(--ink);display:inline-block}
+.legend .k s{width:36px;height:0;border-top:1.5px solid #d4d4d4;display:inline-block;
   text-decoration:none}
 .legend .k s.on{border-color:var(--ink)}
 
@@ -334,9 +337,9 @@ a:hover{text-decoration:underline}
 .vision{padding:34px 36px 30px;display:flex;flex-direction:column;gap:22px}
 .vision header{display:flex;align-items:flex-start;gap:24px;cursor:pointer}
 .vision header .mark{width:44px;height:44px;flex:none;border:1.5px solid var(--ink);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-weight:600;font-size:15px}
-.vision header h2{font:600 33px/1.08 var(--sans);letter-spacing:-.028em;margin:0}
+  border-radius:0;display:flex;align-items:center;justify-content:center;
+  font-weight:560;font-size:15px}
+.vision header h2{font:500 30px/1.15 var(--sans);letter-spacing:-.03em;margin:0}
 .vision header .thesis{font-size:20px;line-height:1.35;color:var(--ink-2);margin:8px 0 0;
   max-width:40ch}
 .vision header .open{margin-left:auto;flex:none;color:var(--muted);font-size:13.5px;
@@ -345,20 +348,20 @@ a:hover{text-decoration:underline}
 .vision .specimen{border:1px solid var(--rule);overflow:hidden}
 .vision .specimen iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
 .vision .two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
-.vision h4{font:600 13.5px/1.2 var(--sans);color:var(--muted);margin:0 0 8px}
+.vision h4{font:560 13px/1.2 var(--sans);color:var(--ink);margin:0 0 8px}
 .vision .lenses{display:grid;grid-template-columns:104px 1fr;gap:6px 14px;font-size:14px}
-.vision .lenses b{font-weight:600}
+.vision .lenses b{font-weight:560}
 .vision .lenses span{color:var(--ink-2)}
 .vision .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{appearance:none;background:none;border:1px solid var(--rule);border-radius:999px;
+.chip{appearance:none;background:none;border:1px solid var(--rule);border-radius:0;
   padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ink-2)}
 .chip:hover{border-color:var(--ink)}
 .chip.constant{color:var(--muted)}
 .vision .tension{font-size:14px;line-height:1.5;color:var(--ink-2);margin:0;padding-top:14px;
   border-top:1px solid var(--rule)}
-.vision .tension b{color:var(--red);font-weight:600}
+.vision .tension b{color:var(--ink);font-weight:560}
 .vision .asks{font-size:14px;color:var(--ink-2);margin:0}
-.vision .asks b{font-weight:600}
+.vision .asks b{font-weight:560}
 
 /* ── plates: the material, and the gaps where there is none ──────────── */
 .strip{display:flex;gap:12px;overflow:hidden}
@@ -367,7 +370,7 @@ a:hover{text-decoration:underline}
   border:1px solid var(--rule);background:#eee}
 .clip .gone{width:100%;aspect-ratio:16/10;border:1px dashed var(--rule);background:var(--wash);
   display:flex;align-items:center;justify-content:center;padding:10px;
-  font-family:var(--mono);font-size:10px;line-height:1.4;color:var(--red);
+  font-size:12px;line-height:1.4;color:var(--red);
   word-break:break-all;text-align:center}
 .clip figcaption{font-size:12.5px;line-height:1.35;color:var(--ink-2);margin-top:6px}
 
@@ -380,28 +383,30 @@ a:hover{text-decoration:underline}
 .drawer .close{position:absolute;top:14px;right:14px;appearance:none;background:none;
   border:0;font-size:22px;line-height:1;color:var(--muted);cursor:pointer;padding:6px}
 .drawer .kind{color:var(--muted);font-size:13px;margin-bottom:6px}
-.drawer h2{font:600 26px/1.15 var(--sans);letter-spacing:-.022em;margin:0 0 10px;
+.drawer h2{font:500 26px/1.15 var(--sans);letter-spacing:-.03em;margin:0 0 10px;
   padding-right:30px}
 .drawer .line{font-size:17px;line-height:1.4;color:var(--ink-2);margin:0 0 18px}
-.drawer h5{font:600 13.5px/1.2 var(--sans);color:var(--muted);margin:22px 0 8px}
+.drawer h5{font:560 13px/1.2 var(--sans);color:var(--ink);margin:22px 0 8px}
 .drawer p{font-size:14.5px;line-height:1.58;color:var(--ink-2);margin:0 0 10px}
 .drawer .lenses{display:grid;grid-template-columns:92px 1fr;gap:6px 12px;font-size:14px}
-.drawer .lenses b{font-weight:600}
+.drawer .lenses b{font-weight:560}
 .drawer .lenses span{color:var(--ink-2)}
 .drawer .ev{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .drawer .ev .clip{width:auto}
 .drawer .chips{display:flex;flex-wrap:wrap;gap:6px}
-.drawer textarea{width:100%;min-height:96px;border:1px solid var(--rule);border-radius:2px;
-  padding:10px 12px;font:inherit;font-size:14px;resize:vertical;background:var(--wash)}
-.drawer textarea:focus{border-color:var(--ink);outline:none}
+.drawer textarea{width:100%;min-height:96px;border:0;border-bottom:1.5px solid var(--field-line);
+  border-radius:0;padding:12px 14px;font:inherit;font-size:16px;resize:vertical;background:var(--wash)}
+.drawer textarea:not(:placeholder-shown){background:var(--paper);border-bottom-color:var(--ink)}
+.drawer textarea:focus{background:var(--paper);border-bottom:2px solid var(--ink);
+  box-shadow:inset 0 0 0 1px var(--ink);outline:none}
 .drawer .saved{font-size:12.5px;color:var(--faint);margin-top:4px;min-height:16px}
 .drawer .src{font-size:12.5px;color:var(--faint);margin-top:22px;line-height:1.5;
   border-top:1px solid var(--rule);padding-top:12px}
 
 /* ── minimap and the one line of instruction ─────────────────────────── */
 .mini{position:fixed;left:16px;bottom:16px;width:232px;height:120px;overflow:hidden;
-  background:rgba(255,255,255,.94);border:1px solid var(--rule);z-index:45;cursor:pointer}
-.mini div{position:absolute;background:#e8e8e5}
+  background:var(--paper);border:1px solid var(--rule);z-index:45;cursor:pointer}
+.mini div{position:absolute;background:#dedede}
 .mini .vp{background:none;border:1.5px solid var(--ink)}
 .hint{position:fixed;left:0;right:0;bottom:22px;text-align:center;color:var(--muted);
   font-size:13px;z-index:44;pointer-events:none;transition:opacity .4s}
