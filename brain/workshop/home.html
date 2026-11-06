@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workshops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* The owner's page, in the house style: Inter, white paper, black ink, hairlines, colour only for intent. */
+:root{--ink:#0E0E10;--muted:rgba(14,14,16,.6);--hair:rgba(14,14,16,.12);--rule:rgba(14,14,16,.28);--hover:rgba(14,14,16,.05);--or:#FF3C00}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.4 Inter,ui-sans-serif,system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+main{max-width:1080px;margin:0 auto;padding:56px 24px 96px}
+.ot{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 10px}
+h1{font-size:clamp(36px,6vw,64px);font-weight:400;letter-spacing:-.045em;line-height:.95;margin:0;max-width:16ch;text-wrap:balance}
+h2{font-size:28px;font-weight:400;letter-spacing:-.03em;line-height:1.1;margin:0}
+section{margin-top:64px;border-top:1px solid var(--ink);padding-top:14px}
+.lead{max-width:60ch;color:var(--muted);margin:14px 0 0}
+.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 24px;margin-top:28px}
+label.fl{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--hair);padding-top:10px}
+label.fl span{font-size:13px;font-weight:700;color:var(--muted)}
+input[type=text],input[type=date]{font:inherit;font-size:20px;letter-spacing:-.02em;border:0;border-bottom:1px solid var(--rule);padding:4px 0 8px;background:none;color:var(--ink);outline:none;width:100%;border-radius:0}
+input:focus{border-bottom-color:var(--or)}
+.bh{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:40px}
+.bh p{margin:0;font-size:13px;font-weight:700;color:var(--muted)}
+.boards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;margin-top:10px}
+.bo{display:grid;grid-template-columns:22px minmax(0,1fr) auto;column-gap:12px;align-items:start;border-top:1px solid var(--hair);padding:12px 0;cursor:pointer}
+.bo input{margin:3px 0 0;width:16px;height:16px;accent-color:var(--ink)}
+.bo b{font-weight:700;letter-spacing:-.01em}
+.bo .ab{display:block;font-size:13px;color:var(--muted);margin-top:3px;text-wrap:pretty}
+.bo .mn{font-size:13px;font-weight:700;color:var(--muted)}
+.bo:has(input:not(:checked)) b{color:var(--muted);font-weight:400}
+.act{display:flex;align-items:center;gap:18px;margin-top:28px;border-top:1px solid var(--hair);padding-top:20px;flex-wrap:wrap}
+button.go{font:inherit;font-weight:700;background:var(--ink);color:#fff;border:0;border-radius:6px;padding:12px 18px;cursor:pointer}
+button.go:disabled{opacity:.4;cursor:progress}
+.quiet{font-size:13px;color:var(--muted)}
+.err{color:var(--or);font-weight:700;font-size:13px}
+.ws{margin-top:20px}
+.w{display:grid;grid-template-columns:minmax(0,1fr) 180px 170px 80px;column-gap:24px;align-items:baseline;border-top:1px solid var(--hair);padding:14px 0;color:inherit;text-decoration:none}
+.w:hover{background:var(--hover)}
+.w .tt{font-size:20px;letter-spacing:-.02em}
+.w .tt small{display:block;font-size:13px;color:var(--muted);letter-spacing:0;margin-top:2px}
+.w span{font-size:13px;color:var(--muted)}
+.w .op{font-weight:700;color:var(--ink);text-align:right}
+.empty{border-top:1px solid var(--hair);padding:14px 0;color:var(--muted)}
+code{font-size:.9em}
+@media (max-width:760px){.fields{grid-template-columns:1fr 1fr}.boards{grid-template-columns:1fr}.w{grid-template-columns:1fr auto}.w .hide{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <p class="ot">Workshops</p>
+  <h1>Pick the boards, present them, and every answer is saved as you type.</h1>
+  <p class="lead">Each workshop is a folder in <code>brain/workshops/</code>. Close the tab or lose the connection and nothing is lost; reopen it and it lands on the board you left.</p>
+
+  <section>
+    <p class="ot">New workshop</p>
+    <h2>Start from the boards a design kickoff needs.</h2>
+    <form id="new" autocomplete="off">
+      <div class="fields">
+        <label class="fl"><span>Project</span><input type="text" name="title" placeholder="Brand and app kickoff" required></label>
+        <label class="fl"><span>Client</span><input type="text" name="client" placeholder="Acme"></label>
+        <label class="fl"><span>Day of the workshop</span><input type="date" name="date"></label>
+        <label class="fl"><span>Your studio, set as text on the cover</span><input type="text" name="us" placeholder="Studio"></label>
+      </div>
+      <label class="fl" id="projwrap" hidden style="margin-top:24px;max-width:360px"><span>Which project this workshop belongs to</span><select name="project" style="font:inherit;font-size:18px;border:0;border-bottom:1px solid var(--rule);padding:4px 0 8px;background:none"></select></label>
+      <div class="bh"><p>Boards · the cover, the agenda and the ending are always in; the rest can be switched during the call too</p><p id="sum"></p></div>
+      <div class="boards" id="boards"></div>
+      <div class="act"><button class="go" type="submit">Create and open</button><span class="quiet" id="msg"></span></div>
+    </form>
+  </section>
+
+  <section>
+    <p class="ot">All workshops</p>
+    <h2>Pick one up where it stopped.</h2>
+    <div class="ws" id="ws"><p class="empty">Loading…</p></div>
+  </section>
+</main>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+const form=$('#new');
+form.date.value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+function longDate(iso){const [y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d);
+  return dt.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^(\w+) /,'$1, ')}
+function sum(){const on=[...form.querySelectorAll('[name=board]:checked')];const min=on.reduce((a,x)=>a+ +x.dataset.min,0)+3;
+  $('#sum').textContent=`${on.length} boards · about ${min} min`}
+fetch('/api/library').then(r=>r.json()).then(({boards,us,projects})=>{
+  if(us&&!form.us.value)form.us.value=us;
+  if(projects&&projects.length){$('#projwrap').hidden=false;form.project.innerHTML=projects.map(([k,l])=>`<option value="${esc(k)}">${esc(l)}</option>`).join('')}
+  $('#boards').innerHTML=boards.filter(b=>!b.fixed).map(b=>{const about=b.about||(b.questions||[]).map(q=>q.q||q).slice(0,2).join(' · ');
+    return `<label class="bo"><input type="checkbox" name="board" value="${esc(b.key)}" data-min="${b.min||0}"${b.on?' checked':''}><span><b>${esc(b.name)}</b><span class="ab">${esc(about)}</span></span><span class="mn">${b.min||0} min</span></label>`}).join('');
+  sum()});
+form.addEventListener('change',sum);
+form.addEventListener('submit',async e=>{e.preventDefault();const btn=form.querySelector('.go');btn.disabled=true;$('#msg').textContent='Creating…';$('#msg').className='quiet';
+  const body={project:form.project.value,title:form.title.value,client:form.client.value,us:form.us.value,date:form.date.value?longDate(form.date.value):'',on:[...form.querySelectorAll('[name=board]:checked')].map(x=>x.value)};
+  try{const r=await fetch('/api/workshops',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);location.href=j.url}
+  catch(err){btn.disabled=false;$('#msg').textContent='Could not create it: '+err.message;$('#msg').className='err'}});
+fetch('/api/workshops').then(r=>r.json()).then(list=>{
+  $('#ws').innerHTML=list.length?list.map(w=>`<a class="w" href="/w/${encodeURIComponent(w.id)}"><span class="tt">${esc(w.title||'Untitled')}<small>${esc([w.client,w.date].filter(Boolean).join(' · '))}</small>${(w.sent||[]).map(s=>`<small>Sent to ${esc(s.to||'someone')} as a ${s.via==='vercel'?'link':'file'} · ${s.answered} of ${s.of} answered${s.done?', finished':''}</small>`).join('')}</span><span class="hide">${w.answers} ${w.answers===1?'answer':'answers'} on ${w.boards} boards</span><span class="hide">Saved ${esc((w.updated||'').replace('T',' at ').slice(0,19))}</span><span class="op">Open →</span></a>`).join(''):'<p class="empty">None yet.</p>'})
+  .catch(()=>{$('#ws').innerHTML='<p class="empty">The server is not answering. Run <code>python3 brain/workshop.py serve</code>.</p>'});
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Per workspace: the link to the owner's Vercel project, and the form copied in at deploy.
+.vercel/
+.env*.local
+form.html

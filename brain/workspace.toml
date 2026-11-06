@@ -111,6 +111,22 @@ version = ""                       # the boilerplate commit last taken; `/update
 # dangerous one and belongs upstream, where everybody gets it.
 extra_project_paths = []
 
+[workshop]
+# `brain/workshop.py`, the live workshop deck. `studio` is set as text on every cover (never a
+# drawn logo); `notion_parent` is the Notion page a workshop's notes go under when the owner
+# asks for them there. Recording it here IS the owner's say-so for writing to it.
+studio = ""
+port = 8765
+notion_parent = ""
+# How a workshop's questions reach a client who answers alone (`workshop.py send`):
+#   "file"    one HTML file to email; they email back the copy it downloads. Nothing to set up.
+#   "vercel"  a link per person, saved as they type, on the owner's own Vercel account. Run
+#             `python3 brain/workshop.py host` once; it writes host_url. Client answers then sit
+#             in that account's Redis store, which is the owner's call to make.
+send_via = "file"
+host_url = ""                      # written by `workshop.py host`
+host_project = ""                  # the Vercel project's name; "" = <engagement>-workshop
+
 [confidential]
 # Directories holding client or third-party material. Kept out of git from day one, and
 # read-only to the assistant when they are source material from outside.

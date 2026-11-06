@@ -50,6 +50,7 @@ DEFAULT_REPO = TEMPLATE_HOME
 # The template's machinery. Improvements to these are the whole point of checking upstream.
 OWNED = (
     "brain/*.py",
+    "brain/workshop/**",
     ".claude/skills/**",
     ".agents/skills/**",
     ".github/workflows/**",

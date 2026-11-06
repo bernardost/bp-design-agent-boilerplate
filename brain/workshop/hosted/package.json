@@ -1,0 +1,6 @@
+{
+  "name": "workshop-forms",
+  "private": true,
+  "type": "module",
+  "description": "The hosted half of the async workshop: brain/workshop.py host deploys this folder."
+}

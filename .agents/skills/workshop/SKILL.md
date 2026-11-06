@@ -1,9 +1,116 @@
 ---
 name: workshop
-description: Turn questions for a stakeholder into an async workshop they answer on their phone, in pieces — assumptions they confirm rather than blanks they fill. Use for /workshop, or when a discovery call was missed, a promised document never arrived, a decision-maker will not read a list of questions, or the work is blocked on information only a stakeholder has.
+description: Run a workshop with the client, live on a call or sent as a form. Live is the default — a deck of boards picked from a design-brief library, presented from this repo, every answer saved to brain/workshops/ as it is typed, with notes that can go to Notion. The same deck's questions can go to a client as a plain form, by email as a file or as a hosted link, and the answers come back into the workshop's notes. Use for /workshop, "set up the kickoff", "make a workshop", "send the client the questions", or when a call was missed, a promised document never arrived, or the work is blocked on information only a stakeholder has.
 ---
 
-# Workshop — when the call does not happen
+# Workshop — live first, a form when the call does not happen
+
+Three shapes. **Live** is the default: the owner presents a deck of boards on a call and types
+the answers into it as people talk. **A form** sends the same deck's questions to a client to
+answer alone. **A built async workshop** (further down) is for when a form is not enough. Ask
+which only when the conversation has not made it obvious.
+
+## Live: the workshop deck
+
+`brain/workshop.py` is a local server and `brain/workshop/` is the deck it serves: the boards
+of Far Wall, AE Kickoff's design of record, with the questions rewritten for a design brief
+(`library.json`). Standard library only, no database, no account.
+
+```
+python3 brain/workshop.py serve --open                       # home page: new workshop, past ones
+python3 brain/workshop.py new "Brand kickoff" --client Acme --date 2026-11-12 --open
+python3 brain/workshop.py new --spec brain/workshops/<spec>.json --open
+python3 brain/workshop.py library                            # the boards and their keys
+python3 brain/workshop.py notes <id>                         # rewrite notes.md by hand
+```
+
+**Where it saves.** One folder per workshop, `brain/workshops/YYYY-MM-DD-<client>-<title>/`:
+`deck.json` is the truth, `notes.md` is the same answers as markdown, rewritten on every save,
+and `history/` (gitignored) holds a copy every ten minutes and before any conflicting write.
+The page keeps every keystroke in the browser first and sends it a moment later, so a dropped
+connection, a stopped server or a refresh loses nothing; the foot says *Not saved to disk ·
+kept in this browser* until the server answers again. Reopening lands on the board the owner
+left, with the time spent on each board kept.
+
+**Generating one for this project.** Read `brain/project-brief.md` and the open questions
+first, as for any workshop. Then write a spec rather than taking the defaults: switch on the
+boards this project needs, and rewrite or add questions in the client's own words, with what
+is already known left out. A spec is the library's shape, trimmed:
+
+```json
+{"title": "Brand and app kickoff", "client": "Acme", "date": "2026-11-12", "us": "Studio",
+ "project": "<key, when the workspace has more than one>",
+ "boards": ["team", "mv", "goals", "tl", "pers", "traits", "raci", "pre", "steps",
+   {"key": "brand", "questions": [{"q": "What do enterprise buyers say about you today?", "d": ""}]},
+   {"key": "pricing", "kind": "questions", "name": "Pricing", "title": "What it costs, and why",
+    "questions": ["What do customers pay today?", "Who has said it is too expensive?"]}]}
+```
+
+Listed boards are switched on, every other library board is in the deck switched off (the
+owner can switch it in during the call from the gear), and a new key must be a `questions`,
+`rows` or `goals` board. Show the owner the board list and the questions you changed before
+the call, in one message, and let him cut them.
+
+**During and after.** Never edit a `deck.json` while its page is open: the page's next save
+overwrites the edit (the replaced copy lands in `history/`). After the call, read `notes.md`
+and route it like a transcript: decisions to `brain/decisions/`, insights to `brain/insights/`,
+what stayed open to `brain/open-questions.md`, and the brief where the workshop moved it.
+An answer the owner typed during the call is the client's word only if he says it was; ask
+once when it matters.
+
+**Notion.** Notes go to Notion as a projection, never as the store. Load the Notion connector
+(authenticate if asked), and create one page under the parent named in `[workshop]
+notion_parent` in `brain/workspace.toml` (ask once and write it there if it is empty), titled
+with the workshop's title and date, its body `notes.md` without the frontmatter. Put the page's
+link at the top of the answers routing you report. Re-running replaces that page's content;
+it never creates a second one.
+
+**Brand assets.** The cover sets the studio's name and the client's as text. Never draw a
+logo in; the rule in `AGENTS.md` has no exceptions here either.
+
+## Sent as a form: the async workshop
+
+Prep exactly as for a live workshop: create the deck, switch boards, edit the questions. Then
+send it. The client gets one plain page in the house style, like the brief: the switched-on
+question, mission, goals, audience and personality boards as fields to fill in, nothing
+pre-filled, nothing to log in to. Team, timeline, RACI, week and next steps belong to a call
+and stay out.
+
+```
+python3 brain/workshop.py preview <id>                       # what the client will see; sends nothing
+python3 brain/workshop.py send <id> --to "Dana Ruiz" [--due "Friday 13 November"] [--note "…"]
+python3 brain/workshop.py receive ~/Downloads/<…>-answers-dana-ruiz.html
+python3 brain/workshop.py pull [<id>]                        # hosted forms: fetch the answers
+python3 brain/workshop.py host                               # once per workspace, for --via vercel
+```
+
+One form per person; a second person gets a second `send`. Each send writes
+`responses/<who>-<token>.json` in the workshop's folder: the questions as sent and whatever
+came back. Answers never go into `deck.json`, so a deck open in a tab cannot overwrite them,
+and `notes.md` gains an *Answers from <name>* section for each.
+
+**Two ways to send it.** `--via` picks one; `[workshop] send_via` in `brain/workspace.toml` is
+the default, and `file` needs nothing set up. Ask the owner which the first time and write it
+there; a template clone may not want its client answers on Vercel at all.
+
+- **`file`** writes one HTML file to `send/` and reveals it in Finder for the owner to attach
+  to an email. The client's answers stay in their browser as they type. At the end they
+  download a copy of the page with the answers inside and email it back; `receive` reads it.
+  Nothing arrives until they send it, and a different browser starts empty.
+- **`vercel`** gives each person a link; every answer is saved as it is typed, from any
+  device, and `pull` fetches them. `host` sets it up once: it links a Vercel project, adds an
+  Upstash Redis store for the answers, puts a key in `.env.agents` that only this workspace
+  holds, deploys `brain/workshop/hosted/`, and writes the address to `[workshop] host_url`.
+  It needs the Vercel CLI logged in, and the CLI may ask the owner to accept Upstash's terms,
+  so the owner runs it himself the first time: `! python3 brain/workshop.py host`. Re-run it
+  after `form.html` changes to redeploy. Deploying is publishing: ask before the first one.
+
+**When answers arrive**, route them like the notes of a call. These are the client's own words,
+typed alone; quote them as such. A blank is `_open_`, never a no.
+
+---
+
+# A built async workshop — when a form is not enough
 
 A client misses the workshop, does not send the document he promised, and will not read an
 email with nine questions in it. The work needs his answers anyway. The move is to take the

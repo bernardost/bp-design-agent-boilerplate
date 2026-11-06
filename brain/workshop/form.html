@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* The async workshop: the questions of a deck as one plain page a client fills in alone.
+   House style on purpose. The look of the work is still undecided, so the form stays neutral:
+   white paper, black ink, hairlines, one sans. Every value is a property here. */
+:root{
+  --paper:#fff;--ink:#0d0d0e;--ink-2:#3a3a3e;--ink-3:#6e6e75;--ink-4:#9a9aa1;
+  --rule:rgba(13,13,14,.13);--rule-soft:rgba(13,13,14,.08);--field:rgba(13,13,14,.24);
+  --warn:#8a5a12;--ok:#1f6640;
+  --measure:740px;--q:17px;--answer:16px;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+main{max-width:var(--measure);margin:0 auto;padding:72px 24px 160px}
+.kicker{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+h1{font-size:clamp(32px,5vw,46px);line-height:1.08;letter-spacing:-.033em;font-weight:600;margin:0;text-wrap:balance}
+.for{font-size:19px;color:var(--ink-3);margin:10px 0 0;letter-spacing:-.01em}
+.intro{margin:30px 0 0;padding-top:20px;border-top:1px solid var(--ink);color:var(--ink-2)}
+.intro p{margin:0 0 .75em;max-width:62ch}
+.intro b{color:var(--ink);font-weight:600}
+section{margin-top:68px}
+section>header{border-bottom:1px solid var(--ink);padding-bottom:12px}
+section>header .kicker{margin:0 0 6px}
+section>header .d{margin-top:6px}
+h2{font-size:26px;line-height:1.2;letter-spacing:-.022em;font-weight:600;margin:0;text-wrap:balance}
+.it{display:block;padding:22px 0 24px;border-top:1px solid var(--rule-soft)}
+section>header+.it,section>header+.sc{border-top:0}
+.q{display:block;font-size:var(--q);font-weight:600;letter-spacing:-.011em;line-height:1.4;text-wrap:pretty}
+.d{display:block;font-size:14.5px;color:var(--ink-3);margin-top:3px;line-height:1.5;white-space:pre-line;text-wrap:pretty}
+textarea,input[type=text]{display:block;width:100%;margin-top:12px;font:inherit;font-size:var(--answer);line-height:1.55;
+  color:var(--ink);background:var(--paper);border:1px solid var(--field);border-radius:6px;padding:10px 12px;
+  resize:none;overflow:hidden;outline:none;transition:border-color .12s,box-shadow .12s}
+textarea{min-height:70px}
+textarea:focus,input[type=text]:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(13,13,14,.07)}
+::placeholder{color:var(--ink-4)}
+
+/* A pair of words on seven steps. The ends are bigger, so the middle reads as balanced. */
+.sc{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:16px;
+  padding:16px 0 10px;border-top:1px solid var(--rule-soft)}
+.pole{font-size:16px;font-weight:500;letter-spacing:-.01em}
+.pole.a{text-align:right}
+.dots{display:flex}
+.dots label{width:34px;height:34px;display:grid;place-items:center;cursor:pointer}
+.dots input{appearance:none;-webkit-appearance:none;margin:0;width:13px;height:13px;border-radius:50%;
+  border:1.5px solid var(--field);background:var(--paper);cursor:pointer;transition:background .12s,border-color .12s,transform .12s}
+.dots label:is(:nth-child(1),:nth-child(7)) input{width:21px;height:21px}
+.dots label:is(:nth-child(2),:nth-child(6)) input{width:17px;height:17px}
+.dots label:hover input{border-color:var(--ink)}
+.dots input:checked{background:var(--ink);border-color:var(--ink)}
+.dots input:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.lean{grid-column:1/-1;text-align:center;font-size:13px;color:var(--ink-3);min-height:20px}
+
+/* Audiences repeat: a name, then the same questions for each. */
+.aud{margin-top:26px;padding-top:14px;border-top:1px solid var(--ink)}
+.aud:first-child{margin-top:4px;border-top:0;padding-top:16px}
+.aud-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.aud-h .kicker{margin:0}
+.aud>input[type=text]{font-size:19px;font-weight:600;letter-spacing:-.015em}
+.aud .it{padding:18px 0 20px}
+button{font:inherit;cursor:pointer}
+.ln{background:none;border:0;padding:0;color:var(--ink-3);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.ln:hover{color:var(--ink)}
+.ln.add{margin-top:18px;color:var(--ink);font-weight:600;text-decoration:none;border:1px solid var(--field);border-radius:6px;padding:9px 14px}
+.ln.add:hover{border-color:var(--ink)}
+
+.finish{margin-top:84px;padding-top:20px;border-top:1px solid var(--ink)}
+.finish p{color:var(--ink-2);max-width:60ch;margin:12px 0 0}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:22px}
+.go{font-size:15px;font-weight:600;background:var(--ink);color:#fff;border:1px solid var(--ink);border-radius:6px;padding:11px 18px;white-space:nowrap}
+.go.alt{background:none;color:var(--ink);border-color:var(--field)}
+.go.alt:hover{border-color:var(--ink)}
+.go.ok{background:var(--paper);color:var(--ok);border-color:var(--ok)}
+.note{font-size:14px;color:var(--ink-3)}
+
+/* The status line is always on screen: what is saved, and how far along. */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--rule)}
+.bar .in{max-width:var(--measure);margin:0 auto;display:flex;align-items:center;gap:16px;
+  padding:11px 24px calc(11px + env(safe-area-inset-bottom))}
+.st{flex:1;min-width:0;font-size:13.5px;color:var(--ink-3);line-height:1.4}
+.st b{color:var(--ink);font-weight:600}
+.st.off b{color:var(--warn)}
+.st .pr{white-space:nowrap}
+.bar .go{font-size:14px;padding:8px 14px}
+.bar .go[hidden]{display:none}
+
+@media (max-width:560px){
+  main{padding:48px 18px 150px}
+  .bar .in{padding-left:18px;padding-right:18px}
+  h2{font-size:23px}
+  .sc{grid-template-columns:1fr 1fr;row-gap:4px}
+  .pole.a{text-align:left;grid-row:1}
+  .pole.b{text-align:right;grid-row:1;grid-column:2}
+  .dots{grid-column:1/-1;justify-content:space-between}
+}
+@media print{.bar,.acts,.ln.add{display:none}main{padding-top:0}}
+</style>
+</head>
+<body>
+<main id="app"><p class="kicker">Loading</p></main>
+<div class="bar"><div class="in"><p class="st" id="st"></p><button class="go" id="dl" type="button" hidden>Download answers</button></div></div>
+<script id="spec" type="application/json">null</script>
+<script id="answers" type="application/json">null</script>
+<script>
+/* Three ways this page runs, read from what it carries:
+   file     the questions are inside this file (`workshop.py send --via file`); answers are kept
+            in this browser and leave as a downloaded copy of this page with them inside.
+   hosted   no questions inside; the address is /f/<token> and the answers save to /api/form.
+   preview  the owner's look at the form before sending; nothing leaves the browser. */
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+const embedded=id=>{try{return JSON.parse(document.getElementById(id).textContent)}catch(e){return null}};
+const EMB=embedded('spec'),EMBA=embedded('answers');
+const MODE=EMB?(EMB.preview?'preview':'file'):'hosted';
+const TOKEN=MODE==='hosted'?decodeURIComponent((location.pathname.match(/\/f\/([^/?#]+)/)||[])[1]||''):null;
+let SPEC=null,A={},AT=0,DONE=false,dirty=false,dirtySince=0,saving=false,again=false,fails=0,offline=false,lastSaved=null,timer=null;
+
+const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const KEY=()=>'form:'+(SPEC?SPEC.token:TOKEN);
+const keep=()=>lsSet(KEY(),{spec:SPEC,answers:A,at:AT,done:DONE,dirty});
+const adopt=x=>{if(x){A=x.answers||{};AT=x.at||0;DONE=!!x.done}};
+
+async function boot(){
+  if(MODE!=='hosted'){SPEC=EMB;adopt(EMBA)}
+  else{
+    if(!/^[A-Za-z0-9_-]{16,64}$/.test(TOKEN||''))return stop('This link is not complete.','Check that the whole address was copied from the message.');
+    let srv=null;
+    try{const r=await fetch('/api/form?t='+encodeURIComponent(TOKEN),{cache:'no-store'});
+      if(r.status===404)return stop('This link does not lead to a form any more.','Ask whoever sent it for a new one.');
+      if(!r.ok)throw new Error(r.status);srv=await r.json()}catch(e){}
+    const loc=lsGet(KEY());
+    if(srv){SPEC=srv.spec;adopt(srv.answers)}
+    else if(loc&&loc.spec){SPEC=loc.spec;offline=true}
+    else return stop('The form could not be reached.','Check the connection and reload the page.');
+  }
+  // The browser's copy wins when it is newer: typed offline, or the tab closed before it sent.
+  const loc=lsGet(KEY());
+  if(loc&&(loc.at||0)>AT){A=loc.answers||{};AT=loc.at;DONE=!!loc.done;if(MODE==='hosted'){dirty=true;dirtySince=Date.now()}}
+  render();paint();
+  if(dirty)push();
+}
+
+function stop(title,line){$('#app').innerHTML=`<p class="kicker">Questions</p><h1>${esc(title)}</h1><p class="intro">${esc(line)}</p>`;$('.bar').hidden=true}
+
+/* ── drawing ── */
+const LEAN={1:'Strongly',2:'Clearly',3:'A little',5:'A little',6:'Clearly',7:'Strongly'};
+const lean=(n,it)=>!n?'':n===4?'Balanced':`${LEAN[n]} ${n<4?it.a:it.b}`;
+const items=()=>SPEC.sections.flatMap(s=>s.items);
+const itemById=id=>items().find(i=>i.id===id);
+const people=it=>{const L=A[it.id];return Array.isArray(L)&&L.length?L:(it.names&&it.names.length?it.names:['']).map(n=>({name:n,a:[]}))};
+
+function field(id,q,d,v,ph){
+  return `<label class="it"><span class="q">${esc(q)}</span>${d?`<span class="d">${esc(d)}</span>`:''}<textarea ${id} rows="2"${ph?` placeholder="${esc(ph)}"`:''}>${esc(v||'')}</textarea></label>`}
+
+function item(it){
+  if(it.kind==='text')return field(`data-id="${esc(it.id)}"`,it.q,it.d,A[it.id]);
+  if(it.kind==='list')return field(`data-id="${esc(it.id)}"`,it.q,it.d,A[it.id],'One per line');
+  if(it.kind==='scale'){const v=+A[it.id]||0;
+    return `<div class="sc" role="radiogroup" aria-label="${esc(it.a+' or '+it.b)}"><span class="pole a">${esc(it.a)}</span><span class="dots">${[1,2,3,4,5,6,7].map(n=>
+      `<label title="${esc(lean(n,it))}"><input type="radio" name="${esc(it.id)}" value="${n}" data-id="${esc(it.id)}" aria-label="${esc(lean(n,it))}"${v===n?' checked':''}></label>`).join('')}</span><span class="pole b">${esc(it.b)}</span><span class="lean" data-lean="${esc(it.id)}">${esc(lean(v,it))}</span></div>`}
+  if(it.kind==='people')return `<div class="ppl" data-pid="${esc(it.id)}">${peopleHTML(it)}</div>`;
+  return '';
+}
+function peopleHTML(it){const L=people(it);
+  return L.map((p,i)=>`<div class="aud"><div class="aud-h"><span class="kicker">${esc(it.one||'Audience')} ${i+1}</span>${L.length>1?`<button type="button" class="ln" data-rm="${i}">Remove</button>`:''}</div>
+    <input type="text" data-pp="${i}" data-f="name" value="${esc(p.name||'')}" placeholder="${esc(it.name_hint||'Name them')}" aria-label="Name">
+    ${it.qs.map((q,j)=>field(`data-pp="${i}" data-f="${j}"`,q.q,q.d,(p.a||[])[j])).join('')}</div>`).join('')
+    +`<button type="button" class="ln add" data-add>${esc(it.add||'Add another')}</button>`}
+
+function render(){
+  const S=SPEC;document.title=[S.title,S.client].filter(Boolean).join(' — ')||'Questions';
+  const who=S.us||'us';
+  let h=`<p class="kicker">${esc([S.us,S.client&&'for '+S.client].filter(Boolean).join(' · ')||'Questions')}</p><h1>${esc(S.title)}</h1>`;
+  if(S.to)h+=`<p class="for">Questions for ${esc(S.to)}</p>`;
+  const intro=[];
+  if(S.note)intro.push(esc(S.note).replace(/\n+/g,'</p><p>'));
+  else intro.push(`These are the questions we would ask you in a kickoff. Answer what you can, in your own words. Short answers are fine, and so is leaving one blank.`);
+  if(MODE==='hosted')intro.push(`<b>Your answers save as you type</b> and reach ${esc(who)} as they save; there is nothing to submit. Close the page whenever you like and come back to it through the same link.`);
+  else intro.push(`<b>Your answers are kept in this browser as you type</b>, so you can close this and come back to it here. When you are done, download your answers at the end and email the file back to ${esc(who)}.`);
+  if(S.due)intro.push(`It helps most if we have them by <b>${esc(S.due)}</b>.`);
+  if(EMBA&&EMBA.saved)intro.unshift(`<b>Answers saved ${esc(new Date(EMBA.saved).toLocaleString([], {dateStyle:'long',timeStyle:'short'}))}.</b>`);
+  h+=`<div class="intro">${intro.map(p=>`<p>${p}</p>`).join('')}</div>`;
+  for(const s of S.sections){
+    h+=`<section><header>${s.title?`<p class="kicker">${esc(s.name)}</p><h2>${esc(s.title)}</h2>`:`<h2>${esc(s.name)}</h2>`}${s.d?`<p class="d">${esc(s.d)}</p>`:''}</header>${s.items.map(item).join('')}</section>`}
+  h+=`<div class="finish" id="finish"></div>`;
+  $('#app').innerHTML=h;
+  document.querySelectorAll('textarea').forEach(grow);
+  paintFinish();
+}
+
+function paintFinish(){
+  const who=esc(SPEC.us||'us');let h;
+  if(MODE==='preview')h=`<p class="kicker">The end</p><h2>This is where the client sends their answers back.</h2><p>This is a preview. Nothing typed here leaves this browser.</p>`;
+  else if(MODE==='hosted')h=DONE
+    ?`<p class="kicker">Thank you</p><h2>${who} has your answers.</h2><p>You can still change anything; it keeps saving.</p><div class="acts"><button class="go ok" type="button" disabled>Finished</button></div>`
+    :`<p class="kicker">That is everything</p><h2>Your answers are already with ${who}.</h2><p>Press Finished to tell them you are done. You can still change anything afterwards.</p><div class="acts"><button class="go" type="button" data-done>Finished</button></div>`;
+  else h=`<p class="kicker">That is everything</p><h2>Send your answers back to ${who}.</h2><p>Download your answers and attach the file to an email to ${who}. It opens in a browser, like this page.</p><div class="acts"><button class="go" type="button" data-dl>Download answers</button><button class="go alt" type="button" data-copy>Copy as text instead</button><span class="note" id="fnote"></span></div>`;
+  $('#finish').innerHTML=h;
+  $('#dl').hidden=MODE!=='file';
+}
+
+function grow(t){t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px'}
+
+/* ── answering ── */
+function touch(){AT=Date.now();if(MODE==='hosted'&&!dirty){dirty=true;dirtySince=Date.now()}keep();paint();
+  if(MODE==='hosted'){clearTimeout(timer);timer=setTimeout(push,700)}}
+
+const app=$('#app');
+app.addEventListener('input',e=>{const t=e.target;
+  if(t.dataset.id&&t.type!=='radio'){A[t.dataset.id]=t.value;grow(t);return touch()}
+  if(t.dataset.pp!=null){const box=t.closest('[data-pid]'),it=itemById(box.dataset.pid);
+    const L=people(it).map(p=>({name:p.name||'',a:[...(p.a||[])]}));const p=L[+t.dataset.pp];
+    if(t.dataset.f==='name')p.name=t.value;else{p.a[+t.dataset.f]=t.value;grow(t)}
+    A[it.id]=L;touch()}});
+app.addEventListener('click',e=>{const t=e.target;
+  if(t.type==='radio'){const it=itemById(t.dataset.id),n=+t.value;
+    if(+A[it.id]===n){t.checked=false;A[it.id]=0}else A[it.id]=n;   // a second tap clears it
+    app.querySelector(`[data-lean="${CSS.escape(it.id)}"]`).textContent=lean(+A[it.id]||0,it);return touch()}
+  const box=t.closest('[data-pid]');
+  if(box&&(t.matches('[data-add]')||t.matches('[data-rm]'))){const it=itemById(box.dataset.pid);
+    const L=people(it).map(p=>({name:p.name||'',a:[...(p.a||[])]}));
+    if(t.matches('[data-add]'))L.push({name:'',a:[]});
+    else{const i=+t.dataset.rm,p=L[i];if((p.name||p.a.some(x=>(x||'').trim()))&&!confirm('Remove this one and its answers?'))return;L.splice(i,1)}
+    A[it.id]=L;box.innerHTML=peopleHTML(it);box.querySelectorAll('textarea').forEach(grow);
+    if(t.matches('[data-add]'))box.querySelectorAll('.aud')[L.length-1].querySelector('input').focus();
+    return touch()}
+  if(t.matches('[data-done]')){DONE=true;touch();paintFinish();return}
+  if(t.matches('[data-dl]'))return download();
+  if(t.matches('[data-copy]'))return copyText();
+});
+$('#dl').addEventListener('click',()=>download());
+
+/* ── saving (hosted) ── */
+async function push(){
+  if(MODE!=='hosted')return;
+  clearTimeout(timer);if(saving){again=true;return}saving=true;const at=AT;
+  try{const r=await fetch('/api/form?t='+encodeURIComponent(TOKEN),{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:A,at:AT,done:DONE})});
+    if(!r.ok)throw new Error(r.status);
+    fails=0;offline=false;lastSaved=new Date();if(AT===at){dirty=false;keep()}}
+  catch(e){fails++;offline=true;timer=setTimeout(push,Math.min(30000,1000*2**fails))}
+  saving=false;paint();if(again){again=false;if(dirty)push()}
+}
+addEventListener('online',()=>{if(dirty)push()});
+addEventListener('pagehide',()=>{if(MODE!=='hosted'||!dirty)return;keep();
+  const body=JSON.stringify({answers:A,at:AT,done:DONE});
+  if(body.length<60000)try{fetch('/api/form?t='+encodeURIComponent(TOKEN),{method:'PUT',headers:{'Content-Type':'application/json'},body,keepalive:true})}catch(e){}});
+
+function progress(){let n=0,t=0;for(const it of items()){t++;const v=A[it.id];
+  if(it.kind==='people'?people(it).some(p=>(p.name||'').trim()||(p.a||[]).some(x=>(x||'').trim())):it.kind==='scale'?+v>0:(v||'').trim())n++}return[n,t]}
+const clock=d=>d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+function paint(){if(!SPEC)return;const[n,t]=progress();let s,off=false;
+  if(MODE==='preview')s='<b>Preview.</b> Nothing typed here is sent.';
+  else if(MODE==='file')s='<b>Kept in this browser</b> as you type.';
+  else if(dirty&&offline){s='<b>Not connected.</b> Your answers are kept on this device and sent when you are back online.';off=true}
+  else if(dirty&&Date.now()-dirtySince>3000)s='Saving…';
+  else if(!lastSaved&&!AT)s='<b>Saves as you type.</b>';
+  else s=`<b>Saved</b>${lastSaved?' at '+clock(lastSaved):''}.`;
+  const st=$('#st');st.className='st'+(off?' off':'');st.innerHTML=`${s} <span class="pr">${n} of ${t} answered.</span>`}
+setInterval(paint,1000);
+
+/* ── sending back (file) ── */
+function download(){
+  const saved=new Date().toISOString();
+  const doc=document.documentElement.cloneNode(true);
+  doc.querySelector('#app').innerHTML='<p class="kicker">Loading</p>';
+  doc.querySelector('#answers').textContent=JSON.stringify({answers:A,at:AT,done:true,saved}).replace(/</g,'\\u003c');
+  const blob=new Blob(['<!doctype html>\n'+doc.outerHTML],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=SPEC.save_as||'answers.html';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
+  DONE=true;keep();
+  const f=$('#fnote');if(f)f.textContent=`Downloaded ${a.download}. Attach it to an email to ${SPEC.us||'us'}.`}
+
+function asText(){const L=[SPEC.title+(SPEC.to?' — answers from '+SPEC.to:''),''];
+  for(const s of SPEC.sections){L.push('## '+(s.title?s.name+': '+s.title:s.name),'');
+    for(const it of s.items){
+      if(it.kind==='scale')L.push(`${it.a} / ${it.b}: ${lean(+A[it.id]||0,it)||'—'}`);
+      else if(it.kind==='people')people(it).forEach((p,i)=>{L.push(`${it.one||'Audience'} ${i+1}: ${p.name||'—'}`);it.qs.forEach((q,j)=>L.push(q.q,((p.a||[])[j]||'').trim()||'—',''))});
+      else L.push(it.q,(A[it.id]||'').trim()||'—','')}
+    L.push('')}
+  return L.join('\n').replace(/\n{3,}/g,'\n\n').trim()+'\n'}
+async function copyText(){const txt=asText(),f=$('#fnote');
+  try{await navigator.clipboard.writeText(txt)}
+  catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
+  if(f)f.textContent=`Copied. Paste it into an email to ${SPEC.us||'us'}.`}
+
+boot();
+</script>
+</body>
+</html>

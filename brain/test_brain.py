@@ -836,5 +836,121 @@ class ReviewRound(unittest.TestCase):
             self.assertNotEqual(run(ws, "review.py", "Bad Name", "list").returncode, 0)
 
 
+class Workshop(unittest.TestCase):
+    """The workshop server holds client answers typed during a call. What must never happen:
+    a save that loses the deck it replaced, notes that crash the save, or a new deck whose
+    shape deck.js cannot read."""
+
+    def setUp(self):
+        import workshop
+        self.w = workshop
+        self.tmp = Path(tempfile.mkdtemp())
+        self.old = workshop.STORE
+        workshop.STORE = self.tmp
+
+    def tearDown(self):
+        self.w.STORE = self.old
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_new_deck_holds_every_library_board(self):
+        d = self.w.new_deck("Kickoff", "Acme", "2026-11-12", on=["gq", "traits"])
+        keys = [b["key"] for b in d["boards"]]
+        self.assertEqual(keys, [b["key"] for b in self.w.library()])
+        self.assertNotIn("gq", d["off"])
+        self.assertNotIn("cover", d["off"])            # fixed boards are always in
+        self.assertTrue(d["off"]["team"])
+        self.assertEqual(d["cover"]["date"], "Thursday, 12 November 2026")
+        self.assertEqual(len(d["traits"]), 8)
+        self.assertTrue(all(q["a"] == [] for q in d["gq"]))
+
+    def test_spec_adds_a_custom_question_board(self):
+        d = self.w.new_deck("Kickoff", spec_boards=["team", {"key": "pricing", "kind": "questions",
+                                                              "questions": ["What do customers pay today?"]}])
+        self.assertEqual(d["pricing"][0]["q"], "What do customers pay today?")
+        self.assertNotIn("pricing", d["off"])
+        self.assertTrue(d["off"]["gq"])
+        with self.assertRaises(SystemExit):
+            self.w.new_deck("Kickoff", spec_boards=[{"key": "cover2", "kind": "timeline"}])
+
+    def test_save_bumps_rev_and_keeps_the_replaced_deck_on_conflict(self):
+        wid = self.w.create(self.w.new_deck("Kickoff", "Acme"))
+        d = self.w.read_deck(wid)
+        d["gq"][0]["a"] = ["Pricing pages lose enterprise buyers"]
+        r = self.w.save(wid, 0, d)
+        self.assertEqual(r["rev"], 1)
+        self.assertFalse(r["conflict"])
+        self.assertIn("Pricing pages lose enterprise buyers", (self.tmp / wid / "notes.md").read_text())
+        r = self.w.save(wid, 0, d)                       # a second tab that started from rev 0
+        self.assertTrue(r["conflict"])
+        self.assertTrue(list((self.tmp / wid / "history").glob("*-conflict.json")))
+
+    def test_notes_name_every_board_switched_on(self):
+        d = self.w.new_deck("Kickoff", "Acme", on=["gq", "traits", "raci", "steps"])
+        d["traits"][0]["pos"] = 6
+        md = self.w.notes(d)
+        self.assertTrue(md.startswith("---\ntags: [research]\n---"))
+        self.assertIn("Serious ↔ Playful: clearly Playful", md)
+        self.assertIn("| Role | Responsible |", md)
+        self.assertNotIn("## Team", md)                  # switched off, so not in the notes
+
+    def test_form_asks_only_the_boards_switched_on_that_a_client_can_answer(self):
+        d = self.w.new_deck("Kickoff", "Acme", on=["gq", "mv", "goals", "pers", "traits", "team", "raci", "steps"])
+        d["gq"][0]["q"] = "Why now, in one sentence?"     # edited in prep
+        spec = self.w.form_spec(d, "Dana", "t" * 24)
+        keys = [s["key"] for s in spec["sections"]]
+        self.assertEqual(keys, ["gq", "mv", "goals", "pers", "traits"])
+        self.assertEqual(spec["sections"][0]["items"][0]["q"], "Why now, in one sentence?")
+        kinds = {s["key"]: s["items"][0]["kind"] for s in spec["sections"]}
+        self.assertEqual(kinds, {"gq": "text", "mv": "text", "goals": "list", "pers": "people", "traits": "scale"})
+        self.assertEqual(spec["save_as"], "acme-kickoff-answers-dana.html")
+
+    def _sent_back(self, rec, answers, at):
+        """The page a client downloads: the form as sent, with their answers inside."""
+        page = (self.w.ROOT / rec["file"]) if not Path(rec["file"]).is_absolute() else Path(rec["file"])
+        data = json.dumps({"answers": answers, "at": at, "done": True}).replace("<", "\\u003c")
+        out = self.tmp / f"back-{at}.html"
+        out.write_text(page.read_text().replace(
+            '<script id="answers" type="application/json">null</script>',
+            f'<script id="answers" type="application/json">{data}</script>'))
+        return out
+
+    def test_a_file_sent_and_returned_lands_in_the_notes(self):
+        wid = self.w.create(self.w.new_deck("Kickoff", "Acme", on=["gq", "traits"]))
+        rec = self.w.send(wid, "Dana", "file")
+        with self.assertRaises(SystemExit):              # the form as sent carries no answers
+            self.w.receive(Path(rec["file"]))
+        self.w.receive(self._sent_back(rec, {"gq.0": "The <old> site loses buyers", "traits.0": 2}, 200))
+        md = (self.tmp / wid / "notes.md").read_text()
+        self.assertIn("## Answers from Dana", md)
+        self.assertIn("The <old> site loses buyers", md)
+        self.assertIn("Serious ↔ Playful: clearly Serious", md)
+        with self.assertRaises(SystemExit):              # an older copy never replaces a newer one
+            self.w.receive(self._sent_back(rec, {"gq.0": "older"}, 100))
+        self.assertEqual(self.w.read_deck(wid).get("gq")[0]["a"], [])   # deck.json is never touched
+
+    def test_a_hosted_form_is_created_and_pulled(self):
+        wid = self.w.create(self.w.new_deck("Kickoff", "Acme", on=["gq"]))
+        calls, old = [], (self.w.http_json, self.w.host_url, self.w.env_value)
+        self.w.host_url, self.w.env_value = (lambda: "https://forms.example"), (lambda n: "key")
+        def fake(method, url, body=None, headers=None, timeout=20):
+            calls.append((method, url, headers))
+            return {"ok": True} if method == "POST" else {"answers": {"answers": {"gq.1": "Signups"}, "at": 5, "done": False}}
+        self.w.http_json = fake
+        try:
+            rec = self.w.send(wid, "Sam", "vercel")
+            self.assertEqual(rec["link"], f"https://forms.example/f/{rec['token']}")
+            self.assertEqual(calls[0][2], {"x-workshop-key": "key"})
+            got = self.w.pull(wid)
+            self.assertTrue(got[0][2])
+            self.assertIn("Signups", (self.tmp / wid / "notes.md").read_text())
+        finally:
+            self.w.http_json, self.w.host_url, self.w.env_value = old
+
+    def test_ids_cannot_reach_outside_the_store(self):
+        for bad in ("../x", "2026-01-01-../../etc", ""):
+            with self.assertRaises(KeyError):
+                self.w.folder(bad)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

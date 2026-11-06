@@ -1,0 +1,650 @@
+{
+ "_about": "The board library for brain/workshop.py. Every new workshop holds every board below, in this order; `on` says which arrive switched on. Content here is the default a new deck starts with; a deck keeps its own copy, so editing this file never changes a workshop that already exists. Keys are permanent: a deck stores each board's answers under its key.",
+ "boards": [
+  {
+   "key": "cover",
+   "kind": "cover",
+   "name": "Cover",
+   "fixed": true,
+   "min": 1,
+   "eyebrow": "Design kickoff"
+  },
+  {
+   "key": "agenda",
+   "kind": "agenda",
+   "name": "Agenda",
+   "fixed": true,
+   "min": 2,
+   "eyebrow": "Agenda",
+   "title": "Today"
+  },
+  {
+   "key": "open",
+   "kind": "questions",
+   "name": "Opening",
+   "on": true,
+   "min": 5,
+   "tone": "human",
+   "eyebrow": "Before anything else",
+   "title": "From first sight to the most important task",
+   "questions": [
+    {
+     "q": "What should a customer feel?",
+     "d": "From first seeing the brand to finishing their most important task in the product."
+    },
+    {
+     "q": "What should they understand?",
+     "d": ""
+    },
+    {
+     "q": "What should they be able to do?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "team",
+   "kind": "team",
+   "name": "Team",
+   "on": true,
+   "min": 3,
+   "eyebrow": "Team",
+   "title": "Who you’ll work with",
+   "about": "Names and roles on both sides; RACI and next steps pick owners from here."
+  },
+  {
+   "key": "gq",
+   "kind": "questions",
+   "name": "Business and purpose",
+   "on": true,
+   "min": 4,
+   "tone": "human",
+   "eyebrow": "Business and purpose",
+   "title": "Why this, why now",
+   "questions": [
+    {
+     "q": "Why is this happening now, and what is not working today?",
+     "d": ""
+    },
+    {
+     "q": "What should it drive?",
+     "d": "Signups, retention, conversion, trust, pricing power, expansion."
+    },
+    {
+     "q": "What does success look like at launch, in three months, in a year?",
+     "d": ""
+    },
+    {
+     "q": "What must stay unchanged?",
+     "d": "Name, logo, core colours, the product promise, legal claims, what customers expect."
+    },
+    {
+     "q": "What evidence do we have?",
+     "d": "Analytics, support tickets, interviews, sales objections, churn reasons."
+    }
+   ]
+  },
+  {
+   "key": "mv",
+   "kind": "rows",
+   "name": "Mission and positioning",
+   "on": true,
+   "min": 4,
+   "eyebrow": "Mission and positioning",
+   "title": "Why this exists",
+   "about": "Vision, mission, positioning, difference and the one idea, in the client’s words.",
+   "cols": [
+    "{client}"
+   ],
+   "rows": [
+    {
+     "label": "Vision",
+     "def": "The world if this fully works."
+    },
+    {
+     "label": "Mission",
+     "def": "What the company does every day to get there."
+    },
+    {
+     "label": "Positioning",
+     "def": "Who it is for, and what it is the best at."
+    },
+    {
+     "label": "Difference",
+     "def": "What only this company can say."
+    },
+    {
+     "label": "The one idea",
+     "def": "What the audience should remember."
+    }
+   ]
+  },
+  {
+   "key": "goals",
+   "kind": "goals",
+   "name": "Goals and metrics",
+   "on": true,
+   "min": 6,
+   "eyebrow": "Goals and metrics",
+   "title": "What this has to achieve",
+   "about": "Goals, how we will measure them, and the one number that matters.",
+   "buckets": [
+    {
+     "q": "Goals",
+     "d": "What this project must change",
+     "add": "Add a goal"
+    },
+    {
+     "q": "Metrics",
+     "d": "How we will know it worked",
+     "add": "Add a metric"
+    },
+    {
+     "q": "North star",
+     "d": "The one number that matters most",
+     "add": "Add a milestone"
+    }
+   ]
+  },
+  {
+   "key": "tl",
+   "kind": "timeline",
+   "name": "Timeline",
+   "on": true,
+   "min": 4,
+   "eyebrow": "Timeline",
+   "title": "",
+   "about": "Phases as bars and milestones as diamonds, week by week from the kickoff.",
+   "weeks": 8,
+   "phases": [
+    [
+     "Discovery",
+     0,
+     2
+    ],
+    [
+     "Concepts",
+     2,
+     2
+    ],
+    [
+     "Design",
+     3,
+     4
+    ],
+    [
+     "Handoff",
+     7,
+     1
+    ]
+   ],
+   "milestones": [
+    [
+     "Direction chosen",
+     3.57
+    ],
+    [
+     "Design sign-off",
+     6.57
+    ],
+    [
+     "Handoff",
+     7.57
+    ]
+   ]
+  },
+  {
+   "key": "pers",
+   "kind": "personas",
+   "name": "Audiences",
+   "on": true,
+   "min": 6,
+   "eyebrow": "Audiences",
+   "title": "Who this is for",
+   "about": "A profile per audience, anti-audiences too: nine questions in three groups.",
+   "questions": [
+    {
+     "q": "Who are they?",
+     "short": "Role",
+     "prompt": ""
+    },
+    {
+     "q": "What are they trying to get done?",
+     "short": "Job",
+     "prompt": "The task that brings them to us, in their words."
+    },
+    {
+     "q": "What frustrates them today?",
+     "short": "Frustrations",
+     "prompt": "With what they use now, or with us."
+    },
+    {
+     "q": "What do they need from us?",
+     "short": "Needs",
+     "prompt": "What would make this worth their time?\nWhat must it do for them?"
+    },
+    {
+     "q": "What convinces them?",
+     "short": "Convinces them",
+     "prompt": "Proof, people, numbers, a feeling.\nWhat tips them over?"
+    },
+    {
+     "q": "Who do they trust?",
+     "short": "Trusts",
+     "prompt": "Colleagues, publications, communities, competitors."
+    },
+    {
+     "q": "Where do they first meet us?",
+     "short": "First contact",
+     "prompt": "App store, social, a referral, a sales call, search, the website."
+    },
+    {
+     "q": "On what, and how confident are they?",
+     "short": "Context",
+     "prompt": "Devices, surroundings, language, accessibility needs, digital confidence."
+    },
+    {
+     "q": "After the first visit, what should they think, feel and do?",
+     "short": "Afterwards",
+     "prompt": ""
+    }
+   ],
+   "groups": [
+    [
+     "Jobs and needs",
+     [
+      0,
+      1,
+      2,
+      3
+     ]
+    ],
+    [
+     "Trust",
+     [
+      4,
+      5
+     ]
+    ],
+    [
+     "Context",
+     [
+      6,
+      7,
+      8
+     ]
+    ]
+   ]
+  },
+  {
+   "key": "brand",
+   "kind": "questions",
+   "name": "Brand strategy",
+   "on": true,
+   "min": 5,
+   "tone": "human",
+   "eyebrow": "Brand strategy",
+   "title": "How it should feel",
+   "questions": [
+    {
+     "q": "Five words for the brand today, and five for where it is going",
+     "d": ""
+    },
+    {
+     "q": "If the brand were a person, how would it speak and make decisions?",
+     "d": ""
+    },
+    {
+     "q": "What should people feel?",
+     "d": "Confidence, calm, delight, urgency, authority, play."
+    },
+    {
+     "q": "What is non-negotiable, and what is open to reinvention?",
+     "d": ""
+    },
+    {
+     "q": "How should it differ from competitors, in tone and behaviour as well as looks?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "traits",
+   "kind": "traits",
+   "name": "Personality",
+   "on": true,
+   "min": 5,
+   "eyebrow": "Personality",
+   "title": "Where should it sit?",
+   "about": "Eight pairs of words; drag each dot toward the word that fits.",
+   "pairs": [
+    [
+     "Serious",
+     "Playful"
+    ],
+    [
+     "Classic",
+     "Modern"
+    ],
+    [
+     "Quiet",
+     "Loud"
+    ],
+    [
+     "Premium",
+     "Accessible"
+    ],
+    [
+     "Friendly",
+     "Authoritative"
+    ],
+    [
+     "Simple",
+     "Rich"
+    ],
+    [
+     "Human",
+     "Technical"
+    ],
+    [
+     "Established",
+     "Challenger"
+    ]
+   ]
+  },
+  {
+   "key": "visual",
+   "kind": "questions",
+   "name": "Visual language",
+   "on": true,
+   "min": 5,
+   "tone": "neutral",
+   "eyebrow": "Visual language",
+   "title": "What it should look like",
+   "questions": [
+    {
+     "q": "Are we evolving an identity or starting from nothing?",
+     "d": ""
+    },
+    {
+     "q": "What can we reuse?",
+     "d": "Guidelines, fonts, imagery, illustration, photography, icons."
+    },
+    {
+     "q": "Which references do you admire, and exactly why?",
+     "d": "Colour, type, density, motion, photography, layout, personality."
+    },
+    {
+     "q": "Which references should we avoid, and why?",
+     "d": ""
+    },
+    {
+     "q": "Where must the system work?",
+     "d": "Marketing, product UI, sales decks, social, packaging, events, future sub-brands."
+    }
+   ]
+  },
+  {
+   "key": "market",
+   "kind": "questions",
+   "name": "Competitors",
+   "on": false,
+   "min": 4,
+   "tone": "human",
+   "eyebrow": "Competitors",
+   "title": "Who we’re measured against",
+   "questions": [
+    {
+     "q": "Who do customers compare you to, directly and indirectly?",
+     "d": ""
+    },
+    {
+     "q": "What do they do well that we should match?",
+     "d": ""
+    },
+    {
+     "q": "Where do they all look and sound the same, so we can differ?",
+     "d": ""
+    },
+    {
+     "q": "Who must we never be mistaken for?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "scope",
+   "kind": "questions",
+   "name": "Product and UI scope",
+   "on": true,
+   "min": 5,
+   "tone": "neutral",
+   "eyebrow": "Product and UI scope",
+   "title": "What we’re designing",
+   "questions": [
+    {
+     "q": "Which surfaces are in scope?",
+     "d": "Marketing site, onboarding, dashboard, checkout, settings, emails, empty states, errors."
+    },
+    {
+     "q": "Which flows matter for launch, and which can wait?",
+     "d": ""
+    },
+    {
+     "q": "Is this a redesign, a new product, or a system extension?",
+     "d": "Which components exist already."
+    },
+    {
+     "q": "What content, data and imagery will we have while designing?",
+     "d": ""
+    },
+    {
+     "q": "Languages, dark mode, breakpoints, accessibility?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "ux",
+   "kind": "questions",
+   "name": "UX principles",
+   "on": false,
+   "min": 4,
+   "tone": "neutral",
+   "eyebrow": "UX principles",
+   "title": "How it should work",
+   "questions": [
+    {
+     "q": "Which three tasks must take the least effort?",
+     "d": ""
+    },
+    {
+     "q": "Where do people drop off, get lost or call support today?",
+     "d": ""
+    },
+    {
+     "q": "How simple, and how deep for power users?",
+     "d": ""
+    },
+    {
+     "q": "Where is it worth breaking the category’s conventions?",
+     "d": ""
+    },
+    {
+     "q": "What should motion and feedback help people understand?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "tech",
+   "kind": "questions",
+   "name": "Tech and operations",
+   "on": false,
+   "min": 3,
+   "tone": "tech",
+   "eyebrow": "Tech and operations",
+   "title": "What we build inside",
+   "questions": [
+    {
+     "q": "Which platforms, frameworks, CMS and component libraries are in use?",
+     "d": ""
+    },
+    {
+     "q": "Which browsers, devices and performance limits apply?",
+     "d": ""
+    },
+    {
+     "q": "Who builds the UI, and how closely must designs match what they can build?",
+     "d": ""
+    },
+    {
+     "q": "Which legal, privacy or industry rules affect the design?",
+     "d": ""
+    },
+    {
+     "q": "Who keeps the content up to date after launch?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "process",
+   "kind": "questions",
+   "name": "Scope and process",
+   "on": true,
+   "min": 5,
+   "tone": "neutral",
+   "eyebrow": "Scope and process",
+   "title": "How we’ll work together",
+   "questions": [
+    {
+     "q": "What deliverables, in what formats, by when?",
+     "d": ""
+    },
+    {
+     "q": "What is out of scope?",
+     "d": ""
+    },
+    {
+     "q": "What is the budget range, and what trade-offs does it imply?",
+     "d": ""
+    },
+    {
+     "q": "Which dates are fixed, and which milestones can move?",
+     "d": ""
+    },
+    {
+     "q": "How many review rounds, and what feedback format works best?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "raci",
+   "kind": "raci",
+   "name": "Who decides",
+   "on": true,
+   "min": 4,
+   "eyebrow": "Roles and responsibilities",
+   "title": "Who decides what",
+   "about": "Roles against Responsible, Accountable, Consulted, Informed; people tap in from Team.",
+   "roles": [
+    "Final decision",
+    "Brand",
+    "Product",
+    "Day-to-day contact",
+    "Content",
+    "Design",
+    "Development"
+   ]
+  },
+  {
+   "key": "week",
+   "kind": "week",
+   "name": "Ways of working",
+   "on": false,
+   "min": 3,
+   "eyebrow": "Ways of working",
+   "title": "",
+   "about": "A week, or two, of the rituals: reviews, check-ins, feedback rounds.",
+   "days": [
+    [
+     [
+      "Check-in",
+      "15 min"
+     ]
+    ],
+    [],
+    [
+     [
+      "Work in progress",
+      "30 min"
+     ]
+    ],
+    [
+     [
+      "Design review",
+      "60 min"
+     ]
+    ],
+    [
+     [
+      "Feedback due",
+      "End of day"
+     ]
+    ]
+   ]
+  },
+  {
+   "key": "pre",
+   "kind": "questions",
+   "name": "Premortem",
+   "on": true,
+   "min": 8,
+   "tone": "human",
+   "eyebrow": "Premortem",
+   "title": "It’s six months from now and this failed. Why?",
+   "questions": [
+    {
+     "q": "What would make us call this unsuccessful?",
+     "d": ""
+    },
+    {
+     "q": "Why did it fail?",
+     "d": ""
+    },
+    {
+     "q": "How do we prevent it?",
+     "d": ""
+    }
+   ]
+  },
+  {
+   "key": "steps",
+   "kind": "steps",
+   "name": "Next steps",
+   "on": true,
+   "min": 5,
+   "eyebrow": "Next steps",
+   "title": "Who does what next",
+   "about": "Each step with an owner picked from the team.",
+   "items": [
+    "Share the brand assets: logos, fonts, guidelines.",
+    "Book the weekly design review.",
+    "Send the list of existing pages and products.",
+    "Confirm who signs off."
+   ]
+  },
+  {
+   "key": "end",
+   "kind": "end",
+   "name": "The end",
+   "fixed": true,
+   "min": 0,
+   "eyebrow": "That’s the workshop",
+   "title": "Thank you, everyone."
+  }
+ ],
+ "_sources": "Questions adapted from the owner's design-brief list (2026-11-06), which drew on asana.com/resources/design-brief, jvds.cn's UI design brief template and Black Country Chamber's six questions behind every design brief."
+}

@@ -28,3 +28,8 @@ projects/
 
 # Generation keys — dev-only, tightly capped, and they never ship in a deliverable.
 .env.agents
+
+# The workshop server's log, and the ten-minute copies of each deck. deck.json and notes.md
+# are the record; history/ is the undo for a bad afternoon.
+brain/workshops/.server.log
+brain/workshops/*/history/

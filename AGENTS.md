@@ -97,7 +97,8 @@ and deal with it first; a pull onto work in progress is how a session loses it.
   email in a temp folder is a draft email nobody sends.
 - **Put whatever you want the owner to look at in front of him, in the same turn.** A page
   goes to his default browser: `python3 brain/show.py <path>`, or the render script's own
-  `--open` (`feed.py`, `brief.py`, `playground.py`, `spread.py`, `board.py`, `review.py`).
+  `--open` (`feed.py`, `brief.py`, `playground.py`, `spread.py`, `board.py`, `review.py`,
+  `workshop.py`).
   Any other file you want him to read, check, attach or send — a draft, a PDF, an export, an
   image — is revealed in Finder: `python3 brain/show.py --reveal <path>`. Name the path in the
   reply too. Agents skip this step more than any other: a page built and only named in the
@@ -147,8 +148,8 @@ and deal with it first; a pull onto work in progress is how a session loses it.
   decisions have outrun `now.md`, a task changed status unrecorded, or your summary is the only
   place part of the session lives.
 - **When the work waits on a person, offer `/workshop` once.** A missed call, a document that
-  never arrives, unanswered questions: a workshop turns them into assumptions the stakeholder
-  confirms on his phone, and a half-finished run is still data.
+  never arrives, unanswered questions: send the stakeholder the questions as a form, or build
+  a workshop of assumptions they confirm on their phone. A half-finished run is still data.
 - **Raise a contradiction before acting on it**, when new information conflicts with a logged
   decision or the record.
 - **Answer every review finding in writing** in its file in `brain/reviews/`: concede or
@@ -338,7 +339,7 @@ The same applies to `brain/lenses/`, the skills, and every README in `brain/`.
 route · `/decide` log a decision · `/status` one-screen readout · `/close` wrap up ·
 `/update` take boilerplate improvements · `/open` a page in the browser · `/reveal` a file in
 Finder · `/remind` an alarm that will fire · `/transcript` check a transcript, then route it ·
-`/briefing` pull the watched sources · `/workshop` async questions for a stakeholder ·
+`/briefing` pull the watched sources · `/workshop` a live workshop deck, or its questions sent as a form ·
 `/moodboard` research into ideas and visions · `/explore` go wide before committing ·
 `/prototype` first pass with the dials exposed · `/playground` the work as HTML pieces ·
 `/promote` a piece called final · `/motion` a motion vocabulary · `/critique` score a render ·
