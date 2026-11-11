@@ -76,7 +76,8 @@ PROJECT = (
     "brain/decisions/*.md",
     "brain/insights/**",
     "brain/explorations/**",
-    "brain/moodboards/**",
+    "brain/visions/**",
+    "brain/moodboards/**",  # the old name of brain/visions/, still in older projects
     "brain/workshops/**",
     "brain/braindumps/**",
     "brain/briefings/**",
@@ -303,7 +304,7 @@ def main() -> int:
             print("    → read the upstream diff and port what you want by hand. Never copy\n"
                   "      one of these over: it carries this project's own answers.")
         print("\n  untouched: every file under brain/decisions, insights, explorations,\n"
-              "  moodboards, workshops, braindumps, briefings, drafts, reviews,\n"
+              "  visions, workshops, braindumps, briefings, drafts, reviews,\n"
               "  references, plus\n"
               "  now.md, tasks.md, plan.md, project-brief.md, workspace.toml, context/\n"
               "  and projects/.")

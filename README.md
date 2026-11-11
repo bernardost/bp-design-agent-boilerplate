@@ -34,7 +34,7 @@ no dependencies and no API of their own. Switch models between sessions, run two
 separate tabs, or hand the repo to someone using a different tool entirely — the record is
 plain text either way, and nothing about it expires when a product does.
 
-**The commands are design work, not coding work.** `/moodboard` turns research into ideas and
+**The commands are design work, not coding work.** `/visions` turns research into ideas and
 assembles them into visions. `/explore` puts six to eight genuinely different directions on
 the table with real specimens. `/critique` scores a render against a craft lens you wrote.
 Brand assets are extracted from the client's PDF, never redrawn. A general assistant has no
@@ -103,7 +103,7 @@ own instructions, hooks and skills load natively.
 | `brain/sources.md` | what the assistant watches outside this repo, and what it can reach |
 | `brain/lenses/` | what "good" means, one file per domain — `record`, `craft`, `deck`, `house`, `motion`; `/reviewer` runs one per pass |
 | `brain/decks/` | decks and client documents — deliverables, judged against `brain/lenses/deck.md` |
-| `brain/moodboards/` | ideas the research adds up to, and the visions they assemble into |
+| `brain/visions/` | ideas the research adds up to, and the visions they assemble into |
 | `brain/explorations/` | directions considered but not chosen; rejected ones stay |
 | `brain/playground/` | the work as HTML pieces — the design as the page, controls for every value, every version kept, and `shipped.html` once it is live |
 | `brain/workshops/` | questions put to a stakeholder asynchronously, and the answers back |
@@ -115,7 +115,7 @@ own instructions, hooks and skills load natively.
 | `brain/redate.py` | one-way migration of an older `NNNN-` decision log to dated filenames |
 | `brain/test_brain.py` | what `doctor.py` cannot check about itself: links resolve, migrations keep every citation, pages ship no unsafe or absolute URLs, two projects stay separate |
 | `brain/brief.py` | renders `brain/brief.html` — the brief the owner approves, with every outside claim linked to its source |
-| `brain/board.py` | renders a moodboard as a desk you can pan and zoom — ideas, visions, and the wires between them |
+| `brain/board.py` | renders a vision desk you can pan and zoom — ideas, visions, and the wires between them |
 | `brain/spread.py` | renders an exploration as a page — every direction's specimen, pitch and verdict side by side |
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the renderers above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
@@ -123,7 +123,7 @@ own instructions, hooks and skills load natively.
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
 | `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
-| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/moodboard` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` — plus thirteen vendored from [jakubkrehel/skills](https://github.com/jakubkrehel/skills), credited in `CREDITS.md`: `/better-ui` `/better-typography` `/better-colors` `/better-accessibility` `/better-layout` `/better-writing` `/better-interface` `/interface-review` `/explain-interface` `/break` `/state-machine` `/variant` `/build-design` |
+| `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/visions` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` — plus thirteen vendored from [jakubkrehel/skills](https://github.com/jakubkrehel/skills), credited in `CREDITS.md`: `/better-ui` `/better-typography` `/better-colors` `/better-accessibility` `/better-layout` `/better-writing` `/better-interface` `/interface-review` `/explain-interface` `/break` `/state-machine` `/variant` `/build-design` |
 
 ## The ideas underneath
 
@@ -202,9 +202,9 @@ own instructions, hooks and skills load natively.
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
   replacement and moves to `archive/`.
-- **A moodboard argues; a style guide specifies.** Asked for a moodboard, a model reliably
+- **A vision desk argues; a style guide specifies.** Asked for a moodboard, a model reliably
   produces a brand manual — swatches, a type scale, sections named Colour and Typography —
-  which settles a design nobody chose from research nobody read. `/moodboard` builds the other
+  which settles a design nobody chose from research nobody read. `/visions` builds the other
   thing: **ideas**, one title and one sentence each and arguable, and **visions** that assemble
   named sets of them into whole brands. The same idea appears in several visions, and that
   overlap is the argument — `brain/board.py` draws it as wires you can light from either end,

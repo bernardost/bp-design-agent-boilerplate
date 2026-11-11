@@ -1,18 +1,20 @@
 ---
-name: moodboard
-description: Turn the research already in the workspace into ideas, assemble the ideas into whole visions for the brand, and render the lot as a desk you can move around on — with the wires showing which ideas build which vision. Use for /moodboard, "put a moodboard together", "what does all this research add up to", or whenever the material has piled up and nobody has said what it means.
+name: visions
+description: Turn the research already in the workspace into ideas, assemble the ideas into whole visions for the brand, and render the lot as a desk you can move around on — with the wires showing which ideas build which vision. Use for /visions, "what does all this research add up to", "give me visions for the brand", or whenever the material has piled up and nobody has said what it means. Not for a plain moodboard — a page of collected references with no argument needs no skill.
 ---
 
-# Moodboard — the desk
+# Visions — the desk
 
-A moodboard documents ideas and articulates them into visions for the brand. Everything it is
+The desk documents ideas and articulates them into visions for the brand. It is the argued,
+synthesised form of a moodboard; a plain moodboard of collected references is a smaller job
+and needs none of this. Everything it is
 built from is already in this workspace: the client's own words, the references, the briefing,
 the braindumps, the brief. **The job is connection, not production.** You are not designing
 anything here and you are not collecting anything new.
 
 ## Read this first, because it is the failure
 
-**Asked for a moodboard, a model produces a style guide.** Swatches with hex values, a type
+**Asked for a moodboard or a set of visions, a model produces a style guide.** Swatches with hex values, a type
 scale, three sections named Colour, Typography and Imagery, a rule about the logo. It happens
 every time, it is not a lapse in effort, and it is what predicting the likely next token
 returns — "moodboard" sits next to a million brand manuals in the training data and next to
@@ -22,7 +24,7 @@ The artifact it produces is worse than nothing. It specifies a design nobody cho
 research nobody read, at the stage where the question is still what the work is *about*. It
 looks finished, so it ends the conversation it was supposed to start.
 
-**A style guide says what the design is. A moodboard argues what it could mean.**
+**A style guide says what the design is. A desk argues what it could mean.**
 
 ## The shape of the thing
 
@@ -42,7 +44,7 @@ the two layers, and lets you light them from either end. Do not claim a constant
 
 ## Where this sits
 
-Research → **`/moodboard`** (what does it all mean, and what wholes could it make) →
+Research → **`/visions`** (what does it all mean, and what wholes could it make) →
 `/explore` (specimens that prove a vision can be executed) → a decision. **This command
 decides nothing**, and nothing in the brain may cite a vision as chosen.
 
@@ -96,8 +98,8 @@ vision and you owe the owner another. Real difference means disagreeing about wh
 is *for*, not about hue. And if every idea ends up in every vision, there is only one vision
 here wearing three hats — say so rather than shipping the illusion of choice.
 
-**6 · Write the file and render it.** `brain/moodboards/YYYY-MM-DD-<topic>.md` in the shape
-`brain/moodboards/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
+**6 · Write the file and render it.** `brain/visions/YYYY-MM-DD-<topic>.md` in the shape
+`brain/visions/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
 `project:` key. Then `python3 brain/board.py`, read the page yourself, then hand it over with
 `python3 brain/board.py --open`
 and give the owner the path.
@@ -120,7 +122,7 @@ visions and stays on the desk, which is what the file is for.
   though this looks like a sketch. A plate showing the client's mark is their file, extracted
   with `brain/extract.py` or supplied — never redrawn to make a specimen look finished.
 - **Specimens are optional, and they are `/explore`'s layer.** A desk with no specimens is a
-  finished moodboard. Add one to a vision when the argument needs proof it can be executed,
+  finished desk. Add one to a vision when the argument needs proof it can be executed,
   and expect `/explore` to be where they are really made and judged.
 - **One project per desk.** The ideas are judged against one strand's brief. A desk mixing two
   strands argues for a brand nobody is building.

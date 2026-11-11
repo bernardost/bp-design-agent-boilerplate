@@ -1,6 +1,6 @@
-# `moodboards/` — ideas, and the visions they build
+# `visions/` — ideas, and the visions they build
 
-`YYYY-MM-DD-<topic>.md`, written by `/moodboard`. This directory owns **the ideas the research
+`YYYY-MM-DD-<topic>.md`, written by `/visions`. This directory owns **the ideas the research
 adds up to, and the wholes they assemble into**, and nothing else in the brain holds either.
 
 ## The two layers, and the thing between them
@@ -21,13 +21,13 @@ never authored, because a constant claimed by hand is one that a vision quietly 
 
 ## What this is not, and what it keeps turning into
 
-**Left unsupervised, an agent asked for a moodboard produces a style guide.** Swatches with
+**Left unsupervised, an agent asked for a moodboard or a set of visions produces a style guide.** Swatches with
 hex values, a type scale, three sections named Colour, Typography and Imagery, a rule about
 the logo. That artifact is competent and worthless here: it specifies a design nobody chose,
 from research nobody read, at the stage where the question is still what the work is *about*.
 It is also the most probable thing to produce, which is why this directory has rules.
 
-**A style guide says what the design is. A moodboard argues what it could mean.** The lenses
+**A style guide says what the design is. A desk argues what it could mean.** The lenses
 below look like a style guide's table of contents and are not: they are the **index** of the
 desk, not its argument. The argument is the visions. An idea is filed under Layout the way a
 book is filed under a shelf mark — you find it there, you do not read the shelf.
@@ -125,7 +125,7 @@ Plate: brain/references/inspo-cravath.png — Cravath — https://www.cravath.co
 
 A vision's specimen is optional here and is what `/explore` adds: the desk argues, and a
 specimen proves the argument can be executed. A desk with no specimens is a finished
-moodboard, not an unfinished one.
+desk, not an unfinished one.
 
 `python3 brain/board.py` renders the file to a page beside it. Layout is computed in the
 browser because a card's height is its text's height. The page is a projection like every
