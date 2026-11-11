@@ -26,14 +26,48 @@ moodboard, or the interactive one? The interactive one connects the insights and
 each idea, so you can see where every idea comes from and which ones all the directions
 share."*
 
-**A regular moodboard** is the references and nothing else. When the work lives in Figma,
-put it on a page in that file (the Figma skills handle the writing). Otherwise collect the
-images in `brain/references/<topic>/` with a `README.md` that captions each one with what to
-take from it, never what it is, and reveal the folder with `python3 brain/show.py --reveal`.
-The rest of this file does not apply to it, except one rule: still no swatches with hex values
-and no type scale.
+**A regular moodboard** is references grouped into boards, each with a caption. When the work
+lives in Figma, put it on a page in that file (the Figma skills handle the writing).
+Otherwise collect the images in `brain/references/<topic>/` with a `README.md` that holds the
+captions, and reveal the folder with `python3 brain/show.py --reveal`. The next section
+applies to it. Everything after that is for the interactive one, apart from one rule: no
+swatches with hex values and no type scale.
 
 **An interactive moodboard** is the rest of this file. Its records are called desks.
+
+## A regular moodboard for a visual language
+
+**Describe how the pages are built, never what is in the pictures.** A board for a visual
+language claims that a set of codes can carry a whole content system, so it has to show that
+range. The owner corrected this twice on a deck-template job with 170 references: the boards
+named photos and moods, and one-artefact ideas (a magazine cover, a collage, a product shot,
+one big serif sentence) passed as systems. None of those can show what a dense slide, a table
+or a 40-word paragraph looks like in that language.
+
+1. **Read the whole reference, not the hero crop.** Open every scroll capture and inner page,
+   and find the densest view. Take font names from the source, never by eye.
+2. **Describe codes, not content.** Margins, type treatment, colour, density, rules, grid.
+   Test each sentence: would it still be true if every photo and word on the page were
+   swapped? If not, it describes content.
+3. **Say what each code signals about the speaker.** Tight outer margins read as contemporary
+   and utilitarian. Large, untreated sans type reads as clear thinking that deserves a read.
+   One hard accent kept for one job reads as discipline. Hairline rules instead of boxes read
+   as a ledger: rigour without weight.
+4. **Measure where you can.** *"A 24px outer margin on a 1440 viewport"* beats *"tight
+   margins"*. A measurement describes a reference; a type scale specifies a design nobody
+   chose, and stays banned.
+5. **Prove the codes hold across the deliverable.** For a deck, each board shows the same
+   codes on a statement page, a dense text page, a table or data page, a list or diagram, and
+   an image-led page. Where a role has no evidence, name the gap on the board; never fill it
+   with another hero image.
+6. **Drop any board whose idea is one artefact.** A cover, collage, product shot or single
+   sentence can survive as one move inside a board that has a full system, such as its
+   statement page.
+7. **Judge against the real job.** Take it from the brief: how many layouts, how long the
+   content runs, who fills them in, on what software and machines. A language that only works
+   when a designer sets every page fails a template that non-designers fill.
+8. **Keep the format.** The title names the system. Two or three sentences give the codes and
+   what they signal.
 
 ## The interactive moodboard — the desk
 
