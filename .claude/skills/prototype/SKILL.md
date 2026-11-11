@@ -1,14 +1,14 @@
 ---
 name: prototype
-description: Build the first pass of a new design as a playground piece with its controls exposed, so the owner adjusts the values himself instead of describing them. Use for /prototype, after a direction is picked, or whenever the first visual pass of a screen, page or deck template is about to be built.
+description: Build the first pass of a new design as a playground piece with its controls exposed, so the owner adjusts values instead of describing them. Use for /prototype or the first visual pass of a screen, page or deck template.
 ---
 
 # Prototype — the first pass, with the dials exposed
 
 Between a picked direction and a real build there is one disposable artifact: a screen with
 real content, in the states that matter, with no component abstraction and no production
-architecture. It exists to answer a question — does this composition work, does this
-interaction feel right — and then it is left behind. Premature abstraction locking in a weak
+architecture. It exists to answer a question (does this composition work, does this
+interaction feel right) and then it is left behind. Premature abstraction locking in a weak
 design is the failure this step prevents.
 
 **The first pass is a playground piece, and it ships with its controls, built in the same pass
@@ -19,7 +19,7 @@ about what goes into that first pass and why the controls matter.
 ## Why the controls exist
 
 An owner's taste for a *new* design cannot be specified in advance. He has not seen it yet, and
-he certainly has not seen it move. What comes back from a first pass is never "use 15px" — it
+he certainly has not seen it move. What comes back from a first pass is never "use 15px"; it
 is "the type feels heavy" and "that transition is doing too much", and then you both spend a
 round converting adjectives into values.
 
@@ -52,7 +52,7 @@ also what `/promote` hands to the implementer, so a complete list now is a spec 
 [data-motion="none"] .in{animation:none}
 ```
 
-and each of those appears once in `window.PIECE.controls`, which is what builds the panel.
+and each of those appears once in `window.PIECE.controls`, from which the panel is built.
 
 ## The controls
 
@@ -60,7 +60,7 @@ and each of those appears once in `window.PIECE.controls`, which is what builds 
   instead of taking a band off it. Nothing else of the chrome is on screen.
 - **Styled outside the page's own language.** The chrome is a flat utility grey in a
   monospace face, on purpose: nobody can mistake it for part of the design, and a panel that
-  matched the page would be read as a design element and judged as one.
+  matched the page would pass for a design element and be judged as one.
 - **Four groups, in this order:**
   1. **Colour** — ground, ink, accent, and any tint the design uses.
   2. **Type** — the size steps, and tracking for display and body separately.
@@ -71,16 +71,16 @@ and each of those appears once in `window.PIECE.controls`, which is what builds 
 
 ### Motion is chosen, not dialled
 
-**A select of three or four genuinely different kinds, not a slider.** Rise, fade, wipe, none —
+**A select of three or four different kinds, not a slider.** Rise, fade, wipe, none:
 each one a CSS branch off `data-motion`, so they differ in kind rather than in degree. A slider
 between two numbers cannot tell you that the right answer was a different idea.
 
 **Ease is a select of named curves**, never four raw bezier handles. Standard, entrance, exit,
-spring — named, so the owner picks a feel rather than solving a cubic.
+spring, each named, so the owner picks a feel rather than solving a cubic.
 
 **When a reference site has been inspected, its curve joins the select by name**, and a
 state preset sets the timing with it. *"Linear's easing"* in the dropdown, and a chip that
-applies their duration and stagger alongside it. That is how a reference stops being a thing
+applies their duration and stagger alongside it. That is the step where a reference stops being a thing
 you looked at and becomes a thing you can try.
 
 ### Three actions, and no more
@@ -101,11 +101,11 @@ link opens on the exact view the owner was looking at.
 - **Real content, or no verdict.** The longest realistic name, the empty list, the error
   message, the number with five digits. A composition judged on tidy placeholder text has been
   judged on a page that will never exist.
-- **The states that matter**, not just the happy one — default, empty, loading, error, long —
+- **The states that matter**, not just the happy one (default, empty, loading, error, long)
   stacked as `data-case` sections so they are all on the page at once, with presets in
   `PIECE.states` for what the controls can switch.
 - **Both widths from the first version.** The design is the page, so mobile is the window
-  resized — look at it there before handing over; a design that gets its mobile pass later
+  resized; look at it there before handing over. A design that gets its mobile pass later
   gets a worse one. Declare `boards` only when the two have to be compared side by side.
 - **Look at it before handing it over** — render it, screenshot both boards, read the
   screenshots. Then `/critique` against `brain/lenses/craft.md`.
@@ -120,7 +120,11 @@ link opens on the exact view the owner was looking at.
 - **Do not let the panel become the deliverable.** If you are adding a fifth group or a second
   row of actions, you are building a tool instead of answering the question.
 - **The owner's pasted JSON is a decision.** When it settles the look, it gets logged like any
-  other — one dated file in `brain/decisions/`, with the values in it — and `/promote` is
+  other, as one dated file in `brain/decisions/` with the values in it, and `/promote` is
   the point where that happens for the whole piece.
 - **Nothing with the chrome on it goes to a client.** A client sees a deck (`/deck`) or the
   shipped thing. `doctor.py` reports a tuning drawer left in anything under `brain/decks/`.
+
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing `piece.md` and any copy in the piece. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

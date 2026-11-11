@@ -2,7 +2,7 @@
 
 *The owner of the tag vocabulary. Tags are **global to the brain** — one vocabulary across
 decisions, insights, braindumps and briefings, so a decision and an insight can carry the same
-tag. That is the point of having them.*
+tag. That is why they exist.*
 
 **Format.** Frontmatter at the top of every brain file:
 
@@ -14,14 +14,14 @@ tags: [onboarding, portability]
 
 **Not a project.** Which strand of work a record belongs to is `project:` in frontmatter, a
 separate key with a closed vocabulary from `[projects]` in `brain/workspace.toml`. Never make a
-tag for it: tags are open, global and thematic — a decision and an insight sharing one is the
-point — while a project is a compartment the projections filter on, and mixing the two would
+tag for it: tags are open, global and thematic (a decision and an insight sharing one is the
+point) while a project is a compartment the projections filter on, and mixing the two would
 make both useless.
 
 **Tag or link?** A tag is membership in a theme; a wiki-link in double brackets is a claim about two
 specific notes. If a tag would have exactly one member, it wanted to be a link. `doctor.py`
 reports tags that aren't defined here, tags defined here and never used, and files with no
-tags at all — all reports, never failures, because a new tag is usually legitimate.
+tags at all; all reports, never failures, because a new tag is usually legitimate.
 
 **The graph, free.** Frontmatter tags plus wiki-links are exactly what Obsidian reads. Open
 `brain/` as a vault and the interconnected view is there, with nothing committed to this repo

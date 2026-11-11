@@ -3,13 +3,13 @@
 *Is the work any good to look at? `/reviewer craft <scope>`. Also the standard `/critique`
 scores against during a build, which is why the two stay in sync by both reading this file.*
 
-**If this file is still a template below the line, say so in the verdict** rather than quietly
+**If this file is still a template below the line, say so in the verdict** rather than
 scoring against nothing. `/setup` fills sections 3 and 4; the rest ships as written.
 
 ## 1 · What to look at
 
-**The rendered artifact, and nothing else.** A screenshot, an exported frame, the live URL,
-the printed page. If it cannot be seen, it cannot be reviewed under this lens — ask for a
+**The rendered artifact, nothing more.** A screenshot, an exported frame, the live URL,
+the printed page. If it cannot be seen, it cannot be reviewed under this lens; ask for a
 render rather than reading the source and imagining one.
 
 Judge at two scales in the same pass, and say which scale each finding belongs to:
@@ -25,14 +25,14 @@ The code, the decisions, the brief, the builder's reasoning, and the conversatio
 produced the work. Knowing what it was *trying* to do is exactly what stops you noticing that
 it did not. If context arrives anyway, review the render as if it had not.
 
-The one permitted input beyond the artifact is `brain/references/` — the quality bar as
+The only input allowed beyond the artifact is `brain/references/`: the quality bar as
 images. Those are the standard to *measure against*, never a thing to copy toward.
 
 ## 3 · What it is judged on
 
 **The question, asked in this order:** What aesthetic is this work reaching for? How would a
 studio at the top of its field execute that same intent? Where are the biggest gaps between
-the two? Be specific and bold — a safe note is worth less than a wrong one.
+the two? Be specific and bold; a safe note is worth less than a wrong one.
 
 1. *(Fill at `/setup`: what this project's work should feel like, in the owner's own words.
    "Tactile, clicky, satisfying — not cartoony" beats "clean and modern", which describes
@@ -46,7 +46,7 @@ the two? Be specific and bold — a safe note is worth less than a wrong one.
 3. **Restraint.** What would you delete? Additive drift is the default failure: elements
    accumulate, nothing is ever removed, and the result explains itself instead of working.
    Every pass names at least one thing to cut, or states plainly that the work is already
-   tight — those are the only two acceptable answers.
+   tight; those are the only two acceptable answers.
 4. **AI tells.** Penalize them explicitly and by name. The standing list, extend it per
    project:
    - a gradient, glow, or blur standing in for art nobody made
@@ -69,7 +69,7 @@ questions every pass, which is how a critic gets ignored.)*
 ## The score
 
 One number, `n/10`, on how close the artifact sits to studio-grade for the intent it is
-reaching for — not to a generic ideal, and not to the reviewer's own taste.
+reaching for, not to a generic ideal, and not to the reviewer's own taste.
 
 | | |
 |---|---|
@@ -80,5 +80,5 @@ reaching for — not to a generic ideal, and not to the reviewer's own taste.
 | **10** | reserve it. A 10 you give away costs the 9 its meaning. |
 
 **The stop: 9 or higher, judged in fresh context, on a render the judge has not scored
-before.** Below that, findings are what to fix next. A score is not a finding — a pass that
+before.** Below that, findings are what to fix next. A score is not a finding; a pass that
 returns only a number has failed.

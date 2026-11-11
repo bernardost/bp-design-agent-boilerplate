@@ -1,6 +1,6 @@
 ---
 name: workshop
-description: Run a workshop with the client, live on a call or sent as a form. Live is the default — a deck of boards picked from a design-brief library, presented from this repo, every answer saved to brain/workshops/ as it is typed, with notes that can go to Notion. The same deck's questions can go to a client as a plain form, by email as a file or as a hosted link, and the answers come back into the workshop's notes. Use for /workshop, "set up the kickoff", "make a workshop", "send the client the questions", or when a call was missed, a promised document never arrived, or the work is blocked on information only a stakeholder has.
+description: Run a client workshop live on a call, or send its questions as a form and take the answers back. Use for /workshop, "set up the kickoff", "send the client the questions", or when the work is blocked on a stakeholder.
 ---
 
 # Workshop — live first, a form when the call does not happen
@@ -286,3 +286,7 @@ call it produces a written record with attribution on every line.
 - Take word-pairs and option wording from the source material before building, not from your
   own vocabulary — guesses there are guesses the client has to correct.
 - Consider a ping to us on each chapter close, so we are not polling to see whether he started.
+
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing every board's question and note. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

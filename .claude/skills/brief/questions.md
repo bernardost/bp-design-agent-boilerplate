@@ -43,26 +43,26 @@ debates colours, logos or layout.
 ## Business and purpose
 
 - ★ **Why is this project happening now, and what is not working today?**
-- ★ **What business outcomes should the work drive — signups, retention, conversion, trust, pricing power, expansion?**
+- ★ **What business outcomes should the work drive: signups, retention, conversion, trust, pricing power, expansion?**
 - ★ **What does success look like at launch, at 3 months and at 12 months?**
 - **What is the company's mission, positioning and main point of difference?**
 - **What are the biggest risks or misconceptions about the company or product?**
-- ★ **What must not change — name, logo, core colours, product promise, legal claims, customer expectations?**
+- ★ **What must not change: name, logo, core colours, product promise, legal claims, customer expectations?**
 
 ## Audience and context
 
 - ★ **Who are the primary, secondary and anti-audiences?**
 - ★ **What are users trying to get done, and what frustrates them today?**
-- **Where do people first meet the brand — app store, social, referral, sales call, search, the website?**
+- **Where do people first meet the brand: app store, social, referral, sales call, search, the website?**
 - **What devices, environments, languages, accessibility needs and levels of digital confidence must the design serve?**
 - **What should users think, feel and do after their first interaction?**
-- **What evidence exists — analytics, support tickets, interviews, sales objections, churn reasons, competitor feedback?**
+- **What evidence exists: analytics, support tickets, interviews, sales objections, churn reasons, competitor feedback?**
 
 ## Brand strategy
 
 - ★ **Which 3–5 adjectives describe the brand today, and which 3–5 describe where it needs to go?**
 - **If the brand were a person, how would it speak, behave and make decisions?**
-- **What emotional response should it create — confidence, calm, delight, urgency, authority, play?**
+- **What emotional response should it create: confidence, calm, delight, urgency, authority, play?**
 - ★ **What is the one idea the audience should remember?**
 - **Which brand attributes are non-negotiable, and which are open to reinvention?**
 - ★ **How should the brand differ from direct and indirect competitors, in tone and behaviour as well as looks?**
@@ -70,18 +70,18 @@ debates colours, logos or layout.
 ## Visual language
 
 - ★ **Are we evolving an existing identity or creating a new one?**
-- ★ **Which existing assets can be reused — guidelines, logo files, fonts, imagery, illustration, photography, icons?**
-- **Which visual references does the client admire, and why — colour, type, density, motion, photography, layout, personality?**
+- ★ **Which existing assets can be reused: guidelines, logo files, fonts, imagery, illustration, photography, icons?**
+- **Which visual references does the client admire, and why: colour, type, density, motion, photography, layout, personality?**
 - **Which references should be avoided, and why?**
 - **Should it feel premium, technical, human, bold, minimal, warm, playful, or something else?**
-- **How far must the system stretch — marketing, product UI, sales decks, social, packaging, events, future sub-brands?**
-- **Which assets are needed — logo suite, colour tokens, type scale, icon set, illustration style, photography direction, motion principles, guidelines?**
+- **How far must the system stretch: marketing, product UI, sales decks, social, packaging, events, future sub-brands?**
+- **Which assets are needed: logo suite, colour tokens, type scale, icon set, illustration style, photography direction, motion principles, guidelines?**
 
 ## Product and UI scope
 
-- ★ **Which surfaces are in scope — marketing site, onboarding, dashboard, checkout, settings, emails, empty states, errors, notifications?**
+- ★ **Which surfaces are in scope: marketing site, onboarding, dashboard, checkout, settings, emails, empty states, errors, notifications?**
 - ★ **Which user flows matter for launch, and which can wait?**
-- **Which screens, states and edge cases must be designed — loading, empty, error, permission, offline, success, accessibility modes?**
+- **Which screens, states and edge cases must be designed: loading, empty, error, permission, offline, success, accessibility modes?**
 - ★ **Is this a redesign, a new product, or an extension of a design system?**
 - **What content, copy, data and imagery will exist at design time?**
 - **Are there localisation, right-to-left, dark mode, breakpoint or accessibility requirements?**

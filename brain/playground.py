@@ -208,14 +208,14 @@ def build(ps: list[dict]) -> str:
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Playground — {html.escape(PROJECT_NAME)}</title>
+<title>Playground · {html.escape(PROJECT_NAME)}</title>
 {FONT_LINK}<style>{CSS}{PAGE_CSS}</style></head><body>
 <div class="wrap">
 <div class="top">
   <div class="kicker">Playground</div>
   <h1>Every piece in the {html.escape(PROJECT_NAME)} playground, with every version kept</h1>
   <div class="meta">generated {stamp} from <code>brain/playground/*/piece.md</code> and the files
-    beside them — regenerate with <code>python3 brain/playground.py</code></div>
+    beside them; regenerate with <code>python3 brain/playground.py</code></div>
 </div>
 {body}
 {spreads_html()}

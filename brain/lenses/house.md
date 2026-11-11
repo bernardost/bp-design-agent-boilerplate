@@ -4,7 +4,7 @@
 spreads, the desk, a rendered page or document. `/reviewer house <scope>`, and the standard a
 renderer is built to.*
 
-**This governs artifacts made for the owner, and nothing else.** It is not the product's
+**This governs artifacts made for the owner only.** It is not the product's
 aesthetic and is never inherited by the work. What a project should look like is a project
 decision, explored with `/explore` and judged against `brain/lenses/craft.md`. Applying these
 rules to the work by default would substitute the workspace's taste for the project's.
@@ -18,9 +18,9 @@ and no logo. Structure comes from black rules, hairlines, and where things sit o
 It should read like an architect's or a type foundry's paperwork: calm, exact and finished.
 ^[owner · session · 2026-11-06]
 
-**Decide first which kind of page it is.** A page that is **read** — a feed, a report, a
-document — follows section 1. A page that is **used** — the reader has to type, choose,
-confirm or rank: the brief, a workshop, a review round, an intake sheet — follows section 2 on
+**Decide first which kind of page it is.** A page that is **read** (a feed, a report, a
+document) follows section 1. A page that is **used** (the reader has to type, choose,
+confirm or rank: the brief, a workshop, a review round, an intake sheet) follows section 2 on
 top of section 1. The read style is too quiet for a page that is used: a page made only of
 hairlines does not show where to write, where a section ends or how much is left, so the
 reader either scans past the fields or stops.
@@ -34,7 +34,7 @@ wherever numbers stack. Sentence case everywhere: no all-caps labels, no letters
 uppercase. Load it from Google Fonts (`family=Geist:wght@100..900`) or a local file.
 
 **Colour.** White paper, ink `#0a0a0a`, never pure black and never tinted paper. Everything
-secondary — labels, notes, dates, sub-lines — is grey `#737373`; hierarchy comes from grey
+secondary (labels, notes, dates, sub-lines) is grey `#737373`; hierarchy comes from grey
 against black and from size, not from weight. Hairlines `#dedede`. Commit to light: no
 `prefers-color-scheme` block that flips the page dark. The status tags below are the only
 other colour, on every page.
@@ -81,7 +81,7 @@ attribution at the foot.
 Everything in section 1 carries over: Geist, the three columns (label · content · status), the
 page head, black rules for structure, grey for anything secondary. These change:
 
-1. **A fill means "write here", and nothing else has one.** Every field, option row, chip and
+1. **A fill means "write here", and only a field has one.** Every field, option row, chip and
    rank row sits on a light warm grey `rgb(241,241,239)`, with a darker bottom edge
    (`#8a8a8a`) on text fields. Text that is only for reading never sits on a fill, so the
    reader can tell at a glance which parts are theirs.
@@ -105,14 +105,14 @@ page head, black rules for structure, grey for anything secondary. These change:
    alternative, square corners. Never text links standing in for actions.
 8. **Controls match the shape of the answer**: full-width option rows for one choice, chips
    for "pick three", rows with up and down buttons for ranking, sliders with both ends
-   labelled and our guess marked beneath, a text field only where the answer is a sentence
+   labelled and our guess marked beneath, a text field only where the reply is a sentence
    only they have.
 9. **Screen sizes, and air that matches the job.** 16px body and field text (phones zoom on
    anything smaller), 13px labels, one column below 760px with the status under the control.
-   **A long page the reader types into** — the brief, a workshop — gets the full air: 20px
+   **A long page the reader types into** (the brief, a workshop) gets the full air: 20px
    questions at weight 520, 52px tap targets, 80px above and below each question, 28px
    between a question and its control, 160px between sections, a 600px measure. **A page
-   where each answer is a tap or a line** — the feed, a review round, a note on the desk —
+   where each answer is a tap or a line** (the feed, a review round, a note on the desk)
    stays compact: rows about 28px apart, 44px targets, the same fill and the same rules.
    ^[owner · session · 2026-11-06]
 10. **Saving is visible.** "Saved" under a field after each edit, and no final submit the

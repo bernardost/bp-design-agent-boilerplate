@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Score a design against brain/lenses/craft.md using a fresh-context critic that sees only the rendered artifact, and loop until it scores 9/10. Writes nothing to the brain. Use for /critique, "how does this look", "is this any good", or as the inner loop while building a visual artifact.
+description: Score a render against brain/lenses/craft.md with a fresh-context critic that sees only the artifact, and loop until it scores 9/10. Use for /critique, "how does this look", or as the inner loop of a build.
 ---
 
 # Critique — the fast loop
@@ -13,9 +13,9 @@ at it.
 ## The one rule that makes it work
 
 **The critic must never see the code, the conversation, or your reasoning.** You cannot
-critique work whose intent you already know — you fill the gaps with what you meant instead
+critique work whose intent you already know; you fill the gaps with what you meant instead
 of seeing what is there. That is not a discipline problem you can solve by trying harder; it
-is why the critic runs in a fresh context with a screenshot and nothing else.
+is why the critic runs in a fresh context with a screenshot and nothing more.
 
 If you find yourself explaining the design to the critic, stop. The explanation is the defect
 the critic was there to find.
@@ -28,20 +28,20 @@ nothing on its own, and this skill never fires ambiently.
 
 ## The loop
 
-1. **Render.** Screenshot the artifact — the running page, the exported frame, the printed
+1. **Render.** Screenshot the artifact: the running page, the exported frame, the printed
    view. Capture the states that matter, not one hero shot: default, hover, empty, error,
    narrow. A critic shown only the best frame scores only the best frame.
 2. **Spawn the critic.** Fresh context. Hand it *only*: the image(s), the contents of
-   `brain/lenses/craft.md`, and anything in `brain/references/`. Use a capable model — this
+   `brain/lenses/craft.md`, and anything in `brain/references/`. Use a capable model; this
    is a judgment call, not a mechanical one, and the critic is a small share of the tokens
    because it reads pictures and writes paragraphs.
 3. **Ask it for four things**, and reject a reply missing any:
-   - what aesthetic the work is reaching for, in its own reading — **not what you told it**
+   - what aesthetic the work is reaching for, in its own reading, **not what you told it**
    - how a studio at the top of its field would execute that intent
    - the biggest gaps, specific and ranked, at both composition and detail scale
    - **at least one thing to delete**, or an explicit statement that the work is already tight
    - a score, `n/10`, against the anchors in the lens
-4. **Fix the top gaps.** Not all of them — the top ones. Fixing a long list at once makes the
+4. **Fix the top gaps.** Not all of them, the top ones. Fixing a long list at once makes the
    next score unattributable.
 5. **Re-render and re-score in a *new* fresh context.** A critic that saw the last round
    defends its last score and negotiates with you instead of judging.
@@ -60,7 +60,7 @@ nothing on its own, and this skill never fires ambiently.
 - **The score is not a finding.** A round that returns a number and no specifics is a failed
   round; ask again.
 - **Do not log the rounds.** Intermediate scores are noise in a week. If the loop produced a
-  durable realization — a pattern that keeps recurring, a standard worth adding — that is an
+  durable realization (a pattern that keeps recurring, a standard worth adding) that is an
   insight or an edit to `brain/lenses/craft.md`, and it goes there deliberately, once.
 
 ## What this is not
@@ -68,6 +68,6 @@ nothing on its own, and this skill never fires ambiently.
 `/reviewer craft` is the slow, deliberate pass: owner-invoked, writes findings to
 `brain/reviews/`, two rounds, and its independence comes from never having been the builder.
 This is the fast loop you run on yourself while the work is still moving. Both read
-`brain/lenses/craft.md`, which is what keeps them from drifting into two different standards.
+`brain/lenses/craft.md`, and that keeps them from drifting into two different standards.
 
 Reaching 9 here does not substitute for a review. It means the work is worth someone's time.

@@ -1,6 +1,6 @@
 ---
 name: motion
-description: Choose and build a project's motion — the principles that hold across brands, how to measure a reference site's motion rather than guess at it, and how to write this project's own vocabulary down so every page moves the same way. Use for /motion, "how should this animate", "the transitions feel wrong", or before adding motion to a first pass.
+description: Choose and write a project's motion vocabulary, and measure a reference site's motion rather than guess at it. Use for /motion, "how should this animate", "the transitions feel wrong".
 ---
 
 # Motion — pick a vocabulary, measure your references, write it down
@@ -20,8 +20,8 @@ different answers, and several rules invert between them.
 
 - **A long scrolling page.** Scroll is the timeline. Entrances are choreographed, sections can
   be sticky and scrubbed, and the reader's hand drives everything.
-- **An app or tool UI.** Motion is feedback and continuity, not choreography. Much shorter —
-  roughly 120–240ms — and tied to a state change the user caused. Entrance animations on a
+- **An app or tool UI.** Motion is feedback and continuity, not choreography. Much shorter,
+  roughly 120–240ms, and tied to a state change the user caused. Entrance animations on a
   dashboard the user opens forty times a day are an irritation, not a finish.
 - **A presented deck.** The presenter is the clock. Motion is per-slide and triggered by them,
   never by a timer, and a build that outruns the speaker is worse than no build.
@@ -36,7 +36,7 @@ a rule is context-specific.
 These are the ones worth treating as rules.
 
 - **One vocabulary per page.** Every element enters the same way. A mark that draws, a heading
-  that fades and a footer that slides are three vocabularies, and the page reads as assembled
+  that fades and a footer that slides are three vocabularies, and the page looks assembled
   from parts. Pick one entrance and reuse it.
 - **One timed moment, at most.** A page may have exactly one thing that moves on its own clock,
   and it finishes quickly. After it, nothing moves until the reader does. *(In an app: zero.)*
@@ -47,7 +47,7 @@ These are the ones worth treating as rules.
   whether anyone decided anything.
 - **Duration comes from the ease's tail, not from a big number.** "Slow and elegant" is a
   long-tailed curve, not a long transition. Past roughly a second, a reveal the reader is
-  waiting for reads as sluggish rather than considered.
+  waiting for feels sluggish rather than considered.
 - **Transform and opacity animate together on slightly different timings**, because they are
   perceived differently. Opacity usually wants to be a little shorter than movement.
 - **Hover is a dip, not a jump.** Nothing bounces, nothing jumps position under the cursor.
@@ -59,7 +59,7 @@ These are the ones worth treating as rules.
 
 ## 3 · Derive the vocabulary from the brand, not from a reference
 
-The specific answers — what enters, from where, on which curve — belong to the project, and
+The specific answers (what enters, from where, on which curve) belong to the project, and
 two good brands give opposite answers. Ask:
 
 - **What does the brand claim to be?** Precise and institutional, or warm and physical, or
@@ -85,8 +85,8 @@ Playwright MCP. Three evaluations answer most of it:
    library that is module-scoped and invisible on `window` still leaves inline-style
    fingerprints on split-text wrappers.
 2. **Grep the bundles.** `fetch` each same-origin chunk and regex for `ease:`, `duration:`,
-   `stagger:`, `scrub:`, `pin:`, `clipPath:`, `lerp:`. **Tally the eases — the distribution is
-   the vocabulary**, and it tells you how many decisions the site actually made.
+   `stagger:`, `scrub:`, `pin:`, `clipPath:`, `lerp:`. **Tally the eases; the distribution is
+   the vocabulary**, and it tells you how many decisions the site made.
 3. **Sample a real reveal.** Reload, then read `opacity` and `transform` of the first heading's
    wrappers every 60ms for two seconds. The curve you get back is the true duration and ease,
    whatever the CSS claims.
@@ -95,10 +95,10 @@ Then scroll to two or three positions, wait longer than the longest duration, sc
 read any `position: sticky` elements and their heights.
 
 **The trap:** headless Chromium starts transitions late on first paint. Measure with
-`getAnimations()` or computed `opacity`, never with a screenshot taken on a timer — you will
+`getAnimations()` or computed `opacity`, never with a screenshot taken on a timer; you will
 conclude the animation is broken when it had not started.
 
-**Report it as a vocabulary** — what moves, how, on which curve, for how long — and then as
+**Report it as a vocabulary** (what moves, how, on which curve, for how long) and then as
 numbered changes to our page. **Take the grammar, never the look.** A measured reference joins
 the ease select in the tuning drawer by name, with a preset for its timing, so the owner can
 try it rather than be told about it.
@@ -118,8 +118,8 @@ and a measurement is only true on the day it was taken.
 - **Run it headless at desktop and phone width.** Screenshot each state after waiting longer
   than the longest duration plus stagger.
 - **If something looks missing, read computed `opacity` before assuming the CSS is wrong.**
-  The usual cause is specificity — an `#id .x` rule beating `.in .x`, or the state class landing
-  on an element the selector does not actually chain through.
+  The usual cause is specificity: an `#id .x` rule beating `.in .x`, or the state class landing
+  on an element the selector does not chain through.
 - **Check the one timed moment finishes quickly** and that nothing else moves unprompted.
 - **Check `prefers-reduced-motion`.**
 - **Screenshot it with motion disabled** and look at that frame on its own.
@@ -141,10 +141,14 @@ here so the shape of a finished vocabulary is concrete.
 > from `translateY(100%)` and `opacity: 0`. Media enters as a `clip-path` wipe from
 > `inset(100% 0 0 0)` to `inset(0)` with the image settling from `scale(1.1)`.
 >
-> Scroll is the timeline — no snap, no auto-advance. Long sections are sticky blocks whose
+> Scroll is the timeline: no snap, no auto-advance. Long sections are sticky blocks whose
 > height is a multiple of the viewport, scrubbed by scroll progress at `scrub: 0.6–0.8`.
 
-Note what generalises and what does not. The structure — two eases with a rule, a short
-duration band, one entrance device reused — is worth copying. The specific curves, the masked
+Note what generalises and what does not. The structure (two eases with a rule, a short
+duration band, one entrance device reused) is worth copying. The specific curves, the masked
 lines and the scroll scrubbing are that kind of site's answer, and a tool, a deck or a quiet
 institutional page should reach a different one.
+
+## Language
+
+Read `brain/lenses/motion.md` before writing the vocabulary file. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

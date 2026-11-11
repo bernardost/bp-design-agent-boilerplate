@@ -6,8 +6,8 @@ it judges the brain rather than the work. Extend it, don't replace it.*
 
 ## 1 · What to look at
 
-The brain as it stands, and the artifacts it makes claims about. Read widely — this lens
-*needs* the surrounding context, which is what separates it from `craft`.
+The brain as it stands, and the artifacts it makes claims about. Read widely; this lens
+*needs* the surrounding context, and that separates it from `craft`.
 
 Orientation, every pass: `brain/now.md` → `brain/plan.md` → `brain/tasks.md` (know which
 stage the work claims to sit in, and what that stage's exit bar is) → the decisions the work
@@ -20,19 +20,19 @@ context about what the builder "meant", note it and review the files as they sta
 
 ## 3 · What it is judged on
 
-1. **Stage discipline.** *Running ahead* — artifacts that presuppose a stage not yet exited.
-   *Never leaving* — instrumentation or polish beyond the exit bar. Read the bar's decision
+1. **Stage discipline.** *Running ahead*: artifacts that presuppose a stage not yet exited.
+   *Never leaving*: instrumentation or polish beyond the exit bar. Read the bar's decision
    before endorsing or condemning any new check or fixture. A stage entered with no bar
    decision written is itself a finding.
-2. **Decision-trail consistency.** Does the work follow the logged decisions? Flag
+2. **Decision-trail consistency.** Is the work consistent with the logged decisions? Flag
    contradictions with any accepted decision, current-state files citing tombstoned material,
-   and significant choices with no logged decision — name the decision that should exist, do
+   and significant choices with no logged decision; name the decision that should exist, do
    not write it.
 3. **Provenance.** Claims about what a client or stakeholder said carry who-said-it-and-when,
    or are marked `inferred`. **Laundering** — an inference hardening into a fact as it moves
-   between files — is blocking, always.
+   between files, is blocking, always.
 4. **Claim-versus-page.** Do `now.md`, READMEs, and status claims match what the files
-   actually do? A fluent summary of work not yet done is a known failure mode: verify counts
+   do? A fluent summary of work not yet done is a known failure mode: verify counts
    and capabilities by re-running or re-reading, never by trusting the summary.
 5. **One owner.** Is anything restated where it should be linked? A second copy of a fact is
    a second thing to update, and the one that rots is never the one you are reading.

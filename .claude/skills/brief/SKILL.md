@@ -1,6 +1,6 @@
 ---
 name: brief
-description: Turn the first context into a brief the owner can read and approve — the design-brief questions (business, audience, brand, visual language, product scope, UX, constraints, decisions) answered from the context or flagged as missing, the plan, and the next steps — rendered as a page that shows at a glance what is answered, inferred and missing, and proposes a kickoff workshop for the key gaps. Use for /brief, after /setup or a /briefing that brought in outside material, or whenever the work is about to move on an understanding nobody has agreed to.
+description: Turn the first context into a brief page the owner approves: the design questions answered or flagged missing, the plan, the next steps, a kickoff workshop for the gaps. Use for /brief, after /setup or /briefing, or before work moves on an unagreed understanding.
 ---
 
 # Brief
@@ -19,7 +19,7 @@ An earlier version of this skill produced a tidy page of people, channels and de
 that never asked any of that, and the gaps only surfaced in the first design review.
 
 **This is a gate, not a document.** Run it when the first real context lands. Do not run it
-weekly — the brief holds stable facts, and `now.md` holds everything volatile.
+weekly; the brief holds stable facts, and `now.md` holds everything volatile.
 
 ## 1 · Read the context, all of it
 
@@ -60,13 +60,13 @@ Two more workstreams are probably coming. ^[inferred]
 - `who · where · when`, and a link straight to the moment where one exists — a timestamped
   recording URL, a permalink to the message, the mail thread. Not a link to the tool.
 - **`^[inferred]` is mandatory for anything you worked out rather than heard.** It renders as
-  a small dashed tag. A guess that reads like a quote is the exact failure the charter's
-  "label evidence, never launder it" rule exists to stop, and this is how the page enforces it.
+  a small dashed tag. A guess that looks like a quote is the exact failure the charter's
+  "label evidence, never launder it" rule exists to stop, and this is where the page enforces it.
 - Name every person, nickname and acronym you had to decode in `brain/glossary.md`. A decoded
   name that lives only in the brief is a guess that will harden into a fact.
 
 The markers render as faint superscript numerals, so the owner reads the argument and the
-provenance stays one hover away. That is the point: do not write provenance into the prose.
+provenance stays one hover away. So do not write provenance into the prose.
 
 Add the status line under the title if it is not there:
 
@@ -85,7 +85,7 @@ them properly:
   because nobody can answer it.
 - **`brain/plan.md`** — the stage arc. Stage 1 is current; later stages get a name and an
   entry event, never a bar.
-- **The current stage's exit bar**, per project — a decision each, written now if missing.
+- **The current stage's exit bar**, per project: a decision each, written now if missing.
   Without it the page prints "this stage has no exit bar", which is accurate and is the thing
   to fix, not to hide.
 - **`brain/tasks.md`** — the immediate next steps as real task lines, with `bar` on the ones
@@ -98,7 +98,7 @@ python3 brain/brief.py --open
 ```
 
 Then check what it printed: answered, inferred and missing counts, the key questions still
-missing, unwritten sections, steps. An unwritten section renders as a gap on the page — fix it
+missing, unwritten sections, steps. An unwritten section renders as a gap on the page; fix it
 or say why it stays empty. Read the page before handing it over.
 
 If `brief.publish` in `brain/workspace.toml` is `true`, also publish the page as an artifact
@@ -121,7 +121,7 @@ the page re-renders with the gap closed.
 
 ## 6 · Hand it over, and stop
 
-Say what you are handing over in two or three lines, then the box. Nothing else — the page
+Say what you are handing over in two or three lines, then the box. Nothing more; the page
 is the deliverable, and re-narrating it in the terminal defeats the purpose.
 
 ```
@@ -136,7 +136,7 @@ is the deliverable, and re-narrating it in the terminal defeats the purpose.
 ```
 
 Then **stop**. Do not start stage-1 work off an unapproved brief. If the owner is away and
-something is genuinely unblocked and reversible, do that and say you did — but a brief waiting
+something is unblocked and reversible, do that and say you did, but a brief waiting
 on a yes is a brief waiting.
 
 ## 7 · On approval
@@ -148,7 +148,7 @@ on a yes is a brief waiting.
 3. Re-render, `python3 brain/doctor.py`, commit and push.
 
 Corrections the owner makes are the valuable part of this whole exercise. Each one goes into
-the file it belongs to — and if a correction contradicts something already logged, say so
+the file it belongs to, and if a correction contradicts something already logged, say so
 before you write it.
 
 ## 8 · When the owner pastes brief replies
@@ -169,3 +169,6 @@ re-render with `python3 brain/brief.py` (no `--open`: he has the page; tell him 
 and the answered replies drop out of his tray), commit, and say in one line how many key
 questions are still missing.
 
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing the brief page and `brain/project-brief.md`. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

@@ -656,7 +656,7 @@ class Playground(unittest.TestCase):
             self.piece(ws, "card", "---\nstatus: final\n---\n# Card\nFinal: v01\n\n"
                        "## Versions\n- v01 — 2026-10-01 — first\n",
                        ("v01-first.html", "v02-oops.html"))
-            out = run(ws, "doctor.py")
+            out = run(ws, "doctor.py", "--all")
             self.assertIn("v02 not in the version log", out.stdout)
             self.assertIn("no `Decision:`", out.stdout)
             self.assertEqual(out.returncode, 0, "bookkeeping is reported, never failed")
@@ -667,10 +667,10 @@ class Playground(unittest.TestCase):
             self.piece(ws, "nav", "---\nstatus: shipped\n---\n# Nav\nFinal: v01\n"
                        "Decision: [[nav-is-final]]\nShipped: site · 2026-10-05\n\n"
                        "## Versions\n- v01 — 2026-10-01 — first\n", ("v01-first.html",))
-            out = run(ws, "doctor.py")
+            out = run(ws, "doctor.py", "--all")
             self.assertIn("no shipped.html", out.stdout)
             (ws / "brain" / "playground" / "nav" / "shipped.html").write_text("<!doctype html>")
-            out = run(ws, "doctor.py")
+            out = run(ws, "doctor.py", "--all")
             self.assertNotIn("no shipped.html", out.stdout)
 
     def test_the_template_folder_is_not_a_piece(self):
@@ -737,7 +737,7 @@ class Promises(unittest.TestCase):
                      "The wordmark is drawn", "2026-09-09",
                      body="The wordmark is drawn, not set. One swap when the client sends "
                           "a vector.")
-            out = run(ws, "doctor.py")
+            out = run(ws, "doctor.py", "--all")
             self.assertIn("promises", out.stdout)
             self.assertIn("One swap when the client sends", out.stdout)
 
@@ -751,7 +751,7 @@ class Promises(unittest.TestCase):
             tasks.write_text(tasks.read_text()
                              + "\n- `todo` · P1 · `design` · — — **Swap the wordmark**\n"
                                "      the-wordmark-is-drawn\n")
-            out = run(ws, "doctor.py")
+            out = run(ws, "doctor.py", "--all")
             self.assertIn("no unrouted deferrals", out.stdout)
 
 
@@ -1013,3 +1013,87 @@ class Workshop(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+import archive_tasks  # noqa: E402
+import prose  # noqa: E402
+
+
+class Prose(unittest.TestCase):
+    """prose.py is the charter's sentence rules in code. Six projects carried the banned
+    phrases hundreds of times while the rule sat in the charter; the lint has to catch each
+    group, leave quoted examples alone, and keep the template itself clean."""
+
+    def hits(self, text):
+        return {(h["group"], h["phrase"]) for h in prose.lint_text(text)}
+
+    def test_each_group_is_caught(self):
+        got = self.hits("This is load-bearing. Here's the thing: we leverage it. "
+                        "It is not a bug, it is a feature. The page — the whole page — works.")
+        self.assertIn(("stock", "load-bearing"), got)
+        self.assertIn(("opener", "here's the thing"), got)
+        self.assertIn(("jargon", "leverage"), got)
+        self.assertIn(("shape", "not X, it's Y"), got)
+        self.assertIn(("shape", "em dash"), got)
+
+    def test_the_old_house_register_is_caught(self):
+        got = self.hits("The grid reads as utilitarian, and the one accent does the work.")
+        self.assertIn(("stock", "reads as"), got)
+        self.assertIn(("stock", "does the work"), got)
+
+    def test_plain_prose_passes(self):
+        self.assertEqual(prose.lint_text(
+            "The client signs off the wordmark on Friday. Dana sends the roster before "
+            "that, and the brief names who decides.\n"), [])
+
+    def test_quoted_examples_and_code_are_not_the_writers_prose(self):
+        text = ("Do not write *\"here's the thing\"*. Paths like `load-bearing.md` are fine.\n"
+                "- `done` · P2 · `design` · — — **A task line keeps its dash**\n")
+        self.assertEqual(prose.lint_text(prose._strip_markdown(text)), [])
+
+    def test_verbatim_material_is_out_of_scope(self):
+        for p in ("brain/braindumps/2026-01-01-0900.md", "context/client/notes.md",
+                  "brain/briefings/2026-01-01.md", "archive/decisions/old.md",
+                  "brain/tasks.md", ".claude/skills/better-ui/SKILL.md"):
+            self.assertFalse(prose.in_scope(ROOT / p), p)
+        self.assertTrue(prose.in_scope(ROOT / "brain/decisions/2026-01-01-x.md"))
+        self.assertTrue(prose.in_scope(ROOT / ".claude/skills/close/SKILL.md"))
+
+    def test_the_template_is_clean(self):
+        dirty = {str(p.relative_to(ROOT)): len(prose.lint_file(p))
+                 for p in prose.template_files() if prose.lint_file(p)}
+        self.assertEqual(dirty, {}, "python3 brain/prose.py --template lists the sentences")
+
+
+class ArchiveTasks(unittest.TestCase):
+    """Done tasks leave tasks.md after a month, with their notes and under their headings;
+    anything undated (uncommitted) or young stays."""
+
+    def test_old_done_tasks_move_with_their_notes_and_headings(self):
+        from datetime import datetime, timedelta, timezone
+        now = datetime.now(tz=timezone.utc)
+        lines = ["# Tasks", "", "## Portal", "", "### Stage 1 · Discovery", "",
+                 "- `done` · P2 · `design` · — — **Old one**",
+                 "      a note under it",
+                 "- `done` · P2 · `design` · — — **Young one**",
+                 "- `todo` · P1 · `design` · — — **Still open**",
+                 "- `done` · P3 · `design` · — — **Uncommitted**", ""]
+        dates = {7: now - timedelta(days=45), 9: now - timedelta(days=3),
+                 10: now - timedelta(days=45)}
+        kept, moved = archive_tasks.partition(lines, dates, now - timedelta(days=30))
+        self.assertEqual([b for _, b in moved],
+                         [["- `done` · P2 · `design` · — — **Old one**", "      a note under it"]])
+        self.assertEqual(moved[0][0], ("## Portal", "### Stage 1 · Discovery"))
+        self.assertIn("- `done` · P2 · `design` · — — **Young one**", kept)
+        self.assertIn("- `todo` · P1 · `design` · — — **Still open**", kept)
+        self.assertIn("- `done` · P3 · `design` · — — **Uncommitted**", kept)
+        text = archive_tasks.archive_text(moved, "2026-11-11")
+        self.assertIn("## Archived 2026-11-11", text)
+        self.assertIn("### Stage 1 · Discovery", text)
+
+
+class NewOwnership(unittest.TestCase):
+    def test_the_lint_and_the_archiver_are_template_machinery(self):
+        for rel in ("brain/prose.py", "brain/archive_tasks.py", ".claude/hooks/lint_prose.py"):
+            self.assertEqual(upstream.classify(rel), "owned", rel)
+        self.assertEqual(upstream.classify("archive/tasks.md"), "project")

@@ -16,9 +16,12 @@ Adding a FAIL for something with legitimate exceptions trains you to ignore the 
 which costs more than the check is worth.
 """
 
+import contextlib
+import io
 import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 BRAIN = Path(__file__).resolve().parent
@@ -416,6 +419,69 @@ def check_tasks():
 
     check_task_projects()
     check_no_projection_keys_in_prose()
+
+
+# ── FAIL 7 ── tasks.md stays readable in one sitting ───────────────────────────
+def check_tasks_size():
+    """Every session reads tasks.md before it writes. One project's file reached 2,328 lines
+    with nothing open in it; archive_tasks.py moves what has been done for a month."""
+    tasks = BRAIN / "tasks.md"
+    if not tasks.exists():
+        return
+    n = len(tasks.read_text(encoding="utf-8").splitlines())
+    if n > 300:
+        fails.append(
+            f"brain/tasks.md is {n} lines, and every session reads it before writing.\n"
+            "      python3 brain/archive_tasks.py moves tasks done for 30+ days to archive/tasks.md.")
+    elif n > 200:
+        notes.append(f"tasks.md {n} lines; python3 brain/archive_tasks.py would trim it")
+
+
+# ── FAIL 8 ── prose written this week passes prose.py ─────────────────────────
+def check_prose():
+    """A rule about sentences in the charter held for a few turns at a time; six projects
+    carried the banned phrases hundreds of times. prose.py is the rule in code. A file written
+    or changed in the last seven days fails on a hit; older files only count in report_prose,
+    so taking this check into an old project does not fail it on its history."""
+    try:
+        import prose
+    except ImportError:
+        return
+    recent = prose.recently_written(7)
+    for p in prose.walk(ROOT):
+        r = rel(p)
+        if recent is not None and r not in recent:
+            continue
+        hits = prose.lint_file(p)
+        if not hits:
+            continue
+        h = hits[0]
+        fails.append(
+            f"{r}: prose.py flags {len(hits)} sentence(s), e.g. line {h['line']} "
+            f"({h['group']}: {h['phrase']}).\n"
+            f"      python3 brain/prose.py {r} lists them. Rewrite each one, in this turn.")
+
+
+# ── REPORT ── the whole brain's prose, counted ────────────────────────────────
+def report_prose():
+    try:
+        import prose
+    except ImportError:
+        return
+    total, files, by = 0, 0, Counter()
+    for p in prose.walk(ROOT):
+        hs = prose.lint_file(p)
+        if hs:
+            files += 1
+            total += len(hs)
+            by.update(h["phrase"] for h in hs)
+    if not total:
+        print("  prose      clean")
+        return
+    top = ", ".join(f"{k} ({v})" for k, v in by.most_common(4))
+    print(f"  prose      {total} flagged sentence(s) in {files} file(s); most common: {top}")
+    print("               files older than a week are counted, not failed; "
+          "python3 brain/prose.py --report has the table")
 
 
 def check_no_projection_keys_in_prose():
@@ -1424,8 +1490,44 @@ def report_unrouted_promises():
         print(f"               … and {len(found) - 5} more")
 
 
+REPORTS = (
+    report_projection, report_decision_names, report_links, report_historical_citations,
+    report_duplication, report_question_numbers, report_tags, report_config, report_reminders,
+    report_template, report_glossary, report_lenses, report_brief, report_drafts,
+    report_explorations, report_moodboards, report_tuning_drawers, report_playground,
+    report_unrouted_promises, report_orphans, report_archive_candidates, report_now_freshness,
+    report_feed, report_prose,
+)
+
+# A report whose headline says one of these, or that prints a continuation line, has found
+# something. The rest is a status line the session read 118 times without acting on it, so by
+# default it collapses into one line naming the quiet reports; `--all` prints every one.
+LOUD = re.compile(r"missing|STALE|DUPLICATE|failed|unfilled|not generated|no Status|awaiting|"
+                  r"no upstream|no route|placeholder|^\s+\S+\s+empty|still carry|unresolved|"
+                  r"nothing links|tombstoned file|defer something|names no decision|"
+                  r"flagged sentence|lines;")
+
+
+def run_reports(show_all: bool) -> None:
+    quiet = []
+    for fn in REPORTS:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            fn()
+        text = buf.getvalue()
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        found = any(ln.startswith(" " * 13) for ln in lines) or any(LOUD.search(ln) for ln in lines)
+        if show_all or found:
+            sys.stdout.write(text)
+        else:
+            quiet.append(fn.__name__.removeprefix("report_"))
+    if quiet and not show_all:
+        print(f"  quiet      {' · '.join(quiet)}  (--all prints them)")
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
+    show_all = "--all" in sys.argv
     print("brain doctor\n")
 
     check_remote_is_not_the_template()
@@ -1438,32 +1540,12 @@ def main() -> int:
     check_tombstones()
     check_stale_citations()
     check_tasks()
+    check_tasks_size()
+    check_prose()
 
     if not quiet:
         print("reports (never fail the run)")
-        report_projection()
-        report_decision_names()
-        report_links()
-        report_historical_citations()
-        report_duplication()
-        report_question_numbers()
-        report_tags()
-        report_config()
-        report_reminders()
-        report_template()
-        report_glossary()
-        report_lenses()
-        report_brief()
-        report_drafts()
-        report_explorations()
-        report_moodboards()
-        report_tuning_drawers()
-        report_playground()
-        report_unrouted_promises()
-        report_orphans()
-        report_archive_candidates()
-        report_now_freshness()
-        report_feed()
+        run_reports(show_all)
         print()
 
     if fails:

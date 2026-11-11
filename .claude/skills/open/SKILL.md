@@ -1,6 +1,6 @@
 ---
 name: open
-description: Open a page, file or URL in the owner's browser — the default one unless he names another. Use for /open, "pull this up", "open it in my browser", "show me in Chrome".
+description: Open a page, file or URL in the owner's browser. Use for /open, "pull this up", "show me in Chrome".
 ---
 
 # Open
@@ -15,7 +15,7 @@ python3 brain/show.py <path-or-url> [more…] [--browser <name>]
   is about: the last one you built, changed or named. If two are equally likely, open both.
 - **Which browser.** His default unless he names one. `--browser` takes `chrome`, `safari`,
   `firefox`, `arc`, `brave`, `edge`, `dia`, or an app's full name.
-- **A page the script renders** — `feed.html`, `brief.html`, a spread, a board — is rendered
+- **A page the script renders** (`feed.html`, `brief.html`, a spread, a board) is rendered
   first (its script, or `python3 brain/render.py`), then opened. Opening a stale page shows
   him something that is no longer true.
 - **Say the path in the reply**, one line. A tab can be closed; the file stays.

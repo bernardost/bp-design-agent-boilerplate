@@ -1,7 +1,7 @@
 # Sources
 
 *The owner of **what the assistant watches** outside this repo. `/setup` writes it by asking,
-then probing what is actually reachable; `/briefing` reads it and writes a dated file in
+then probing what is reachable; `/briefing` reads it and writes a dated file in
 `brain/briefings/`.*
 
 **Connections are per-person, not per-repo.** This file can name a Slack channel or a Linear
@@ -43,8 +43,8 @@ prints provenance inside its sentences is a page nobody finishes reading. So the
 clean and the evidence stays reachable.
 
 **`^[inferred]` is required for anything worked out rather than heard**, and it renders as its
-own word in a small dashed tag rather than a numeral. A guess that reads like a quote is the failure the
-whole convention exists to prevent — `doctor.py` counts sections that carry neither.
+own word in a small dashed tag rather than a numeral. A guess that looks like a quote is the failure the
+whole convention exists to prevent; `doctor.py` counts sections that carry neither.
 
 ---
 

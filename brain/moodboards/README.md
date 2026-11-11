@@ -2,12 +2,12 @@
 
 `YYYY-MM-DD-<topic>.md`, written by `/interactive-moodboard`. This directory holds interactive
 moodboards only; a regular one lives in Figma or `brain/references/`. It owns **the ideas the
-research adds up to, and the wholes they assemble into**, and nothing else in the brain holds
+research adds up to, and the wholes they assemble into**, and no other file in the brain holds
 either.
 
 ## The two layers, and the thing between them
 
-**An idea is an atom.** One title, one sentence, enough to sell it — *"evidence carries a
+**An idea is an atom.** One title, one sentence, enough to sell it: *"evidence carries a
 date: every figure has an as-of, and a number without one does not appear."* Something a
 reasonable person could disagree with.
 
@@ -15,11 +15,11 @@ reasonable person could disagree with.
 a story, the tension it has to survive, and what it asks of the client before it can be built.
 
 **The interesting layer is between them: the same idea appears in several visions.** That is
-the argument — which ideas are load-bearing whichever way the work goes, and which ones only
+the argument: which ideas hold whichever way the work goes, and which ones only
 one vision needs. On a page that relationship is invisible, so `board.py` draws it as wires
 and lets you light them from either end. An idea in every vision is a **constant**: the brand
 however this lands, and the first thing a guidelines document gets built from. It is derived,
-never authored, because a constant claimed by hand is one that a vision quietly dropped.
+never authored, because a constant claimed by hand is one that a vision dropped unnoticed.
 
 ## What this is not, and what it keeps turning into
 
@@ -32,7 +32,7 @@ It is also the most probable thing to produce, which is why this directory has r
 **A style guide says what the design is. A moodboard argues what it could mean.** The lenses
 below look like a style guide's table of contents and are not: they are the **index** of the
 desk, not its argument. The argument is the visions. An idea is filed under Layout the way a
-book is filed under a shelf mark — you find it there, you do not read the shelf.
+book is filed under a shelf mark: you find it there, you do not read the shelf.
 
 ## The rules
 
@@ -42,17 +42,17 @@ book is filed under a shelf mark — you find it there, you do not read the shel
   idea that needs its paragraph to make sense has failed its own test; the paragraph is for
   the person who opens it.
 - **Every idea belongs to at least one vision.** An idea in none is either the start of a
-  vision nobody wrote or it is filler — `board.py` marks it on the card and `doctor.py` says
+  vision nobody wrote or it is filler; `board.py` marks it on the card and `doctor.py` says
   so.
 - **Nothing is invented.** Every plate is a file that exists in this workspace. Every quote is
   verbatim and every claim about what someone said carries `^[who · where · when]`
   (`brain/sources.md`); anything worked out rather than heard is marked `^[inferred]`.
 - **No specification.** No hex values, no type scales, no ratios, no rules about the mark. A
-  lens line says what an idea *does* to layout or to type — *"tabular numerals, always"* is
+  lens line says what an idea *does* to layout or to type: *"tabular numerals, always"* is
   intention; *"Inter 16/24, 1.25 scale"* is the next stage's work being done early.
 - **Every vision carries its tension.** The thing it needs that may not exist, the way it can
   be read wrong, the reason it might be the wrong answer. A vision with no tension has not
-  been thought about, and it is the one that quietly wins on presentation.
+  been thought about, and it is the one that wins on presentation.
 - **It decides nothing.** A desk is upstream of `/explore` and of any decision. Nothing in the
   brain may cite a vision as chosen. Picking one produces exactly one decision file that links
   back here.
@@ -60,8 +60,8 @@ book is filed under a shelf mark — you find it there, you do not read the shel
 ## Plates
 
 A plate is material off the desk: **an image that already exists in this workspace.** Nothing
-else — you cannot invent one, which is what keeps every idea tethered to something a person
-actually chose or said.
+else: you cannot invent one, and that keeps every idea tethered to something a person
+chose or said.
 
 Images come from `brain/references/` or `context/`, written as a path from the repo root.
 `python3 brain/board.py` links them relatively so the page works opened straight off disk, and
@@ -121,7 +121,7 @@ Plate: brain/references/inspo-cravath.png — Cravath — https://www.cravath.co
 <the story: two or three paragraphs on what this vision is and where it comes from>
 
 ```specimen
-<self-contained HTML and CSS — one representative composition, composed for 16:9>
+<self-contained HTML and CSS: one representative composition, composed for 16:9>
 ```
 ```
 

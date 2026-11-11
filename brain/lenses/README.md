@@ -3,7 +3,7 @@
 *One file per standard the reviewer can be pointed at. `/reviewer <lens> <scope>` picks one.
 Written at `/setup`; edit any time the standard moves.*
 
-The `/reviewer` skill holds what never bends — independence, evidence over impression, the
+The `/reviewer` skill holds what never bends: independence, evidence over impression, the
 findings format, the severities, the two-round limit, `brain/reviews/` as its only write
 location. **This directory holds everything that changes with what is being judged.** The
 split is the whole design: improvements to the skill are portable to every clone, and a
@@ -25,19 +25,19 @@ Every lens file answers four questions, and a lens that skips one is not finishe
 - **`record.md`** — is the project's record honest? Provenance, stage discipline,
   decision-trail consistency, claim-versus-page. Reads widely across the brain. **This is the
   default when `/reviewer` is invoked with no lens named.**
-- **`motion.md`** — does the work move the way this project decided? Ships with the rules that
+- **`motion.md`** — is the motion what this project decided? Ships with the rules that
   hold regardless, and two empty sections `/motion` fills with this project's own vocabulary.
 - **`house.md`** — does a page generated for the owner look right? Geist, black on white, a
   three-column grid, rules instead of boxes; a page he fills in adds fills for "write here" and
   dashed outlines for "my guess". Governs `feed.html` and its siblings, never the project's own
   work.
-- **`deck.md`** — would an agency hand this over? Titles that carry the argument, plain
+- **`deck.md`** — would an agency hand this over? Titles that state the argument, plain
   English, a held grid, ideas drawn rather than bulleted. Governs what goes **out** — a deck,
-  a proposal, a client document — where `craft.md` governs how anything looks.
+  a proposal, a client document; `craft.md` governs how anything looks.
 - **`craft.md`** — is the work any good to look at? Composition, type, colour, motion,
-  restraint, AI tells. Sees the rendered artifact and nothing else.
+  restraint, AI tells. Sees only the rendered artifact.
 
-Add your own — `accessibility.md`, `content.md`, `performance.md` — by writing a file that
+Add your own (`accessibility.md`, `content.md`, `performance.md`) by writing a file that
 answers the four questions. Nothing needs to be registered anywhere; `doctor.py` finds them.
 
 ## Why two critics and not one
@@ -48,5 +48,5 @@ page. A craft review has to see **only the artifact**, because knowing what the 
 trying to do is exactly what stops you from noticing it did not do it.
 
 Both are slow, deliberate, owner-invoked passes that write findings. Neither is the fast
-screenshot loop during a build — that is `/critique`, which writes nothing and lives outside
+screenshot loop during a build; that is `/critique`, which writes nothing and lives outside
 this directory on purpose.

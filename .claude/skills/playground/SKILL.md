@@ -1,6 +1,6 @@
 ---
 name: playground
-description: Do the design work as HTML pieces in brain/playground/ — a faithful translation of an existing design or a page from scratch, the design as the browser body, every visual value on a control, and every iteration kept as its own numbered file. Use for /playground, "put this in the playground", "make a version of this I can tweak", "translate this Figma frame to HTML", "iterate on the header", or whenever a screen or component is about to be designed, changed or tuned.
+description: Do design work as HTML pieces in brain/playground/: faithful translations or new pages, every value on a control, every iteration its own numbered file. Use for /playground, "make a version I can tweak", "translate this Figma frame", "iterate on the header".
 ---
 
 # Playground — the work happens in HTML, and nothing is lost
@@ -17,7 +17,7 @@ In a multi-project workspace the piece carries a `project:` key and the question
 before the folder exists. Then the stage check: a piece that builds a screen presupposes a
 direction. If `brain/decisions/` holds none for this strand and `brain/explorations/` holds no
 spread, say so in one line and offer `/explore` first. Translating an existing design as-is is
-exempt — a baseline is not a direction.
+exempt; a baseline is not a direction.
 
 ## 1 · Start a piece
 
@@ -28,7 +28,7 @@ and permanent, like a decision slug.
 **From an existing design, v01 is the as-is translation and nothing in it is changed.** The
 source is a Figma frame (read it with the Figma tools; measure, never eyeball), a live page
 (screenshot it at both widths, read its computed styles), or a file. Match type, size, colour,
-spacing and radii exactly, with the real brand assets under the charter's rule — extracted,
+spacing and radii exactly, with the real brand assets under the charter's rule: extracted,
 asked for, or a text placeholder, never redrawn. Name it `v01-as-is.html`. The owner judges
 every later version against it, so an inexact baseline poisons every comparison after it.
 
@@ -40,25 +40,25 @@ hold:
 
 - **The design is the page.** Plain `@media` breakpoints, the body as the root, nothing framed;
   the owner resizes the window to see mobile. Declare `boards` only when two widths have to be
-  seen at once — that renders artboards as CSS containers, and the breakpoints then have to be
+  seen at once; that renders artboards as CSS containers, and the breakpoints then have to be
   `@container screen (…)`, so decide before writing the CSS, not after.
 - **Every visual value is a custom property on `:root`; every switch is a `data-` attribute on
   the artboard root; and the `controls` list in `window.PIECE` names all of them.** A value
-  hard-coded in the CSS is a decision hidden from the owner. Four groups by convention —
-  Colour, Type, Layout, Motion — plus Content for states. Motion is a select of kinds, never
+  hard-coded in the CSS is a decision hidden from the owner. Four groups by convention,
+  Colour, Type, Layout, Motion, plus Content for states. Motion is a select of kinds, never
   a slider between two numbers.
-- **States are presets** in `PIECE.states`: Default, Compact, Still — whatever the controls
+- **States are presets** in `PIECE.states`: Default, Compact, Still, whatever the controls
   can express. **What has to be seen at once is a case, not a state**: several components, or
   the default next to the empty next to the error, each wrapped in `data-case="Name"` with a
   `data-note`, stacked down the page with a labelled rule above each and a list in the panel.
   A case carries its own state attribute (`data-empty`) so it stays in that state whatever the
   controls say. Real content in each: the longest real name, the five-digit number, the error
-  message that will actually be shown.
+  message that will be shown.
 
 Then `python3 brain/playground.py`, open the file, and **look at it at both widths before
 handing it over**: screenshot it at 1440 and at 390, in each state, and read the screenshots.
 Every control is a URL parameter, so `?motion=none&empty=true` captures a state with the
-entrance settled — a headless browser otherwise hands back a frame from the middle of it. A piece nobody looked at
+entrance settled; a headless browser otherwise hands back a frame from the middle of it. A piece nobody looked at
 is a draft whatever its state.
 
 ## 2 · Iterate, and keep everything
@@ -67,7 +67,7 @@ is a draft whatever its state.
 copied from the version it builds on. Start one when:
 
 - the owner has seen the current version and asks for a change;
-- the change discards something — a section, a layout, a direction;
+- the change discards something: a section, a layout, a direction;
 - a different direction is being tried alongside the current one.
 
 Small fixes to a version the owner has not seen yet stay in that version. Everything else is a
@@ -145,3 +145,7 @@ implementation notes and the shipped counterpart are that command's job.
   per mount; on a canvas a `document.querySelector` in it finds the wrong copy.
 - **A piece is one strand.** Two projects' screens in one piece compare things that were never
   alternatives.
+
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing `piece.md`, captions and page copy. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

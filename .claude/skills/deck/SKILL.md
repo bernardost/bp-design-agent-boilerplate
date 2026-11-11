@@ -1,6 +1,6 @@
 ---
 name: deck
-description: Build a deck or a client document that reads like an agency made it — titles that carry the whole argument, plain English, a held grid, ideas drawn rather than bulleted, and every page looked at before it is called done. Use for /deck, "make me a deck", "put together a strategy presentation", or whenever a deliverable is going to a client as slides or as a document.
+description: Build a client deck or document: titles that state the argument, plain English, a held grid, ideas drawn not bulleted, every page looked at. Use for /deck, "make me a deck", or any deliverable going to a client as slides or a document.
 ---
 
 # Deck — titles first, then the grid, then look at it
@@ -19,12 +19,12 @@ Both change what gets made, and neither can be guessed. One `AskUserQuestion`, t
 up front:
 
 **Is it presented or standalone?** Presented means somebody is talking over it, so each page
-carries the minimum that survives without their voice — a title, one supporting line or a
+carries the minimum that survives without their voice: a title, one supporting line or a
 short list, one image or diagram. Standalone means it is read alone and has to carry itself,
 so body copy is allowed: a short paragraph, in a narrow measure, placed deliberately. Building
 for the wrong one is wrong whatever the layout.
 
-**Which title style?** Either **labels only** — *Brand traits* — or **label plus a
+**Which title style?** Either **labels only** (*Brand traits*) or **label plus a
 conversational title**, which is the default and the one that makes a deck skimmable:
 
 ```
@@ -32,14 +32,14 @@ Brand traits
 Six key concepts describe the brand's personality
 ```
 
-Take the brand or visual direction from the project if one is settled — `brain/decisions/`,
+Take the brand or visual direction from the project if one is settled: `brain/decisions/`,
 the brand files, the chosen exploration. If none is, say so in one line and propose using the
 client's existing brand rather than inventing a look inside a deck.
 
 ## 2 · Write every title first, and get them approved
 
-**The titles are the deck.** Before a single page is built, write the full sequence — overtitle
-and title for every page, in order, as a plain list — and hand it over.
+**The titles are the deck.** Before a single page is built, write the full sequence, overtitle
+and title for every page, in order, as a plain list, and hand it over.
 
 Then read it yourself, titles only, start to finish, and ask whether a stranger would now know
 the argument. If there is a gap, the deck has a gap; no layout will cover it.
@@ -65,7 +65,7 @@ one of these. Rewrite it as the sentence you would have said instead.
 ## 3 · Decide what gets drawn
 
 Go through the approved titles and mark every page whose content is a **relationship, a
-process, a comparison, a structure or a quantity**. Those are drawn, not bulleted — and they
+process, a comparison, a structure or a quantity**. Those are drawn, not bulleted, and they
 are the pages a generated deck reliably turns into three bullets, because text is cheaper than
 geometry.
 
@@ -74,7 +74,7 @@ every page is a title and a list is the failure this step exists to prevent, and
 invisible until you see the pages side by side.
 
 Diagrams are built from real geometry: a labelled grid, a sequence with actual proportion, two
-columns of specimens, a do/don't pair, a quantity at the size it really is. Not three rounded
+columns of specimens, a do/don't pair, a quantity at the size it is. Not three rounded
 boxes with arrows, not an icon on top of every item.
 
 ## 4 · Build on a frame you define once
@@ -95,13 +95,13 @@ The rest of the grammar, and the reasons, are in `brain/lenses/deck.md` § 3.
 **Render every page and look at every screenshot before you say a word about being done.** Not
 the first page. Not a sample. Every one.
 
-The build is HTML, so screenshot it the way the rest of this workspace does — a headless
+The build is HTML, so screenshot it the way the rest of this workspace does: a headless
 browser over the rendered file, one image per page, then read them.
 
 What you are looking for, and you will find at least one of each on a first build:
 
 - text overflowing its box, or colliding with the frame
-- a page where the frame drifted — the rule, the number or the mark in a different place
+- a page where the frame drifted: the rule, the number or the mark in a different place
 - the same layout four pages in a row, which means step 3 was skipped
 - a title that reads fine in the outline and is three lines long at this size
 - an image at the wrong aspect, or floating in a box with equal margins all round
@@ -127,9 +127,13 @@ the way `brain/sources.md` specifies.
 
 - **The client's brand, not the workspace's.** The house style in `AGENTS.md` is for pages the
   owner reads. A client deck follows the client's brand or the direction this project chose.
-  Brand assets are extracted or supplied, never redrawn — the charter's rule is absolute and a
+  Brand assets are extracted or supplied, never redrawn; the charter's rule is absolute and a
   deck is exactly where a redrawn wordmark gets shipped.
 - **Do not write the deck in the workspace's own voice.** Where `AGENTS.md` and the lenses
   still lapse into epigram, that is their bug. It is the source of the bad titles above.
 - **Do not pad to a page count.** If the argument is nine pages, the deck is nine pages.
 - **Ask before departing from the lens**, rather than splitting the difference.
+
+## Language
+
+Read `brain/lenses/deck.md` § *The language* before writing every page of the deck. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

@@ -1,6 +1,6 @@
 ---
 name: interactive-moodboard
-description: Any moodboard request. First decide, or ask, whether the owner wants a regular moodboard (references collected and captioned, often in Figma) or an interactive one — the research turned into ideas, the ideas assembled into visions for the brand, and the lot rendered as a canvas where every idea is wired to the visions it builds and the material it came from. Use for /interactive-moodboard, "make a moodboard", "put a moodboard together", "what does all this research add up to", or whenever the material has piled up and nobody has said what it means.
+description: Any moodboard request. Pick regular (references collected and captioned, often in Figma) or interactive (ideas and visions on a canvas, each idea wired to its sources), or ask. Use for /interactive-moodboard, "make a moodboard", "what does the research add up to".
 ---
 
 # Moodboards — regular or interactive
@@ -50,9 +50,9 @@ or a 40-word paragraph looks like in that language.
    Test each sentence: would it still be true if every photo and word on the page were
    swapped? If not, it describes content.
 3. **Say what each code signals about the speaker.** Tight outer margins read as contemporary
-   and utilitarian. Large, untreated sans type reads as clear thinking that deserves a read.
-   One hard accent kept for one job reads as discipline. Hairline rules instead of boxes read
-   as a ledger: rigour without weight.
+   and utilitarian. Large, untreated sans type signals clear thinking that deserves a read.
+   One hard accent kept for a single use signals discipline. Hairline rules instead of boxes
+   mean a ledger: rigour without weight.
 4. **Measure where you can.** *"A 24px outer margin on a 1440 viewport"* beats *"tight
    margins"*. A measurement describes a reference; a type scale specifies a design nobody
    chose, and stays banned.
@@ -81,7 +81,7 @@ anything here and you are not collecting anything new.
 **Asked for a moodboard, a model produces a style guide.** Swatches with hex values, a type
 scale, three sections named Colour, Typography and Imagery, a rule about the logo. It happens
 every time, it is not a lapse in effort, and it is what predicting the likely next token
-returns — "moodboard" sits next to a million brand manuals in the training data and next to
+returns: "moodboard" sits next to a million brand manuals in the training data and next to
 almost nothing that reasons.
 
 The artifact it produces is worse than nothing. It specifies a design nobody chose, from
@@ -96,12 +96,12 @@ Two layers, and the interesting part is between them.
 
 **Ideas** are the atoms. One title, one sentence, enough to sell it. Something a reasonable
 person could disagree with. Each is filed under one **lens** — Layout, Imagery, Type, Voice,
-Palette — which is the desk's *index*, not its argument.
+Palette, which is the desk's *index*, not its argument.
 
 **Visions** are the assemblies. A whole brand built from a named set of ideas, with a thesis,
 a story, the tension it has to survive, and what it asks of the client before it can exist.
 
-**The same idea appears in several visions, and that is the argument.** An idea every vision
+**The same idea appears in several visions; that overlap is the argument.** An idea every vision
 shares is a **constant** — the brand whichever way this lands, and the first thing a
 guidelines document gets built from. `board.py` derives constants, draws the wires between
 the two layers, and lets you light them from either end. Do not claim a constant by hand.
@@ -129,8 +129,8 @@ the part that stops a desk drifting into ideas nobody can use.
 
 **3 · Name the lenses.** Four to six, each with one line on what it covers. They are the
 columns. Layout, Imagery, Type, Voice, Palette is the usual set and there is no prize for
-inventing a different one — the lenses are the index, and an index nobody recognizes is worse
-at its one job.
+inventing a different one. The lenses are the index, and an index nobody recognizes is worse
+at its single task.
 
 **4 · Find the ideas.** Ten to twenty. Pull them out of the material: a phrase the client
 repeated, a tension between two things they said, a reference that does not fit the others and
@@ -139,7 +139,7 @@ is more interesting for it. Each gets:
 - a **title** and a **line** — and that pair has to sell it alone, because the desk is read
   zoomed out first;
 - a **lens** it files under;
-- the **visions** it belongs to (write this once, on the idea — the vision's list is derived,
+- the **visions** it belongs to (write this once, on the idea; the vision's list is derived,
   so the two can never disagree);
 - one line per lens it touches, saying what it *does*: *"tabular numerals, always"* is
   intention, *"Inter 16/24, 1.25 scale"* is specification and belongs to a later stage;
@@ -153,14 +153,14 @@ gets a thesis in one sentence, a story of two or three paragraphs, one line per 
 plates, and two things nothing else on the desk carries:
 
 - **Tension** — what it needs that may not exist, or the way it can be read wrong. A vision
-  with no tension has not been thought about, and it is the one that quietly wins on
+  with no tension has not been thought about, and it is the one that wins on
   presentation rather than on merit.
 - **Asks** — what the client has to give us before it can be built. Name the person.
 
 **Check the spread before you render.** If two visions differ only in tone, they are one
 vision and you owe the owner another. Real difference means disagreeing about what the work
 is *for*, not about hue. And if every idea ends up in every vision, there is only one vision
-here wearing three hats — say so rather than shipping the illusion of choice.
+here wearing three hats; say so rather than shipping the illusion of choice.
 
 **6 · Write the file and render it.** `brain/moodboards/YYYY-MM-DD-<topic>.md` in the shape
 `brain/moodboards/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
@@ -169,13 +169,13 @@ here wearing three hats — say so rather than shipping the illusion of choice.
 and give the owner the path.
 
 **7 · Take the reaction, in their words.** Ask which vision they would build and which ideas
-they would kill. Take it verbatim — *"marginalia is too cute next to a balance"* is usable,
+they would kill. Take it verbatim: *"marginalia is too cute next to a balance"* is usable,
 *"I don't love it"* is not. The page has a note box on every card that saves to their browser;
 what they type there is theirs, and it does not reach this repo, so ask for the reaction
 rather than waiting to find it.
 
 Then rewrite through what they said. **Nothing is deleted** — an idea they killed loses its
-visions and stays on the desk, which is what the file is for.
+visions and stays on the desk; that is what the file is for.
 
 ## Guardrails
 
@@ -184,24 +184,28 @@ visions and stays on the desk, which is what the file is for.
   a made-up artefact next to real evidence and they read as equals.
 - **Brand assets are never drawn.** The charter's rule is absolute and applies here even
   though this looks like a sketch. A plate showing the client's mark is their file, extracted
-  with `brain/extract.py` or supplied — never redrawn to make a specimen look finished.
+  with `brain/extract.py` or supplied, never redrawn to make a specimen look finished.
 - **Specimens are optional, and they are `/explore`'s layer.** A desk with no specimens is a
   finished desk. Add one to a vision when the argument needs proof it can be executed,
-  and expect `/explore` to be where they are really made and judged.
+  and expect `/explore` to be where they are made and judged.
 - **One project per desk.** The ideas are judged against one strand's brief. A desk mixing two
   strands argues for a brand nobody is building.
 - **Not a client deliverable** unless the owner says so. It is a thinking artifact, and it
   holds quotes and references that may be confidential.
 - **The house style is the page's, not the work's.** `board.py` renders in the workspace's own
   look because the owner is reading it. Nothing on the desk prescribes that look for the
-  project — a specimen has its own aesthetic, sandboxed so it cannot leak either way.
+  project; a specimen has its own aesthetic, sandboxed so it cannot leak either way.
 - **Do not re-open what is decided.** Check `brain/decisions/` first. A desk arguing for
   something already settled is contradiction, and the charter says raise it rather than
-  quietly proposing around it.
+  proposing around it.
 
 ## Where it goes next
 
 A desk that changed what the work is about produces either an exploration (`/explore`, taking
-the surviving visions as its brief) or a decision — and whichever it is links back to this
+the surviving visions as its brief) or a decision, and whichever it is links back to this
 file by name. Until one exists, `now.md` says the work is making sense of the research, and
 names no vision.
+
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing every idea, vision and caption. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

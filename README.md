@@ -1,41 +1,41 @@
 # bp-design-agent-boilerplate
 
-A blank workspace for running a project with an assistant — Claude Code, Codex, or a model in
-an IDE like Cursor — as a disciplined collaborator. Clone it at the start of a new project,
+A blank workspace for running a project with an assistant (Claude Code, Codex, or a model in
+an IDE like Cursor) as a disciplined collaborator. Clone it at the start of a new project,
 run `/setup`, and the assistant reads `AGENTS.md` as its charter and keeps the record honest
 from day one.
 
 Built for design projects: the work being designed often lives elsewhere (a Figma file, a
 site, a deck) and this repo is the brain that runs it. Extracted from a live engagement where
-every rule here was earned by a failure — the product code and client material were stripped,
+every rule here was earned by a failure; the product code and client material were stripped,
 and the method is the part that carries.
 
 ## Why this and not a general assistant
 
-Claude Cowork, a chat window with project memory, an IDE assistant — they all work, and for
+Claude Cowork, a chat window with project memory, an IDE assistant: they all work, and for
 plenty of tasks they are less setup than this. Five things they do not give you.
 
 **One agent per project, and its context is the project.** A general assistant accumulates
 everything you have ever discussed with it, and retrieval decides what resurfaces. Here the
 boundary is a directory: one clone, one engagement, one brain. Nothing bleeds between clients,
 which is not a nicety when two of them have you under NDA. It also means the assistant can be
-told to read everything rather than guess at what matters — the whole context fits, because
+told to read everything rather than guess at what matters; the whole context fits, because
 you decided what goes in it.
 
 **You own the files, so fixing what it knows is editing a file.** The knowledge is markdown in
 a directory you can grep, diff, edit and delete. When the assistant has the wrong idea about
-your project you correct `now.md` or archive a decision — you do not argue with a memory you
+your project you correct `now.md` or archive a decision; you do not argue with a memory you
 cannot see and cannot address. Every change is a commit, so you can see what it learned and
 when. `doctor.py` then holds the whole thing to rules a README could only suggest.
 
 **Any model, and more than one.** `AGENTS.md` is the charter: Claude Code reads it through
 `CLAUDE.md`, Codex and Cursor read it directly. The scripts are standard-library Python with
 no dependencies and no API of their own. Switch models between sessions, run two at once in
-separate tabs, or hand the repo to someone using a different tool entirely — the record is
+separate tabs, or hand the repo to someone using a different tool entirely; the record is
 plain text either way, and nothing about it expires when a product does.
 
 **The commands are design work, not coding work.** `/interactive-moodboard` turns research into ideas,
-assembles them into visions, and wires each idea to where it came from. `/explore` puts six to eight genuinely different directions on
+assembles them into visions, and wires each idea to where it came from. `/explore` puts six to eight different directions on
 the table with real specimens. `/critique` scores a render against a craft lens you wrote.
 Brand assets are extracted from the client's PDF, never redrawn. A general assistant has no
 opinion about any of that, because it was not built with a designer in the room.
@@ -51,26 +51,26 @@ conversation long, open a chat window instead.
 
 ## How to adopt it
 
-1. Clone, then `rm -rf .git && git init` — your project's history starts empty, and it can
+1. Clone, then `rm -rf .git && git init`; your project's history starts empty, and it can
    no longer push to the boilerplate, which is public. `git remote -v` should print nothing
    until you add your own private repo. `/setup` checks this too, and `doctor.py` fails a
    clone that still points at the template.
 2. Open a session in the root and run **`/setup`**. It interviews you, writes the config and
    the current-state files, clears the template's own brain, checks which of your connectors
-   are actually reachable, and ends with the tour of the commands.
-3. From then on: start sessions by orienting, and let the assistant tell you when it's worth
-   wrapping. `/close` does the wrap-up.
+   are reachable, and ends with the tour of the commands.
+3. From then on: start sessions by orienting, and let the assistant tell you when it is time
+   to wrap. `/close` does the wrap-up.
 
 ## Taking later improvements without losing your work
 
 Step 1 above cuts the git link on purpose, so your project's history starts empty. That leaves
-nothing for an assistant to read when you ask it to check the boilerplate for updates — which
+nothing for an assistant to read when you ask it to check the boilerplate for updates, which
 is why it used to need telling, every time, which files were its own scaffolding.
 
 Now it doesn't. Run **`/update`**. `brain/upstream.py` holds the ownership rules in code:
 `brain/*.py`, the skills and the workflow are the template's and get taken; your decisions,
 insights, tasks, `now.md`, `plan.md`, the craft lens and `workspace.toml` are yours and are
-never even compared. Files that carry both — `AGENTS.md`, `craft.md`, `tags.md` — get listed
+never even compared. Files that carry both (`AGENTS.md`, `craft.md`, `tags.md`) get listed
 for you to port by hand, never copied over. Anything it does not recognise is treated as
 yours, because a wrong guess in that direction costs a question and a wrong guess in the other
 costs your work.
@@ -120,51 +120,54 @@ own instructions, hooks and skills load natively.
 | `brain/feed.py` | renders `brain/feed.html` — a self-glossing readout, including the brain drawn as a graph |
 | `brain/render.py` | the renderers above in one command — what `/close` runs, exiting non-zero on a doctor FAIL |
 | `brain/when.py` | resolves "next friday 9am" to an exact instant, so no reminder is scheduled off arithmetic a model did in its head |
+| `brain/prose.py` | finds the sentences an assistant writes on autopilot (stock phrases, openers, consulting words, "not X, it's Y", em dashes); `doctor.py` fails a file written this week on a hit, a hook runs it after every write, `--report` counts a whole project |
+| `brain/archive_tasks.py` | moves tasks done for 30+ days from `tasks.md` to `archive/tasks.md`, dated by `git blame`, so a session never reads a year of finished work |
+| `.claude/hooks/` | `guard_push.py` asks before a push leaves the workspace repo; `lint_prose.py` hands the assistant the flagged sentences right after it writes a file |
 | `brain/brand/` | the client's real assets, each declaring where it came from — never a redrawn mark |
 | `brain/extract.py` | pulls logos, colours and the written rules out of a brand PDF, so extracting is easier than redrawing |
-| `brain/upstream.py` | which paths the template owns and which the project does, in code — what makes `/update` safe |
+| `brain/upstream.py` | which paths the template owns and which the project does, in code; what makes `/update` safe |
 | `.claude/skills/` | `/setup` · `/brief` · `/braindump` · `/decide` · `/remind` · `/update` · `/status` · `/close` · `/briefing` · `/transcript` · `/workshop` · `/interactive-moodboard` · `/explore` · `/playground` · `/prototype` · `/promote` · `/motion` · `/critique` · `/deck` · `/reviewer` — plus thirteen vendored from [jakubkrehel/skills](https://github.com/jakubkrehel/skills), credited in `CREDITS.md`: `/better-ui` `/better-typography` `/better-colors` `/better-accessibility` `/better-layout` `/better-writing` `/better-interface` `/interface-review` `/explain-interface` `/break` `/state-machine` `/variant` `/build-design` |
 
 ## The ideas underneath
 
 - **A brand asset is obtained, never reconstructed.** Given a client's guidelines, the
   assistant extracts the mark from the PDF as real vector, or asks for the asset pack, or falls
-  back to the name set in plain text — never a redraw, and never the right structure with
+  back to the name set in plain text: never a redraw, and never the right structure with
   invented letterforms, which is the version that survives review and ships. Every file in
   `brain/brand/` declares whether it was extracted, supplied, or designed here, and `doctor.py`
   fails one that does not.
 - **One engagement, several projects, one brain.** A client relationship usually carries two
   or three strands of work, and a single meeting covers all of them. Every record names its
   strand; `feed.html`, `/status` and the tracker push filter on it. Nothing is stored per
-  project — compartmentalizing in the storage would fork the one log that makes a decision
+  project; compartmentalizing in the storage would fork the one log that makes a decision
   findable, to buy a filter that render time gives away. With one project none of it appears.
 - **One owner per class of information.** Everything else links, never restates.
 - **Files are the truth; outward tools are projections.** The tracker and `feed.html` are
   written outward and never read back as authority.
 - **Enforce with a program, not a README.** The rules that survive are the ones
-  `doctor.py` refuses to let you past — and the tools themselves are held to the same
+  `doctor.py` refuses to let you past, and the tools themselves are held to the same
   standard by `brain/test_brain.py`, which GitHub Actions runs on every push.
-- **Stages end by a bar written on entry.** Otherwise every next step is genuinely useful and
+- **Stages end by a bar written on entry.** Otherwise every next step is useful and
   nothing ever ends.
 - **Tags are global to the brain.** A decision and an insight share one vocabulary, and
-  `feed.html` draws the result — notes, shared tags, and the links between them — as an inline
+  `feed.html` draws the result (notes, shared tags, and the links between them) as an inline
   SVG graph. Stdlib only, self-contained, nothing uploaded. Because tags and `[[links]]` are
   also what Obsidian reads, opening `brain/` as a vault works too, and a `brain.canvas` is
   written for it; nothing depends on either.
 - **Nothing starts until the brief is agreed.** Once the first context lands, `/brief` states
-  the project back as a page — what was understood, what is still unknown and who can answer
-  it, the stage arc, the next steps — and waits for a yes. The failure it prevents is the
+  the project back as a page (what was understood, what is still unknown and who can answer
+  it, the stage arc, the next steps) and waits for a yes. The failure it prevents is the
   expensive one: work advancing for weeks on the assistant's private reading of the project.
 - **A transcript is a guess, and it is wrong where it matters.** Speech recognition fails
-  hardest on the words a project runs on — names, acronyms, numbers, who was speaking — and
+  hardest on the words a project runs on (names, acronyms, numbers, who was speaking) and
   whoever was in the room reads straight past the errors. `/transcript` saves the file
   verbatim, then asks once, as a numbered table: timestamp, the line as transcribed, what is
   needed, and the assistant's own reading, so answering is confirming rather than filling in
-  blanks. The commonest hole is a shared screen nobody named — *"this one"*, *"as you can see
-  here"* — which is where the actual content of a review goes missing. The transcript is never
+  blanks. The commonest hole is a shared screen nobody named (*"this one"*, *"as you can see
+  here"*), which is where the content of a review goes missing. The transcript is never
   edited; corrections sit beneath it, the machine's version and the human's both visible.
 - **Evidence is present and quiet.** A claim that came from outside the repo carries
-  `^[who · where · when](link)`, which renders as a faint superscript numeral — hover for the
+  `^[who · where · when](link)`, which renders as a faint superscript numeral; hover for the
   attribution, click for the timestamped moment in the recording. Anything the assistant
   worked out rather than heard is marked `^[inferred]` in ochre. The requirement is absolute
   and it costs the reader nothing, which is the only way a requirement like that survives.
@@ -176,7 +179,7 @@ own instructions, hooks and skills load natively.
   instead of promising something it cannot do.
 - **Nothing for you is left outside the repo.** A drafted email goes to `brain/drafts/` and
   shows up on the feed with a button that copies it, ready to paste and send. Not a scratch
-  directory whose path you would have to be told — that is how a written message becomes an
+  directory whose path you would have to be told. That turns a written message into an
   unsent one.
 - **When the stakeholder will not show up, move the workshop to his phone.** `/workshop`
   takes the questions a missed call would have answered and turns them into screens that
@@ -188,36 +191,36 @@ own instructions, hooks and skills load natively.
   stopping to ask you what you would like it to do about the situation you set up on purpose.
 - **A decision is dated, not numbered.** `brain/decisions/2026-09-15-the-slug.md`: the date
   orders the log, the slug is what `[[links]]` point at. A number would have to be claimed
-  from a pool every open tab shares, and the collision only shows up at merge — which it did,
+  from a pool every open tab shares, and the collision only shows up at merge, which it did,
   here, and cost a three-file renumber. `brain/redate.py` migrates an older log.
 - **Focus mode is assumed.** The charter is written for Claude Code's `/focus`, where you see
-  only the final message of each turn — so that message carries everything, and nothing
+  only the final message of each turn, so that message carries everything, and nothing
   important lives in a tool call you never opened. `/focus` toggles it off.
-- **The prose rules live in the charter, not in a skill.** The parts of `stop-slop` the
-  charter did not already ban — name the actor, active voice, no throat-clearing, no "not X,
-  it's Y", no vague declaratives — are written into `AGENTS.md`, so Codex and Cursor get them
-  too. Em dashes are kept on purpose; that rule is about not being detected, not about being
-  understood.
+- **The prose rules are checked in code.** The charter bans the stock phrases, the
+  throat-clearing, the *"not X, it's Y"* and the em dash, and `brain/prose.py` finds them:
+  `doctor.py` fails a file written this week that carries one, a hook runs the check after
+  every `.md` or `.html` the assistant writes, and `prose.py --report` counts them across a
+  project. A rule in prose scrolls out of the context; a check does not.
 - **Portability is the assistant's job, not yours.** It pushes as it goes and tells you when a
   wrap-up is due, so closing the laptop is never a gamble.
 - **Never delete; tombstone.** A superseded file gets a "do not cite" header naming its
   replacement and moves to `archive/`.
 - **A moodboard argues; a style guide specifies.** Asked for a moodboard, a model reliably
-  produces a brand manual — swatches, a type scale, sections named Colour and Typography —
+  produces a brand manual (swatches, a type scale, sections named Colour and Typography)
   which settles a design nobody chose from research nobody read. `/interactive-moodboard` builds the other
   thing: **ideas**, one title and one sentence each and arguable, and **visions** that assemble
   named sets of them into whole brands. The same idea appears in several visions, and that
-  overlap is the argument — `brain/board.py` draws it as wires you can light from either end,
+  overlap is the argument; `brain/board.py` draws it as wires you can light from either end,
   and an idea present in every vision is the brand whichever way the work lands.
 - **Diverge before you converge, and keep the losers.** `/explore` puts six to eight
-  genuinely different directions on the table, seeded so they are not one idea four times.
+  different directions on the table, seeded so they are not one idea four times.
   They live in `brain/explorations/`, and picking one produces exactly one decision that
-  links back — the only seam between the two halves.
+  links back, the only seam between the two halves.
 - **Motion is decided once, per project, and measured rather than guessed.** Most motion
   advice is written for a long scrolling marketing page and silently assumes it; an app UI, a
   presented deck and a prototype want different answers, and several rules invert between them.
-  `/motion` holds what survives regardless — one vocabulary per page, at most one thing moving
-  on its own clock, a small fixed set of eases, `prefers-reduced-motion` honoured — then has
+  `/motion` holds what survives regardless (one vocabulary per page, at most one thing moving
+  on its own clock, a small fixed set of eases, `prefers-reduced-motion` honoured) then has
   the project derive its own gestures and curves from the brand. When the owner names a
   reference, it is measured in a real browser rather than described from screenshots, and the
   measured curve joins the tuning drawer by name so he can try it. `brain/lenses/motion.md`
@@ -225,29 +228,29 @@ own instructions, hooks and skills load natively.
 - **The work happens in HTML, and no iteration is ever lost.** A round in Figma or in product
   code costs minutes to hours; a round on an HTML file costs seconds. So `/playground` does
   the design work as pieces under `brain/playground/`: an existing design arrives as an
-  exact as-is translation, a new one as a first pass, each one the browser body itself —
-  resize the window for mobile, no frames and no zoom to go wrong — with a hidden panel of
+  exact as-is translation, a new one as a first pass, each one the browser body itself:
+  resize the window for mobile, no frames and no zoom to go wrong, with a hidden panel of
   controls for every value and state, and artboards side by side when two widths have to be
   compared at once. **Every change the owner might want to walk back is a new numbered
   file**, announced as it starts, and the version menu in the bar is how he goes back. When
   he says a piece is final, `/promote` logs the decision, writes what it takes to implement
-  it, and — once it ships — keeps `shipped.html`, the HTML counterpart of what went live.
+  it, and, once it ships, keeps `shipped.html`, the HTML counterpart of what went live.
 - **The first pass of a new design ships with its dials exposed.** An owner cannot specify
   taste for something he has not seen move, so what comes back is *"the type feels heavy"* and
   a round goes into converting adjectives into values. `/prototype` builds the controls in
   the same pass as the page, as a playground piece: every visual value is a CSS custom property, nothing is
   hard-coded, and **the variable list is the honest spec of every decision the design is
   making** — a value you hard-coded is a decision you hid. Motion is a select of three or four
-  genuinely different kinds rather than a slider, because a slider cannot tell you the right
+  different kinds rather than a slider, because a slider cannot tell you the right
   answer was a different idea. Copy settings puts the owner's pick on the clipboard as JSON,
   which gets baked into the defaults and logged as a decision. `doctor.py` reports a drawer
   left in anything under `brain/decks/`.
 - **Show the spread, don't describe it.** Eight directions in prose get judged on which was
-  described best. `brain/spread.py` renders them side by side — each with a specimen of its
-  palette, type and layout logic — so taste acts on the work instead of on the writing
+  described best. `brain/spread.py` renders them side by side, each with a specimen of its
+  palette, type and layout logic, so taste acts on the work instead of on the writing
   about it.
 - **A title is a sentence, not a label and never an aphorism.** Asked for a deck, a model
-  writes fragments that scan and say nothing — *"Say what it is. Date it. Stop."* — then
+  writes fragments that scan and say nothing (*"Say what it is. Date it. Stop."*) then
   explains each slide in a paragraph the presenter will say out loud anyway. `/deck` asks two
   questions first (presented or standalone; labels or labels plus conversational titles),
   writes **every title before a single page is built**, and holds them to one test: read the
@@ -261,7 +264,27 @@ own instructions, hooks and skills load natively.
   slow independent pass that writes findings. Both read `brain/lenses/craft.md`, so there is
   one bar and not two.
 
+## How the charter is written
+
+The plain-language rules apply to `AGENTS.md` itself, because an agent copies the style of its
+instructions more reliably than it follows instructions about style. A rule written as a riddle
+teaches the agent to write riddles. *"Ears."* was a rule there for months; it meant *log
+decisions and insights as they happen*, and nothing about the word said so. Six projects built
+from the template carried its own tics (*reads as, lands, quietly*) hundreds of times, so
+the template's text is now linted: `python3 brain/prose.py --template` must come back clean,
+and `test_brain.py` checks it.
+
+- **Open every rule with a sentence that states the action and makes sense alone.**
+- **Write a bold lead-in in a "Do not" list as a negative.** A positive one there once said the
+  opposite of its rule for as long as it stood.
+- **State the rule once, then the failure that caused it.** No slogans, hedges or restatement.
+- **Put procedure in the skill or README that owns it, and point to it from there.** The
+  charter loads into every session; a step-by-step belongs where it loads only when used.
+- **Keep the charter short.** Every kilobyte is read every session, before any work.
+
+The same applies to `brain/lenses/`, the skills, and every README in `brain/`.
+
 ## Requirements
 
-Python 3 for the scripts — standard library only, no dependencies. Works on a stock macOS
+Python 3 for the scripts, standard library only, no dependencies. Works on a stock macOS
 `python3`.

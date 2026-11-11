@@ -5,14 +5,14 @@ the standard `/critique` scores a deck against during a build.*
 
 This lens governs **what goes out** — a brand deck, a strategy presentation, a proposal, a
 written document for a client. It is not the house style in `AGENTS.md`, which governs pages
-generated for the owner to read. The two share a language standard and nothing else.
+generated for the owner to read. The two share a language standard and nothing more.
 
 ## 1 · What to look at
 
 **Rendered pages, in order, at the size they will be seen.** A deck reviewed as an outline is
 a deck reviewed as prose, and prose is the one thing a deck is not. Screenshot every page.
 
-Then read it twice: **once at the titles only**, then in full. The first pass is the real test
+Then read it twice: **once at the titles only**, then in full. The first pass is the test
 and it is described below.
 
 ## 2 · What to refuse to look at
@@ -20,7 +20,7 @@ and it is described below.
 The build, the source, the brief, and the conversation that produced it. A deck is read by
 someone who was not in any of those, which is the condition this lens reproduces.
 
-The one permitted input is the audience: **standalone or presented**, which changes how much
+The one input allowed is the audience: **standalone or presented**, which changes how much
 text is correct. Get that from the deck's own brief, not from the builder's reasoning.
 
 ## 3 · What it is judged on
@@ -29,7 +29,7 @@ text is correct. Get that from the deck's own brief, not from the builder's reas
 
 **Read only the overtitles and titles, in order, start to finish. Do you now know the
 argument?** If yes, the deck is structurally sound and everything else is refinement. If no,
-nothing further matters — fix that before looking at a single layout.
+nothing further matters; fix that before looking at a single layout.
 
 The structure both halves serve:
 
@@ -52,8 +52,8 @@ titles reaches for compression and rhythm, and produces aphorisms:
 
 Every one of these is a fragment pretending to be a thought. They sound authored, they survive
 a read-through because they scan, and they say nothing a reader can act on. Three-beat
-rhythms, a colon doing the work of a verb, a metaphor standing in for the claim, a sentence
-that would need the slide to explain it — all the same failure. **The test is whether a
+rhythms, a colon standing in for a verb, a metaphor standing in for the claim, a sentence
+that would need the slide to explain it: all the same failure. **The test is whether a
 stranger reading the title alone learns the point.** Flag every title that fails it, quote it,
 and write the replacement.
 
@@ -68,7 +68,7 @@ sentence. The sentence a competent person would say out loud to a colleague.
 - **No throat-clearing before the point**, and no restating the title in the body. If the body
   paragraph is the title again at greater length, cut the paragraph.
 - **No words that sound like consulting.** *Leverage, synergy, holistic, robust, seamless,
-  best-in-class, unlock, elevate, journey, ecosystem* — where a plain word exists, it wins.
+  best-in-class, unlock, elevate, journey, ecosystem*: where a plain word exists, it wins.
 - **Name the actor, active voice.** *"We'll ship the portal on the 14th"*, not *"The portal
   is slated for delivery."*
 - **Nothing asserted that the work does not show.** *Powerful, beautiful, simple* are claims
@@ -87,7 +87,7 @@ question gets asked before anything is made.
 
 ### The layout grammar
 
-Elegant, minimal, strongly gridded — the register of a good brand guideline.
+Elegant, minimal, strongly gridded: the register of a good brand guideline.
 
 1. **A visible grid, held.** Twelve columns. A narrow left band for the labels and the words,
    a wide right band for the thing being shown. Items snap to column edges, and the same
@@ -113,13 +113,13 @@ Elegant, minimal, strongly gridded — the register of a good brand guideline.
 
 **A relationship, a process, a comparison or a structure is drawn, not bulleted.** A model
 defaults to a list because a list is text and text is cheap, and the result is a deck where
-every page looks the same and nothing is actually shown.
+every page looks the same and nothing is shown.
 
-Every pass names at least one page that should be a diagram and is a list — or states plainly
+Every pass names at least one page that should be a diagram and is a list, or states plainly
 that the deck is already visual, which is the only other acceptable answer.
 
 What a drawn page looks like: a labelled grid, a sequence with real geometry, a comparison
-laid out as two columns of specimens, a quantity shown at the size it actually is, a do/don't
+laid out as two columns of specimens, a quantity shown at the size it is, a do/don't
 pair. What it does not look like: three rounded boxes with arrows between them, an icon on top
 of every item, or a shape that decorates without carrying information.
 
@@ -129,7 +129,7 @@ of every item, or a shape that decorates without carrying information.
   written so that whoever is deciding what to do next understands them. A deck is not
   failing because it does not sound like them, and where they still lapse into epigram, that
   is their bug and not a style to carry into a deliverable.
-- **The workspace house style.** White paper, Inter, hairline rules — that governs `feed.html`
+- **The workspace house style.** Geist, black rules, grey hairlines: that governs `feed.html`
   and the pages made for the owner. A client deck follows the client's brand, or the direction
   chosen for the project, and is judged against that.
 - Anything the brief has settled: a fixed template, a client's mandated typeface, a required

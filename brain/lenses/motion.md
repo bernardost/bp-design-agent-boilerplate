@@ -5,7 +5,7 @@ the standard `/critique` scores motion against during a build.*
 
 **Sections 3 and 4 are this project's own answer and start empty.** `/motion` fills them once a
 vocabulary is chosen, and the decision that chose it is logged like any other. **Until they are
-written, say so in the verdict** rather than quietly scoring against a generic ideal — a
+written, say so in the verdict** rather than scoring against a generic ideal; a
 project whose motion has not been decided cannot fail a review for disagreeing with one.
 
 ## 1 · What to look at
@@ -42,14 +42,14 @@ These hold whatever the project chose, and a finding against one of them stands 
 sections 3 and 4 are empty.
 
 1. **One vocabulary.** Every element enters the same way. Three different entrances means the
-   page reads as assembled from parts.
-2. **At most one timed moment**, finishing quickly, and nothing else moving unprompted. Zero in
+   page looks assembled from parts.
+2. **At most one timed moment**, finishing quickly, with nothing else moving unprompted. Zero in
    an app UI.
 3. **Nothing loops in the content.** Idle loops are decoration, never the thing being read.
-4. **A small fixed set of eases.** Count the distinct curves on the page — that number is a
+4. **A small fixed set of eases.** Count the distinct curves on the page; that number is a
    good proxy for whether anyone decided anything.
 5. **Duration from the ease's tail, not from a big number.** Past about a second, a reveal the
-   reader is waiting for reads as sluggish.
+   reader is waiting for feels sluggish.
 6. **Hover dips, never jumps.** Nothing bounces, nothing moves position under the cursor.
 7. **`prefers-reduced-motion` is honoured** and the page still works. This one is a FAIL, not a
    note.

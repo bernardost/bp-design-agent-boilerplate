@@ -1,6 +1,6 @@
 ---
 name: status
-description: One-screen project readout — current focus, open questions by owner, recent decisions, task state. Use for /status or "where are we".
+description: One-screen readout: current focus, open questions by owner, recent decisions, task state. Use for /status or "where are we".
 ---
 
 # Status
@@ -12,7 +12,7 @@ in `brain/decisions/`.
 **Group the readout by project** when `[projects]` in `brain/workspace.toml` holds more than
 one key: each strand gets its stage, its open questions and its tasks under its own heading.
 An engagement-wide item (`project: all`) goes in a short section of its own at the end. Never
-merge two strands into one list — the owner reads this to decide where to spend the next hour,
+merge two strands into one list; the owner reads this to decide where to spend the next hour,
 and a blended list makes that decision for him badly.
 
 Output one screen, no more:
@@ -25,4 +25,8 @@ Output one screen, no more:
 - **Waiting on you to send** — unsent drafts in `brain/drafts/`, by subject and recipient
 
 If now.md's date is older than the newest decision or task change, note that
-it may be stale and offer to reconcile — or say it is worth `/close`-ing.
+it may be stale and offer to reconcile, or say it is time to `/close`.
+
+## Language
+
+Read *The sentences themselves* in `AGENTS.md` before writing the readout. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

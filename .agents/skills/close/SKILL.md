@@ -1,19 +1,19 @@
 ---
 name: close
-description: Wrap up a session so the next one — or the next device — knows exactly what is happening. Routes anything unrecorded to its owning file, rewrites now.md from scratch, lints the brain, regenerates feed.html, commits and pushes, and projects changed tasks to the tracker. Use for /close, "wrap up", "let's stop here", or when you have said it is worth wrapping and the owner agreed.
+description: Wrap up a session: route what is unrecorded, archive old done tasks, rewrite now.md, lint, render, commit, push, project tasks. Use for /close, "wrap up", "let's stop here".
 ---
 
 # Close the loop
 
 The anxiety this answers: closing the editor and having the next session not know what is
-happening. The files solve it — but only if they are written before the session ends. That is
+happening. The files solve it, but only if they are written before the session ends. That is
 this, and it is one word so it never gets skipped.
 
 Work in this order. It is a sequence, not a menu.
 
 **It is not eight sessions of work, either.** Push-as-you-go means most of what follows is
 already on disk: step 1 catches the remainder, it does not re-derive the session. Steps 1 to 4
-write to four different files — read them in one batch, write what each needs, and do not
+write to four different files: read them in one batch, write what each needs, and do not
 narrate a step whose answer is "nothing". The whole close is minutes, and a close that takes
 longer than the work it is recording is a close that gets skipped.
 
@@ -38,9 +38,14 @@ If there is nothing, say so. An empty step is fine; a skipped one is not.
 ## 2 · Update `brain/tasks.md`
 
 Every task that moved gets its status changed. Work you did that was never a task becomes one,
-marked `done` — the file is the record, not a to-do list. Check the labels against
+marked `done`; the file is the record, not a to-do list. Check the labels against
 `tasks.labels` in `brain/workspace.toml`, and keep the projection pointer honest: `—` means
 not yet pushed to the tracker.
+
+Then `python3 brain/archive_tasks.py`. It moves every task that has been `done` for more
+than 30 days (dated by `git blame`) to `archive/tasks.md`, headings kept. The file is still
+the record; the next session reads only the part of it that is still moving. `doctor.py`
+fails the file past 300 lines.
 
 ## 3 · Rewrite `brain/now.md` from scratch
 
@@ -49,7 +54,7 @@ limit; editing is how it became sixteen kilobytes the last time. Open a blank pa
 **one `##` section per project**: where that strand is against its own stage bar, what's next
 and what unblocks it. Blockers go in one section at the end, each naming its project.
 
-A strand nobody touched this session still gets its line — a project that goes quiet in
+A strand nobody touched this session still gets its line; a project that goes quiet in
 `now.md` is one the owner stops seeing, which is the failure this file exists to prevent.
 
 The test for every line: *if it would still be true in two weeks, it belongs in its owning
@@ -59,10 +64,10 @@ first, and `doctor.py` will fail the run if you exceed it.
 ## 4 · Refresh the bar status
 
 Each project inside a stage has its own bar. Update the `## BAR` block in
-`brain/feed-items.md` — lines are `project/n: status · evidence` once the engagement runs more
+`brain/feed-items.md`: lines are `project/n: status · evidence` once the engagement runs more
 than one strand, plain `n:` when it runs one: one line
 per condition, `met` / `partly` / `not-met`, each with its evidence or a pointer to it. The
-condition *text* is read from the decision that owns it and is never retyped here — only the
+condition *text* is read from the decision that owns it and is never retyped here; only the
 judgment of whether it holds.
 
 ## 5 · Lint and render
@@ -71,12 +76,15 @@ judgment of whether it holds.
 python3 brain/render.py
 ```
 
-That is `doctor.py`, `feed.py`, `spread.py` and `brief.py` in one process — the same four
+That is `doctor.py`, `feed.py`, `spread.py` and `brief.py` in one process, the same four
 reports under labelled rules, exiting non-zero on a doctor FAIL. Each still runs alone when
 that is what you want (`/explore` calls `spread.py`, `/brief` calls `brief.py --open`); this
 is the batch a close needs, as one command rather than four.
 
-Fix every FAIL; read the reports and act on the ones that matter — an unknown tag, a stale
+A FAIL from `prose.py` names a file written this week and the sentence in it. Rewrite the
+sentence; do not argue with the list. Then:
+
+Fix every FAIL; read the reports and act on the ones that matter: an unknown tag, a stale
 page, an unfilled config answer. Do not report a passing run you did not see.
 
 Two of those reports are about the brief, and both mean the same thing: the owner has not
@@ -85,24 +93,28 @@ or sections carrying no source tag, is worth a line in the hand-over rather than
 
 ## 6 · Commit and push
 
-If `git.remote` is true in `brain/workspace.toml`, commit and push — one command, not four.
+If `git.remote` is true in `brain/workspace.toml`, commit and push, in one command, not four.
 This is already the standing behavior for each unit of work; here it is the backstop, so most
 of the time there is little left to send. The message says what moved, not "update files".
 
 ## 6b · If you changed anything in `brain/*.py`
 
 Run `python3 brain/test_brain.py`. `doctor.py` lints the content of the brain and has nothing
-to say about the tools that render it — a renderer that drops every `[[link]]` passes the
+to say about the tools that render it; a renderer that drops every `[[link]]` passes the
 linter cleanly. CI runs this too, so the only thing skipping it buys you is finding out later.
 
 ## 7 · Project changed tasks to the tracker
 
 If a tracker is configured, push only the `tasks.md` lines that changed, and write the returned
-key back into the pointer field — never guess an identifier. Only tasks project: never
+key back into the pointer field; never guess an identifier. Only tasks project: never
 decisions, insights, or open questions. A `skip` pointer never goes.
 
 ## 8 · Hand over in five lines or fewer
 
 What moved, what is unrecorded and why, the single next action, and anything the owner owes
-someone else — **including every draft still waiting to be sent, by name.** Write it for the next session — which may be on a phone, with no memory of this
+someone else, **including every draft still waiting to be sent, by name.** Write it for the next session, which may be on a phone, with no memory of this
 one.
+
+## Language
+
+Read *The sentences themselves* in `AGENTS.md` before writing `now.md` and every file this step writes. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

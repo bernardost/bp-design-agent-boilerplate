@@ -1,13 +1,13 @@
 # The plan
 
 *The stage arc and each stage's exit bar, **one section per project**. **Position** — which
-stage a project is in today — stays `now.md`'s to say. **Tasks** stay `tasks.md`'s. This file
+stage a project is in today, stays `now.md`'s to say. **Tasks** stay `tasks.md`'s. This file
 says where each strand is going and what ends each leg, and it should never grow past one
 screen per project.*
 
 **The rule that makes this file work: an exit bar is written when a stage is *entered*, as a
-decision.** A stage without a bar does not produce rigour — it produces a loop where every
-next step is genuinely useful and nothing ever ends.
+decision.** A stage without a bar does not produce rigour; it produces a loop where every
+next step is useful and nothing ever ends.
 
 **Projects run their own arcs.** Two strands of one engagement are rarely at the same stage,
 and forcing them onto a shared arc is how "we're in discovery" starts meaning nothing. An
@@ -34,6 +34,6 @@ guard).*
 
 ## What this plan deliberately does not contain
 
-- **Dates.** Gates are events, not deadlines — unless the engagement says otherwise.
+- **Dates.** Gates are events, not deadlines, unless the engagement says otherwise.
 - **Bars for stages we have not entered.** Writing them now is planning theater.
 - **A shared stage for every project.** Each strand exits its own bar on its own schedule.

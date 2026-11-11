@@ -1,6 +1,6 @@
 ---
 name: transcript
-description: Take a pasted or attached meeting transcript, save it verbatim, and interrogate it before trusting a word of it — a numbered table of what the transcript cannot tell you, with timestamps, answered in one pass. Use for /transcript, and whenever a full transcript arrives in a session however it arrives.
+description: Save a meeting transcript verbatim and question it before trusting it: a numbered table of what it cannot tell you, answered in one pass. Use for /transcript or whenever a full transcript arrives.
 ---
 
 # Transcript — read it for what it got wrong
@@ -10,7 +10,7 @@ and **it is least reliable exactly where it matters most**: proper nouns, number
 speaking, and the thing somebody was pointing at on a shared screen.
 
 The person who pastes it was in the room. They read straight past the errors, because they
-know what was meant. You were not in the room, so you cannot — and if you route a transcript
+know what was meant. You were not in the room, so you cannot, and if you route a transcript
 straight into decisions and tasks, a mishearing becomes a project fact with a citation
 attached to it. That is the exact failure the charter's label-evidence rule exists to stop,
 arriving through the one door that looks like a quotation.
@@ -24,14 +24,14 @@ arriving through the one door that looks like a quotation.
 routing is what assigns a strand.
 
 **You never edit a transcript.** Not to fix a name, not to tidy a sentence, not after the
-owner confirms what was really said. It is a verbatim capture and it is governed by the same
+owner confirms what was said. It is a verbatim capture and it is governed by the same
 rule as a braindump: processing routes content out, it does not rewrite the source.
 Corrections live in their own section underneath (step 4).
 
 ## 2 · Read it for the six things it cannot tell you
 
 Go through the whole transcript once, looking for these. Quote the line and keep the
-timestamp — a question without a timestamp makes the owner search for the moment themselves.
+timestamp; a question without a timestamp makes the owner search for the moment themselves.
 
 1. **Something on screen with no words for it.** *"this one"*, *"as you can see here"*,
    *"the one on the left"*, *"that number"*. A screen was shared and the transcript recorded
@@ -41,15 +41,15 @@ timestamp — a question without a timestamp makes the owner search for the mome
    acronym that is not in `brain/glossary.md`, a product or company name that is also an
    ordinary word. Speech recognition collapses on exactly the vocabulary a project runs on,
    because it is the vocabulary the model has never heard.
-3. **Who actually said it.** `Speaker 2`, an unlabelled turn, or a line attributed to someone
-   it does not sound like — a client's commitment in the agency's mouth, or the reverse. A
+3. **Who said it.** `Speaker 2`, an unlabelled turn, or a line attributed to someone
+   it does not sound like: a client's commitment in the agency's mouth, or the reverse. A
    decision filed under the wrong person is worse than an unfiled one, because it is wrong in
    a place nobody rereads.
 4. **Numbers, dates, money and versions.** The category transcription handles worst and the
    category most likely to be quoted into a brief. *"fifteen"* / *"fifty"*, a date with no
    year, a budget figure, *"v2"* heard as *"B2"*.
 5. **`[inaudible]`, crosstalk and sentences that stop mid-clause.** Most are noise. The ones
-   that matter are the ones sitting next to a decision, a number or a commitment — flag those
+   that matter are the ones sitting next to a decision, a number or a commitment; flag those
    and leave the rest.
 6. **Lines whose meaning is carried by tone.** Flat text cannot tell a commitment from a joke
    from a hypothetical. *"We could just ship it Friday"* is a plan or a groan, and the
@@ -59,7 +59,7 @@ timestamp — a question without a timestamp makes the owner search for the mome
 **What not to raise.** Filler, false starts, a misheard word whose meaning is obvious from the
 sentence around it, and anything you can settle from `brain/glossary.md`, `brain/decisions/`
 or the brief. Check those first. A table of twenty questions, most of them answerable from the
-repo, trains the owner to skim the table — and then the one question that mattered goes
+repo, trains the owner to skim the table, and then the one question that mattered goes
 unanswered.
 
 ## 3 · Ask once, as a numbered table
@@ -80,8 +80,8 @@ question at a time: the owner answers a transcript in one sitting or not at all.
 
 **Always propose your reading.** A question the owner answers by confirming takes five
 seconds; a blank they have to fill takes a minute and often does not get filled at all. Same
-reason `/workshop` sends assumptions rather than blanks. Where you genuinely have no reading,
-say so — an invented guess is worse than an empty cell.
+reason `/workshop` sends assumptions rather than blanks. Where you have no reading,
+say so; an invented guess is worse than an empty cell.
 
 Order the table by how much turns on the answer, not by timestamp. The question that blocks a
 decision goes first.
@@ -90,7 +90,7 @@ In your reply, put the table above the box; the box carries one line pointing at
 
 ## 4 · Route what is safe, hold what is not
 
-Do not stop and wait. Route everything whose meaning does not depend on an open question —
+Do not stop and wait. Route everything whose meaning does not depend on an open question;
 `/briefing`'s step 5 is the routing, and it applies here unchanged. Hold back only the items
 that would change depending on an answer, and say which those are.
 
@@ -104,27 +104,31 @@ The build lands by the 14th. ^[Dana · kickoff transcript 00:41:18 · 2026-10-02
 ## 5 · When the answers come back
 
 - **Corrections go in a `## Corrections` section** at the foot of the transcript file: the
-  timestamp, what the transcript says, what was actually said, and who confirmed it. The
+  timestamp, what the transcript says, what was said, and who confirmed it. The
   transcript body stays exactly as it was. Anyone reading the file later sees both the
-  machine's version and the human's, which is what makes the record checkable.
+  machine's version and the human's, and that makes the record checkable.
 - **Decoded names go to `brain/glossary.md`** — every person, acronym, codename and internal
   name you had to ask about. That is what it owns, and it is the file that stops the same
   question being asked after the next meeting.
 - **Screenshots and files the owner sends go to `context/`**, which owns source material from
   outside, and the table row that asked for them cites the path.
 - **Then route the held items**, and re-check anything already filed on a reading that turned
-  out wrong. A correction is not done until the grep is clean — the charter's rule, and it
+  out wrong. A correction is not done until the grep is clean: the charter's rule, and it
   applies to a misheard name propagated into three files.
 
 ## Guardrails
 
 - **A long transcript is not a reason to skim.** If it is too long to read closely, say so and
-  read it in passes — never sample it and present the result as though you had read it all.
+  read it in passes; never sample it and present the result as though you had read it all.
 - **Do not summarise instead of interrogating.** A summary of a transcript you have not
-  questioned is a confident restatement of its errors, and it reads as more authoritative than
+  questioned is a confident restatement of its errors, and it sounds more authoritative than
   the transcript did.
 - **The owner's own words about the meeting are not a transcript.** If they describe what
   happened rather than pasting the record, that is a `/braindump`.
 - **Confidential by default.** A transcript is other people's words. `brain/briefings/` holds
-  it, and on a non-private remote that directory belongs in `.gitignore` — say so once if the
+  it, and on a non-private remote that directory belongs in `.gitignore`; say so once if the
   setup needs it.
+
+## Language
+
+Read *The sentences themselves* in `AGENTS.md` before writing the question table and everything routed. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

@@ -1,14 +1,14 @@
 ---
 name: promote
-description: Take a playground piece the owner has called final out of the playground — log the decision, freeze the version, write what it takes to implement it, and once it ships, keep an HTML counterpart of what went live. Use for /promote, "this is final", "ship it", "promote this", "it's done, what's next", or whenever a design is about to be built for real somewhere else.
+description: Take a piece the owner called final out of the playground: log the decision, freeze the version, write the implementation notes, keep an HTML counterpart once shipped. Use for /promote, "this is final", "ship it".
 ---
 
 # Promote — a piece leaves the playground
 
 A piece is finished when the owner says so, and that sentence sets off four things that are
 easy to skip in the moment: the record that says which version won and with which settings,
-the file freeze that keeps it from drifting, the notes an implementer needs, and — later —
-the HTML counterpart of what actually shipped. This command does them in that order.
+the file freeze that keeps it from drifting, the notes an implementer needs, and, later,
+the HTML counterpart of what shipped. This command does them in that order.
 
 ## 1 · Pin down what "final" means
 
@@ -58,25 +58,25 @@ terms:
   before a line is written there. The `/product-repo` skill applies, and nothing
   is pushed there without asking.
 
-Then stop. Building it in the destination is the destination's work, under its rules — in
+Then stop. Building it in the destination is the destination's work, under its rules, in
 Figma through the Figma tools, in a product repo in its own session or worktree.
 
 ## 4 · When it has shipped
 
 The owner says it is live, merged, or published. Then:
 
-- **`shipped.html`** in the piece folder: the HTML counterpart of what actually went live.
-  Start from the final version and bring it to what shipped — the implementer will have
+- **`shipped.html`** in the piece folder: the HTML counterpart of what went live.
+  Start from the final version and bring it to what shipped; the implementer will have
   changed things, and this file is where those changes are recorded in the design's own
   terms. A comment at the top of the file lists every deviation from the final version and
   why it happened. Keep the controls that still apply; drop the ones that no longer do.
-- In `piece.md`: `status: shipped`, `Shipped: <where> · <date>` — a URL, a commit, a Figma
+- In `piece.md`: `status: shipped`, `Shipped: <where> · <date>`, a URL, a commit, a Figma
   link, with who confirmed it.
 - Log an insight if the implementation taught something that will happen again.
 - `python3 brain/playground.py`, commit, push.
 
 `doctor.py` reports a shipped piece with no `shipped.html`. The counterpart matters because
-the next round of changes starts from what exists, not from what was intended — and
+the next round of changes starts from what exists, not from what was intended, and
 without it the next session redesigns from the final version and discovers the gap in
 review.
 
@@ -90,3 +90,7 @@ review.
   wordmark is honest in the playground and a defect in the product. Get the asset first.
 - **One decision per piece per promotion.** A piece promoted twice gets a second decision
   that supersedes the first, tombstone and all.
+
+## Language
+
+Read `brain/lenses/house.md` § *How it reads* before writing the decision and the implementation notes. After writing, run `python3 brain/prose.py <file>` on every `.md` or `.html` you produced and rewrite each hit in the same turn; a hook runs the same check after every write, and `doctor.py` fails a file written this week that still carries one.

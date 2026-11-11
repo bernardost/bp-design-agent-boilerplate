@@ -1,6 +1,6 @@
 ---
 name: update
-description: Take improvements from the boilerplate this workspace was cloned from, without overwriting anything the project wrote. Use for /update, "check the boilerplate for updates", "is there a newer version of the scaffolding", or when the owner mentions changes made upstream.
+description: Take improvements from the boilerplate without overwriting what the project wrote. Use for /update, "check the boilerplate for updates", or when the owner mentions upstream changes.
 ---
 
 # Update — take the template's improvements, keep the project's work
@@ -8,7 +8,7 @@ description: Take improvements from the boilerplate this workspace was cloned fr
 **You are running inside a project, not inside the boilerplate.** Most of what is here belongs
 to the owner: their decisions, their current state, their craft lens, their charter with their
 project's identity in it. A little of it is scaffolding that came from the template and gets
-better over time. Telling those apart by eye is how the owner's `now.md` ends up as a template
+better over time. Telling those apart by eye is what turns the owner's `now.md` into a template
 placeholder.
 
 **So do not tell them apart by eye.** `brain/upstream.py` holds the ownership rules in code,
@@ -25,7 +25,7 @@ reports in three groups: **template-owned** (safe to take), **needs you** (the t
 part of the file and `/setup` filled the rest), and everything it refuses to even compare.
 
 Read the report out loud to the owner in a sentence or two. If nothing changed, say that and
-stop — there is no step 2.
+stop; there is no step 2.
 
 ## 2 · Take the safe ones
 
@@ -43,14 +43,14 @@ would destroy something.
 
 ## 3 · Port the "needs you" files by hand, one at a time
 
-These carry both the template's content and the project's answers — `AGENTS.md` has the
+These carry both the template's content and the project's answers: `AGENTS.md` has the
 charter plus this project's identity lines; `brain/lenses/craft.md` ships sections 1, 2 and 5
 with 3 and 4 written at setup; `brain/tags.md` ships a vocabulary this project extended.
 
-For each: read the upstream version, find what actually changed, and apply *that change* to
+For each: read the upstream version, find what changed, and apply *that change* to
 the project's file. Keep every project-specific line. When a change conflicts with something
-this project decided, **say so and stop** — that is a contradiction to raise, not to resolve
-quietly. Check `brain/decisions/` before assuming the upstream version is the better one; the
+this project decided, **say so and stop**; that is a contradiction to raise, not to resolve
+on your own. Check `brain/decisions/` before assuming the upstream version is the better one; the
 project may have overridden it deliberately.
 
 ## 4 · Verify, then record

@@ -34,7 +34,7 @@ things.
 
 The content source, written and cut **before anything is built**. One chapter per heading, one
 screen per block, and every screen that has a guessable answer arrives with our guess already
-in it. The owner cuts this file, not the code — cutting five screens costs nothing here and
+in it. The owner cuts this file, not the code; cutting five screens costs nothing here and
 costs an afternoon once it is built.
 
 ```markdown
@@ -55,7 +55,7 @@ Our assumption: <the option that arrives selected, and why we believe it>
 
 Every assumption that came from outside this repo carries its source tag
 (`brain/sources.md`). An assumption we invented is marked `^[inferred]`, and stays marked
-that way all the way into the answers file — that is the whole reason the method is safe.
+that way all the way into the answers file; that is the whole reason the method is safe.
 
 ## The answers — `YYYY-MM-DD-<topic>-answers.md`
 
@@ -64,7 +64,7 @@ What came back, one line per screen, each tagged **`chose`**, **`let stand`** or
 
 A let-stand answer is *our assumption, unopposed*. It is evidence, and it is weaker evidence
 than a tap. It is never quoted as the stakeholder's words, and anything built on one says so.
-Losing that distinction is how a guess of ours hardens into a client requirement, which is the
+Losing that distinction turns a guess of ours into a client requirement, which is the
 one failure this folder exists to prevent.
 
 Answers are source material, so they get routed out like a braindump: decisions to
@@ -73,7 +73,7 @@ Answers are source material, so they get routed out like a braindump: decisions 
 
 ## The thing itself
 
-A built async workshop is work, not record — it lives wherever `work_lives` in
+A built async workshop is work, not record; it lives wherever `work_lives` in
 `brain/workspace.toml` says the work lives, never in `brain/`. Only the outline, the answers,
 and the decisions they produce belong here. The live deck is the exception: its code is the
 template's own (`brain/workshop/`), and only its folders land here.

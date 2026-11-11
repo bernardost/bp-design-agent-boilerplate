@@ -1,6 +1,6 @@
 ---
 name: reveal
-description: Show a file or folder in Finder with it selected, so the owner can drag, attach or open it himself. Use for /reveal, "show me where it is", "reveal in Finder", "where's that file".
+description: Show a file or folder in Finder, selected. Use for /reveal, "show me where it is", "where's that file".
 ---
 
 # Reveal
