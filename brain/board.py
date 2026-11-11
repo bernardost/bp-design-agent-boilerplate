@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""board.py — render `brain/visions/*.md` as a desk you can move around on.
+"""board.py — render `brain/moodboards/*.md` as a desk you can move around on.
 
     python3 brain/board.py [file ...] [--open]
 
@@ -39,7 +39,7 @@ from pathlib import Path
 
 BRAIN = Path(__file__).resolve().parent
 ROOT = BRAIN.parent
-DIR = BRAIN / "visions"
+DIR = BRAIN / "moodboards"
 
 sys.path.insert(0, str(BRAIN))
 from config import PROJECT_NAME, MULTI_PROJECT, PROJECT_LABEL  # noqa: E402
@@ -106,7 +106,7 @@ def _one(text: str, key: str, default: str = "") -> str:
 
 
 def parse(path: Path) -> dict:
-    """One desk file → the shape `brain/visions/README.md` specifies.
+    """One desk file → the shape `brain/moodboards/README.md` specifies.
 
     Tolerant on purpose: a half-written desk should still render, because seeing the ideas
     that exist with no vision under them is how you notice the assembling never happened.
@@ -836,7 +836,7 @@ def main() -> int:
     paths = ([Path(f).resolve() for f in args.files] if args.files
              else sorted(p for p in DIR.glob("*.md") if p.name != "README.md"))
     if not paths:
-        print("no desks yet — /visions writes the first one")
+        print("no interactive moodboards yet — /interactive-moodboard writes the first one")
         return 0
 
     written = []

@@ -178,17 +178,17 @@ and deal with it first; a pull onto work in progress is how a session loses it.
   `brain/tags.md` · people, nicknames, acronyms, codenames → `brain/glossary.md` · what "good"
   means, per domain → `brain/lenses/` · directions considered → `brain/explorations/` · the
   work as HTML, every version kept → `brain/playground/` · what the research adds up to →
-  `brain/visions/` · async questions for a stakeholder → `brain/workshops/` · watched
+  `brain/moodboards/` · async questions for a stakeholder → `brain/workshops/` · watched
   sources → `brain/sources.md`.
 - **Use one tag vocabulary across the whole brain**, defined in `brain/tags.md`. A tag is a
   theme; a `[[wiki-link]]` is a claim about two notes. A theme with one member should have
   been a link.
-- **Keep the vision desk, exploration and decision apart.** A desk in `brain/visions/` holds
-  what the research means: ideas, and visions assembled from them — never a brand manual of
-  swatches and a type scale. A plain moodboard of collected references is neither, and needs
-  no skill. An exploration holds directions with specimens, rejected ones included. Picking one
+- **Keep moodboard, exploration and decision apart.** A moodboard holds what the research
+  means — references in a regular one; ideas, and visions assembled from them, in an
+  interactive one — never a brand manual of swatches and a type scale. Asked for a moodboard,
+  pick regular or interactive, or ask. An exploration holds directions with specimens, rejected ones included. Picking one
   produces exactly one decision that links back to it; nothing treats a direction as chosen
-  before that decision exists. `/visions` and `/explore` have the detail.
+  before that decision exists. `/interactive-moodboard` and `/explore` have the detail.
 - **Treat files as the truth.** The tracker and `feed.html` are projections: written, never
   read back as authority.
 - **Keep `now.md` under 2000 characters.** Anything still true in two weeks belongs in its
@@ -346,7 +346,7 @@ route · `/decide` log a decision · `/status` one-screen readout · `/close` wr
 `/update` take boilerplate improvements · `/open` a page in the browser · `/reveal` a file in
 Finder · `/remind` an alarm that will fire · `/transcript` check a transcript, then route it ·
 `/briefing` pull the watched sources · `/workshop` a live workshop deck, or its questions sent as a form ·
-`/visions` research into ideas and visions · `/explore` go wide before committing ·
+`/interactive-moodboard` any moodboard, regular or with ideas wired to their sources · `/explore` go wide before committing ·
 `/prototype` first pass with the dials exposed · `/playground` the work as HTML pieces ·
 `/promote` a piece called final · `/motion` a motion vocabulary · `/critique` score a render ·
 `/deck` a client deck or document · `/reviewer <lens> <scope>` independent review ·

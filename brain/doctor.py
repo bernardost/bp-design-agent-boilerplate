@@ -44,7 +44,7 @@ NOW_MAX = 2000 + 500 * max(0, len(PROJECT_KEYS) - 1)
 # Which record classes name the strand they belong to. Braindumps and briefings are
 # deliberately absent: both are verbatim captures that legitimately span the engagement, and
 # routing is what assigns a project — to the decision or task that comes out, not to the dump.
-PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "visions",
+PROJECT_TAGGED_DIRS = ("decisions", "insights", "explorations", "moodboards",
                        "workshops", "playground")
 
 # Decision filenames are `YYYY-MM-DD-slug.md`: the date orders them, the slug identifies them.
@@ -70,7 +70,7 @@ TASK_LINE = re.compile(
 
 # Directories whose .md files participate in [[link]] resolution.
 LINK_DIRS = [BRAIN / "insights", BRAIN / "decisions", BRAIN / "braindumps",
-             BRAIN / "explorations", BRAIN / "visions", BRAIN / "workshops"]
+             BRAIN / "explorations", BRAIN / "moodboards", BRAIN / "workshops"]
 
 # Files that describe what is true *now*. Only these may not carry a dead pointer.
 # A dated record (a decision, an insight, a findings file) citing a since-superseded decision was
@@ -682,7 +682,7 @@ def report_tags():
 
     for path in md_files([BRAIN / "decisions", BRAIN / "insights", BRAIN / "braindumps",
                           BRAIN / "briefings", BRAIN / "explorations",
-                          BRAIN / "visions", BRAIN / "workshops"]):
+                          BRAIN / "moodboards", BRAIN / "workshops"]):
         if path.name == "README.md" or path.stem.startswith("0000"):
             continue
         text = path.read_text(encoding="utf-8")
@@ -798,9 +798,9 @@ def report_explorations():
               f"               → python3 brain/spread.py")
 
 
-# ── REPORT ── vision desks, and whether they are desks or style guides ──────────
-def report_visions():
-    """A vision desk has two layers: ideas, and the visions that assemble them (AGENTS.md).
+# ── REPORT ── interactive moodboards, and whether they are desks or style guides ──────────
+def report_moodboards():
+    """An interactive moodboard has two layers: ideas, and the visions that assemble them (AGENTS.md).
     What rots is the layer between.
 
     An idea in no vision is filler or the start of a vision nobody wrote. A vision with no
@@ -809,12 +809,12 @@ def report_visions():
     hats, which is the illusion of choice. And an idea with no plate is ungrounded: fine
     while the idea is newer than the material, a problem once it stays that way.
     """
-    d = BRAIN / "visions"
+    d = BRAIN / "moodboards"
     if not d.exists():
         return
     files = [p for p in sorted(d.glob("*.md")) if p.name != "README.md"]
     if not files:
-        print("  visions    none filed yet — /visions writes the first one")
+        print("  moodboard  none filed yet — /interactive-moodboard writes the first one")
         return
 
     for path in files:
@@ -835,7 +835,7 @@ def report_visions():
         lenses = [ln for ln in parts.get("lenses", "").splitlines()
                   if ln.strip().startswith("- ")]
 
-        print(f"  visions    {rel(path)} — {len(ideas)} idea(s), {len(visions)} vision(s), "
+        print(f"  moodboard  {rel(path)} — {len(ideas)} idea(s), {len(visions)} vision(s), "
               f"{len(lenses)} lens(es)")
 
         if not visions:
@@ -1456,7 +1456,7 @@ def main() -> int:
         report_brief()
         report_drafts()
         report_explorations()
-        report_visions()
+        report_moodboards()
         report_tuning_drawers()
         report_playground()
         report_unrouted_promises()

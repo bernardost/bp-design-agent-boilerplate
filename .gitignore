@@ -8,7 +8,7 @@ venv/
 brain/feed.html
 brain/brief.html
 brain/explorations/*.html
-brain/visions/*.html
+brain/moodboards/*.html
 brain/playground/index.html
 brain/playground/*/versions.js
 brain/review-*.html

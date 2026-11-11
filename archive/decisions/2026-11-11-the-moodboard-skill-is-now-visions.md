@@ -1,8 +1,11 @@
 ---
 tags: [process]
 ---
+> **Superseded the same day — do not cite.** Replaced by
+> [[the-moodboard-skill-is-interactive-moodboard]]: the owner would not remember `/visions`.
+
 # The moodboard skill is now `/visions`, so "moodboard" can mean a plain one again
-Date: 2026-11-11 · Status: accepted
+Date: 2026-11-11 · Status: superseded by [[the-moodboard-skill-is-interactive-moodboard]]
 
 ## Context
 

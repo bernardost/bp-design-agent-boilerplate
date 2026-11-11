@@ -1,20 +1,50 @@
 ---
-name: visions
-description: Turn the research already in the workspace into ideas, assemble the ideas into whole visions for the brand, and render the lot as a desk you can move around on — with the wires showing which ideas build which vision. Use for /visions, "what does all this research add up to", "give me visions for the brand", or whenever the material has piled up and nobody has said what it means. Not for a plain moodboard — a page of collected references with no argument needs no skill.
+name: interactive-moodboard
+description: Any moodboard request. First decide, or ask, whether the owner wants a regular moodboard (references collected and captioned, often in Figma) or an interactive one — the research turned into ideas, the ideas assembled into visions for the brand, and the lot rendered as a canvas where every idea is wired to the visions it builds and the material it came from. Use for /interactive-moodboard, "make a moodboard", "put a moodboard together", "what does all this research add up to", or whenever the material has piled up and nobody has said what it means.
 ---
 
-# Visions — the desk
+# Moodboards — regular or interactive
 
-The desk documents ideas and articulates them into visions for the brand. It is the argued,
-synthesised form of a moodboard; a plain moodboard of collected references is a smaller job
-and needs none of this. Everything it is
+## First, pick which one
+
+**Decide which kind of moodboard the owner wants before doing anything else.** A regular
+moodboard collects references on one surface with a caption each. An interactive moodboard
+turns the research into ideas, assembles the ideas into visions, and draws the connections:
+every idea is wired to the visions it builds and to the notes, quotes and images it came
+from, so you can see where each idea comes from and which ones every direction shares.
+
+Decide from what is in front of you, and say which you picked in one line:
+
+- **Regular** when the work lives in Figma (`work_lives` in `brain/workspace.toml`, or the
+  owner said so), when he asked for references or "something to look at", or when there is
+  too little research to argue from.
+- **Interactive** when research has piled up and nobody has said what it means, or when
+  several directions are on the table and the question is what they share.
+
+If neither is clear, ask once, selling the interactive one by what it does: *"Regular
+moodboard, or the interactive one? The interactive one connects the insights and notes to
+each idea, so you can see where every idea comes from and which ones all the directions
+share."*
+
+**A regular moodboard** is the references and nothing else. When the work lives in Figma,
+put it on a page in that file (the Figma skills handle the writing). Otherwise collect the
+images in `brain/references/<topic>/` with a `README.md` that captions each one with what to
+take from it, never what it is, and reveal the folder with `python3 brain/show.py --reveal`.
+The rest of this file does not apply to it, except one rule: still no swatches with hex values
+and no type scale.
+
+**An interactive moodboard** is the rest of this file. Its records are called desks.
+
+## The interactive moodboard — the desk
+
+The desk documents ideas and articulates them into visions for the brand. Everything it is
 built from is already in this workspace: the client's own words, the references, the briefing,
 the braindumps, the brief. **The job is connection, not production.** You are not designing
 anything here and you are not collecting anything new.
 
 ## Read this first, because it is the failure
 
-**Asked for a moodboard or a set of visions, a model produces a style guide.** Swatches with hex values, a type
+**Asked for a moodboard, a model produces a style guide.** Swatches with hex values, a type
 scale, three sections named Colour, Typography and Imagery, a rule about the logo. It happens
 every time, it is not a lapse in effort, and it is what predicting the likely next token
 returns — "moodboard" sits next to a million brand manuals in the training data and next to
@@ -44,7 +74,7 @@ the two layers, and lets you light them from either end. Do not claim a constant
 
 ## Where this sits
 
-Research → **`/visions`** (what does it all mean, and what wholes could it make) →
+Research → **`/interactive-moodboard`** (what does it all mean, and what wholes could it make) →
 `/explore` (specimens that prove a vision can be executed) → a decision. **This command
 decides nothing**, and nothing in the brain may cite a vision as chosen.
 
@@ -98,8 +128,8 @@ vision and you owe the owner another. Real difference means disagreeing about wh
 is *for*, not about hue. And if every idea ends up in every vision, there is only one vision
 here wearing three hats — say so rather than shipping the illusion of choice.
 
-**6 · Write the file and render it.** `brain/visions/YYYY-MM-DD-<topic>.md` in the shape
-`brain/visions/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
+**6 · Write the file and render it.** `brain/moodboards/YYYY-MM-DD-<topic>.md` in the shape
+`brain/moodboards/README.md` specifies, tagged from `brain/tags.md`, carrying the strand's
 `project:` key. Then `python3 brain/board.py`, read the page yourself, then hand it over with
 `python3 brain/board.py --open`
 and give the owner the path.
