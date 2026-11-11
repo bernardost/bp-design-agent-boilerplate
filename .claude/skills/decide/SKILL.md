@@ -34,7 +34,7 @@ description: Log a decision in brain/decisions/. Use for /decide, "let's log thi
 6. If the decision changes current work, update that project's section of `brain/now.md`.
 7. Commit and push; a logged decision is a completed unit of work.
 8. Confirm with the path and a one-line restatement of the decision, naming the project
-   it lands under when the engagement has more than one, and listing what you routed out
+it belongs under when the engagement has more than one, and listing what you routed out
    of it.
 
 ## Language

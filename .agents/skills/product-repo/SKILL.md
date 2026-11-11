@@ -37,7 +37,7 @@ one contains the current directory, so every git step has to say which repo it m
   decision log, technical decisions go there; `brain/decisions/` records the design and
   engagement decision and links to it. If its rules and the charter's conflict, raise it
   rather than picking one.
-- **Its writing rules override the charter's for anything that lands in it.** Page copy,
+- **Its writing rules override the charter's for anything written into it.** Page copy,
   commit messages, PR titles and bodies, a rewrite you propose in a comment: all of it follows
   that repo's voice rules. The two will disagree. One site this workspace served banned em
 dashes and every contrastive pattern ("rather than", "instead of", "X over Y") while the

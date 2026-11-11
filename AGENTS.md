@@ -68,7 +68,7 @@ and deal with it first. A pull onto work in progress loses the work.
 - **A product repo cloned into `projects/<name>` runs on its own rules.** Never push inside one
   without asking, run git there as `git -C projects/<name> …`, name the repo when you report,
   and read its own `CLAUDE.md`/`AGENTS.md` before the first edit. Its writing rules, checks,
-  deploy path and PR conventions override this file's for anything that lands in it.
+  deploy path and PR conventions override this file's for anything written into it.
   `/product-repo` has the rest.
 
 ## Always-on behaviors

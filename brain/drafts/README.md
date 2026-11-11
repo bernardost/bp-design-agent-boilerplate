@@ -6,7 +6,7 @@ on someone else's ticket. It sits here until it goes out, and it stays here afte
 This folder exists because of one failure. A draft written into a scratch directory (the
 agent's own working space, outside the repo, in a path nobody can be expected to remember)
 is a draft that never gets sent. **Nothing the owner has to read or act on is ever written
-outside this repo.** If it is for them, it lands in the folder that owns it, and you say where
+outside this repo.** If it is for them, it goes in the folder that owns it, and you say where
 you put it.
 
 Drafts stay after sending, and that is deliberate: what we told a client is evidence,
